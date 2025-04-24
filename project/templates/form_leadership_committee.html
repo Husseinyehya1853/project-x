@@ -1,0 +1,513 @@
+{% extends 'base.html' %}
+
+{% block title %}
+تشكيل لجنة وظائف قيادية
+{% endblock %}
+
+{% block extra_styles %}
+    <style>
+        .form-section {
+            max-width: 800px;
+            margin: 0 auto;
+        }
+
+        .section-title {
+            color: #D4AF37;
+            font-size: 22px;
+            margin-top: 20px;
+            margin-bottom: 10px;
+            font-weight: 700;
+        }
+
+        .form-group {
+            margin-bottom: 15px;
+            position: relative;
+        }
+
+        .form-group label {
+            display: block;
+            color: #4A4A4A;
+            font-weight: 600;
+            margin-bottom: 5px;
+        }
+
+        .form-group input,
+        .form-group textarea {
+            width: 100%;
+            padding: 10px;
+            border: 2px solid #D4AF37;
+            border-radius: 8px;
+            font-size: 16px;
+            transition: border-color 0.3s ease, box-shadow 0.3s ease;
+        }
+
+        .form-group input:focus,
+        .form-group textarea:focus {
+            border-color: #4A4A4A;
+            box-shadow: 0 0 5px rgba(212, 175, 55, 0.5);
+            outline: none;
+        }
+
+        .member-card {
+            background: #FFF;
+            padding: 15px;
+            border: 2px solid #D4AF37;
+            border-radius: 10px;
+            margin-bottom: 15px;
+        }
+
+        .member-card h4 {
+            color: #D4AF37;
+            font-size: 18px;
+            margin-bottom: 10px;
+        }
+
+        .error-message {
+            color: red;
+            font-size: 14px;
+            display: none;
+            margin-top: 5px;
+            text-align: center;
+        }
+
+        .field-error {
+            color: red;
+            font-size: 12px;
+            margin-top: 3px;
+            display: none;
+        }
+
+        .mini-report {
+            width: 400px;
+            margin: 20px auto;
+            background: #F9F9F9;
+            border: 2px solid #D4AF37;
+            border-radius: 10px;
+            padding: 15px;
+            text-align: center;
+            transition: background 0.3s ease;
+        }
+
+        .mini-report:hover {
+            background: #F0E68C;
+        }
+
+        .mini-report-buttons {
+            display: flex;
+            justify-content: center;
+            gap: 10px;
+            margin-bottom: 10px;
+            border: 2px solid #D4AF37;
+            border-radius: 8px;
+            padding: 8px;
+            width: 400px;
+            margin: 0 auto 10px auto;
+        }
+
+        .mini-report-buttons button {
+            background-color: #D4AF37;
+            color: white;
+            border: none;
+            padding: 8px 15px;
+            border-radius: 5px;
+            cursor: pointer;
+            font-size: 14px;
+            display: flex;
+            justify-content: center; /* توسيط النص أفقيًا */
+            align-items: center; /* توسيط النص عموديًا */
+            gap: 5px;
+            transition: background-color 0.3s ease;
+        }
+
+        .mini-report-buttons button:hover {
+            background-color: #b89c2f;
+        }
+
+        .mini-report-buttons i {
+            font-size: 16px;
+        }
+
+        .mini-report h3 {
+            color: #D4AF37;
+            font-size: 18px;
+            margin-bottom: 10px;
+        }
+
+        .mini-report p {
+            color: #4A4A4A;
+            font-size: 14px;
+        }
+
+        .alert {
+            padding: 10px;
+            margin: 10px 0;
+            border-radius: 5px;
+            text-align: center;
+        }
+
+        .alert-success {
+            background-color: #d4edda;
+            color: #155724;
+            border: 1px solid #c3e6cb;
+        }
+
+        .alert-error {
+            background-color: #f8d7da;
+            color: #721c24;
+            border: 1px solid #f5c6cb;
+        }
+
+        .alert-warning {
+            background-color: #fff3cd;
+            color: #856404;
+            border: 1px solid #ffeeba;
+        }
+
+        /* تنسيق أزرار النموذج على الشاشات الكبيرة (اللاب توب) */
+        .form-buttons {
+            display: flex;
+            flex-direction: row; /* جعل الأزرار تظهر جنبًا إلى جنب */
+            flex-wrap: wrap; /* السماح بالانتقال إلى السطر التالي إذا لزم الأمر */
+            gap: 10px; /* إضافة مسافة بين الأزرار */
+            margin-top: 20px;
+            width: 600px; /* عرض مناسب لاستيعاب الأزرار الأربعة في سطر واحد */
+            margin: 0 auto; /* توسيط الحاوية أفقيًا */
+            justify-content: center; /* التأكد من توسيط الأزرار داخل الحاوية */
+        }
+
+        .form-buttons button {
+            width: auto; /* عرض الزر بناءً على المحتوى */
+            max-width: 150px; /* تقليل عرض الزر نفسه لتجنب الازدحام */
+            padding: 10px 15px; /* تحسين الحشوة لسهولة النقر */
+            font-size: 18px; /* حجم الخط الافتراضي */
+            justify-content: center; /* توسيط النص أفقيًا */
+            align-items: center; /* توسيط النص عموديًا */
+            text-align: center; /* التأكد من توسيط النص */
+        }
+
+        /* تحسين التجاوب على الموبايل */
+        @media (max-width: 576px) {
+            .mini-report-buttons {
+                width: 100%; /* جعل العرض متجاوبًا */
+                flex-wrap: nowrap; /* منع الأزرار من الانتقال إلى السطر التالي */
+                gap: 6px; /* تقليل المسافة بين الأزرار */
+                padding: 6px; /* تقليل الحشوة */
+            }
+
+            .mini-report-buttons button {
+                padding: 6px 10px; /* تقليل حجم الأزرار */
+                font-size: 12px; /* تقليل حجم الخط */
+                flex: 1; /* جعل الأزرار متساوية في العرض */
+                min-width: 80px; /* الحد الأدنى للعرض لضمان سهولة النقر */
+                justify-content: center; /* توسيط النص أفقيًا */
+                align-items: center; /* توسيط النص عموديًا */
+            }
+
+            .mini-report-buttons i {
+                font-size: 14px; /* تقليل حجم الأيقونة */
+            }
+
+            .mini-report {
+                width: 100%; /* جعل العرض متجاوبًا */
+                padding: 10px; /* تقليل الحشوة */
+            }
+
+            .mini-report h3 {
+                font-size: 16px; /* تقليل حجم العنوان */
+            }
+
+            .mini-report p {
+                font-size: 12px; /* تقليل حجم النص */
+            }
+
+            .error-message {
+                font-size: 12px; /* تقليل حجم الخط لكن مع الحفاظ على الوضوح */
+            }
+
+            /* أزرار النموذج على الموبايل */
+            .form-buttons {
+                flex-direction: column; /* إبقاء الأزرار فوق بعضها على الموبايل */
+                width: 180px; /* تقليل العرض لتوسيط الأزرار بشكل أوضح */
+                margin: 0 auto; /* توسيط الحاوية أفقيًا */
+            }
+
+            .form-buttons button {
+                width: 100%; /* العرض داخل الحاوية */
+                max-width: 150px; /* تقليل عرض الزر نفسه داخل الحاوية */
+                margin: 0 auto; /* توسيط الزر داخل الحاوية */
+                padding: 8px; /* تحسين الحشوة لسهولة النقر */
+                font-size: 14px; /* تقليل حجم الخط */
+            }
+        }
+    </style>
+{% endblock %}
+
+{% block extra_scripts %}
+    <script>
+        // دالة للتحقق من صحة الرقم القومي
+        function validateNationalId(nid) {
+            const regex = /^\d{14}$/;
+            if (!regex.test(nid)) return false;
+            const century = parseInt(nid[0]);
+            const month = parseInt(nid.substring(3, 5));
+            const day = parseInt(nid.substring(5, 7));
+            return (century === 2 || century === 3) && (month >= 1 && month <= 12) && (day >= 1 && day <= 31);
+        }
+
+        // دالة للتحقق من صحة رقم الهاتف
+        function validatePhoneNumber(phone) {
+            const regex = /^01[0-2|5][0-9]{8}$/;
+            return regex.test(phone);
+        }
+
+        // دالة للتحقق من فرادة الأرقام القومية
+        function validateUniqueNationalIds() {
+            const nationalIds = [
+                document.getElementById('chairperson_national_id').value,
+                document.getElementById('admin_member_national_id').value,
+                document.getElementById('hr_member_national_id').value,
+                document.getElementById('it_member_national_id').value,
+                document.getElementById('legal_member_national_id').value,
+                document.getElementById('other_member_1_national_id').value,
+                document.getElementById('other_member_2_national_id').value,
+                document.getElementById('secretary_national_id').value,
+                document.getElementById('secretary_member_1_national_id').value,
+                document.getElementById('secretary_member_2_national_id').value
+            ].filter(id => id.trim() !== '');
+
+            const uniqueIds = new Set(nationalIds);
+            if (nationalIds.length !== uniqueIds.size) {
+                document.querySelector('.error-message').style.display = 'block';
+                return false;
+            }
+            document.querySelector('.error-message').style.display = 'none';
+            return true;
+        }
+
+        // دالة لعرض رسائل الخطأ
+        function showFieldError(inputId, message) {
+            const errorElement = document.getElementById(`${inputId}_error`);
+            errorElement.textContent = message;
+            errorElement.style.display = 'block';
+            return false;
+        }
+
+        function clearFieldError(inputId) {
+            const errorElement = document.getElementById(`${inputId}_error`);
+            errorElement.style.display = 'none';
+        }
+
+        document.querySelectorAll('input[type="text"]').forEach(input => {
+            input.addEventListener('input', function() {
+                const inputId = this.id;
+
+                if (inputId.includes('national_id')) {
+                    const value = this.value;
+                    if (value && !validateNationalId(value)) {
+                        showFieldError(inputId, 'الرقم القومي يجب أن يكون 14 رقمًا ويتبع الصيغة الصحيحة');
+                    } else {
+                        clearFieldError(inputId);
+                    }
+                } else if (inputId.includes('phone')) {
+                    const value = this.value;
+                    if (value && !validatePhoneNumber(value)) {
+                        showFieldError(inputId, 'رقم الهاتف يجب أن يكون 11 رقمًا ويبدأ بـ 010 أو 011 أو 012 أو 015');
+                    } else {
+                        clearFieldError(inputId);
+                    }
+                }
+            });
+        });
+
+        document.querySelector('form').addEventListener('submit', function(event) {
+            let valid = true;
+
+            document.querySelectorAll('input[id*="national_id"]').forEach(input => {
+                const value = input.value;
+                if (value && !validateNationalId(value)) {
+                    showFieldError(input.id, 'الرقم القومي يجب أن يكون 14 رقمًا ويتبع الصيغة الصحيحة');
+                    valid = false;
+                }
+            });
+
+            document.querySelectorAll('input[id*="phone"]').forEach(input => {
+                const value = input.value;
+                if (value && !validatePhoneNumber(value)) {
+                    showFieldError(input.id, 'رقم الهاتف يجب أن يكون 11 رقمًا ويبدأ بـ 010 أو 011 أو 012 أو 015');
+                    valid = false;
+                }
+            });
+
+            if (event.submitter.name === 'action' && event.submitter.value === 'create_decision') {
+                if (!validateUniqueNationalIds()) {
+                    valid = false;
+                }
+            }
+
+            if (!valid) {
+                event.preventDefault();
+            }
+        });
+
+        function printPDF(url) {
+            window.open(url, '_blank').print();
+        }
+    </script>
+{% endblock %}
+
+{% block content %}
+    <h2>تشكيل لجنة وظائف قيادية</h2>
+    <p class="slide-up">يرجى ملء البيانات التالية لتشكيل لجنة وظائف قيادية.</p>
+
+    <form method="POST" action="{{ url_for('form_leadership_committee') }}" class="form-section">
+        <!-- بيانات القرار -->
+        <h3 class="section-title">بيانات القرار</h3>
+        <div class="form-group">
+            <label for="decision_number">رقم القرار:</label>
+            <input type="text" id="decision_number" name="decision_number" required>
+        </div>
+        <div class="form-group">
+            <label for="decision_date">تاريخ القرار:</label>
+            <input type="date" id="decision_date" name="decision_date" required>
+        </div>
+
+        <!-- الدباجة القانونية -->
+        <h3 class="section-title">الدباجة القانونية</h3>
+        <div class="form-group">
+            <textarea id="preamble" name="preamble" rows="4" placeholder="أدخل الدباجة القانونية هنا..." required></textarea>
+        </div>
+
+        <!-- المادة الأولى: أعضاء اللجنة -->
+        <h3 class="section-title">المادة الأولى: أعضاء اللجنة</h3>
+        <div class="form-group">
+            <textarea id="article_one_text" name="article_one_text" rows="4" placeholder="أدخل نص المادة الأولى هنا..." required></textarea>
+        </div>
+
+        {% set members = [
+            {'title': 'رئيس اللجنة', 'id_prefix': 'chairperson', 'name_field': 'chairperson_name', 'national_id_field': 'chairperson_national_id', 'phone_field': 'chairperson_phone'},
+            {'title': 'عضو الإدارة', 'id_prefix': 'admin_member', 'name_field': 'admin_member_name', 'national_id_field': 'admin_member_national_id', 'phone_field': 'admin_member_phone'},
+            {'title': 'عضو الموارد البشرية', 'id_prefix': 'hr_member', 'name_field': 'hr_member_name', 'national_id_field': 'hr_member_national_id', 'phone_field': 'hr_member_phone'},
+            {'title': 'عضو تكنولوجيا المعلومات', 'id_prefix': 'it_member', 'name_field': 'it_member_name', 'national_id_field': 'it_member_national_id', 'phone_field': 'it_member_phone'},
+            {'title': 'عضو القانون', 'id_prefix': 'legal_member', 'name_field': 'legal_member_name', 'national_id_field': 'legal_member_national_id', 'phone_field': 'legal_member_phone'},
+            {'title': 'عضو آخر 1', 'id_prefix': 'other_member_1', 'name_field': 'other_member_1_name', 'national_id_field': 'other_member_1_national_id', 'phone_field': 'other_member_1_phone'},
+            {'title': 'عضو آخر 2', 'id_prefix': 'other_member_2', 'name_field': 'other_member_2_name', 'national_id_field': 'other_member_2_national_id', 'phone_field': 'other_member_2_phone'}
+        ] %}
+
+        {% for member in members %}
+        <div class="member-card">
+            <h4>{{ member.title }}</h4>
+            <div class="form-group">
+                <label for="{{ member.id_prefix }}_name">الاسم:</label>
+                <input type="text" id="{{ member.id_prefix }}_name" name="{{ member.name_field }}" required>
+            </div>
+            <div class="form-group">
+                <label for="{{ member.id_prefix }}_national_id">الرقم القومي:</label>
+                <input type="text" id="{{ member.id_prefix }}_national_id" name="{{ member.national_id_field }}" required>
+                <div id="{{ member.id_prefix }}_national_id_error" class="field-error"></div>
+            </div>
+            <div class="form-group">
+                <label for="{{ member.id_prefix }}_phone">رقم الموبايل:</label>
+                <input type="text" id="{{ member.id_prefix }}_phone" name="{{ member.phone_field }}" required>
+                <div id="{{ member.id_prefix }}_phone_error" class="field-error"></div>
+            </div>
+        </div>
+        {% endfor %}
+
+        <!-- المادة الثانية: الأمانة الفنية -->
+        <h3 class="section-title">المادة الثانية: الأمانة الفنية</h3>
+        <div class="form-group">
+            <textarea id="article_two_text" name="article_two_text" rows="4" placeholder="أدخل نص المادة الثانية هنا..." required></textarea>
+        </div>
+
+        {% set secretaries = [
+            {'title': 'أمين اللجنة', 'id_prefix': 'secretary', 'name_field': 'secretary_name', 'national_id_field': 'secretary_national_id', 'phone_field': 'secretary_phone'},
+            {'title': 'عضو أمانة 1', 'id_prefix': 'secretary_member_1', 'name_field': 'secretary_member_1_name', 'national_id_field': 'secretary_member_1_national_id', 'phone_field': 'secretary_member_1_phone'},
+            {'title': 'عضو أمانة 2', 'id_prefix': 'secretary_member_2', 'name_field': 'secretary_member_2_name', 'national_id_field': 'secretary_member_2_national_id', 'phone_field': 'secretary_member_2_phone'}
+        ] %}
+
+        {% for secretary in secretaries %}
+        <div class="member-card">
+            <h4>{{ secretary.title }}</h4>
+            <div class="form-group">
+                <label for="{{ secretary.id_prefix }}_name">الاسم:</label>
+                <input type="text" id="{{ secretary.id_prefix }}_name" name="{{ secretary.name_field }}" required>
+            </div>
+            <div class="form-group">
+                <label for="{{ secretary.id_prefix }}_national_id">الرقم القومي:</label>
+                <input type="text" id="{{ secretary.id_prefix }}_national_id" name="{{ secretary.national_id_field }}" required>
+                <div id="{{ secretary.id_prefix }}_national_id_error" class="field-error"></div>
+            </div>
+            <div class="form-group">
+                <label for="{{ secretary.id_prefix }}_phone">رقم الموبايل:</label>
+                <input type="text" id="{{ secretary.id_prefix }}_phone" name="{{ secretary.phone_field }}" required>
+                <div id="{{ secretary.id_prefix }}_phone_error" class="field-error"></div>
+            </div>
+        </div>
+        {% endfor %}
+
+        <!-- المادة الثالثة: مهام اللجنة -->
+        <h3 class="section-title">المادة الثالثة: مهام اللجنة</h3>
+        <div class="form-group">
+            <textarea id="committee_tasks" name="committee_tasks" rows="4" placeholder="أدخل مهام اللجنة هنا..." required></textarea>
+        </div>
+
+        <!-- المادة الرابعة -->
+        <h3 class="section-title">المادة الرابعة</h3>
+        <div class="form-group">
+            <textarea id="article_four" name="article_four" rows="4" placeholder="أدخل نص المادة الرابعة هنا..." required></textarea>
+        </div>
+
+        <!-- السلطة المختصة -->
+        <h3 class="section-title">السلطة المختصة</h3>
+        <div class="form-group">
+            <label for="competent_authority">صاحب الاختصاص:</label>
+            <input type="text" id="competent_authority" name="competent_authority" required>
+        </div>
+        <div class="form-group">
+            <label for="authority_approval">اعتماد السلطة المختصة (التوقيع الإلكتروني):</label>
+            <input type="text" id="authority_approval" name="authority_approval" placeholder="أدخل رمز التوقيع الإلكتروني" required>
+        </div>
+
+        <!-- الأزرار الثلاثة مع الحدود الذهبية -->
+<div class="mini-report-buttons">
+    <button type="button" onclick="window.location.href='{{ url_for('view_pdf', type='committee') }}'">
+        <i class="fas fa-eye"></i>
+    </button>
+    <button type="button" onclick="printPDF('{{ url_for('print_pdf' , type='committee') }}')">
+        مسح ضوئي
+    </button>
+    <button type="button" onclick="window.location.href='{{ url_for('download_pdf' , type='committee') }}'">
+        ارفاق من جهازك
+    </button>
+</div>
+
+        <!-- المربع المصغر لعرض آخر بيانات أو رسالة -->
+        <div class="mini-report">
+            {% if session.get('latest_committee') %}
+                <h3>قرار محافظ {{ governorate }} - رقم القرار {{ session['latest_committee']['decision_number'] }} - تاريخ {{ session['latest_committee']['decision_date'] }}</h3>
+                <p>بشأن تشكيل لجنة الوظائف القيادية</p>
+            {% else %}
+                <h3>لا يوجد بيانات حتى الآن</h3>
+            {% endif %}
+        </div>
+
+        <!-- رسالة خطأ لعدم فرادة الأرقام القومية -->
+        <div class="error-message">الأرقام القومية يجب أن تكون مختلفة وفريدة!</div>
+
+        <!-- أزرار الفورم -->
+        <div class="form-buttons">
+            <button type="submit" name="action" value="create_decision" class="btn">إنشاء قرار</button>
+            <button type="submit" name="action" value="save_draft" class="btn">حفظ كمسودة</button>
+            <button type="submit" name="action" value="refer_to" class="btn">إحالة إلى</button>
+            <button type="submit" name="action" value="next" class="btn">التالي</button>
+        </div>
+    </form>
+
+    {% with messages = get_flashed_messages(with_categories=true) %}
+        {% if messages %}
+            {% for category, message in messages %}
+                <div class="alert alert-{{ category }}">{{ message }}</div>
+            {% endfor %}
+        {% endif %}
+    {% endwith %}
+{% endblock %}

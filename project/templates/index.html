@@ -1,0 +1,585 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>الرئيسية - نظام الإدارة المركزية</title>
+    <link href="https://fonts.googleapis.com/css2?family=Cairo:wght@400;700&display=swap" rel="stylesheet">
+    <!-- إضافة مكتبة SweetAlert -->
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Cairo', sans-serif;
+        }
+
+        body {
+            background: linear-gradient(135deg, #70a9e1 0%, #0a325c 100%); /* خلفية تدرج ناعمة */
+            min-height: 100vh;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            direction: rtl;
+            padding: 50px 0; /* إضافة padding عشان الـ scroll يظهر */
+        }
+
+        .container {
+            display: flex;
+            max-width: 900px;
+            width: 100%;
+            margin: 20px;
+            border: 2px solid #D4AF37;
+            border-radius: 15px;
+            overflow: hidden; /* عشان الحدود تكون متماسكة */
+            box-shadow: 0 8px 16px rgba(0, 0, 0, 0.1); /* ظل ناعم */
+            min-height: 500px; /* ارتفاع موحد للجزئين */
+            position: relative;
+        }
+
+        .login-box, .welcome-box {
+            padding: 40px;
+            width: 50%;
+            text-align: center;
+            position: relative;
+            transition: all 0.3s ease; /* للتفاعل عند الـ hover */
+            display: flex;
+            flex-direction: column;
+            justify-content: center; /* لتوسيط المحتوى عموديًا */
+            align-items: center; /* لتوسيط المحتوى أفقيًا */
+        }
+
+        .login-box {
+            background: linear-gradient(45deg, #F5F5F5 0%, #FFF9E6 100%); /* تدرج أنيق للجزء الأيمن */
+            transform: translateX(100%);
+            animation: slideInRight 1s ease-out forwards;
+        }
+
+        .welcome-box {
+            background-color: #FFFFFF; /* أبيض للجزء الأيسر */
+            transform: translateX(-100%);
+            animation: slideInLeft 1s ease-out forwards;
+        }
+
+        /* الأنيميشن للجزء الأيسر */
+        @keyframes slideInLeft {
+            0% {
+                transform: translateX(-100%);
+                opacity: 0;
+            }
+            100% {
+                transform: translateX(0);
+                opacity: 1;
+            }
+        }
+
+        /* الأنيميشن للجزء الأيمن */
+        @keyframes slideInRight {
+            0% {
+                transform: translateX(100%);
+                opacity: 0;
+            }
+            100% {
+                transform: translateX(0);
+                opacity: 1;
+            }
+        }
+
+        /* أنيميشن دمج الجزئين */
+        .merge-left {
+            animation: mergeLeft 0.5s ease-in forwards;
+        }
+
+        .merge-right {
+            animation: mergeRight 0.5s ease-in forwards;
+        }
+
+        @keyframes mergeLeft {
+            0% {
+                transform: translateX(0);
+                opacity: 1;
+            }
+            100% {
+                transform: translateX(100%);
+                opacity: 0;
+            }
+        }
+
+        @keyframes mergeRight {
+            0% {
+                transform: translateX(0);
+                opacity: 1;
+            }
+            100% {
+                transform: translateX(-100%);
+                opacity: 0;
+            }
+        }
+
+        /* إخفاء الكلام */
+        .fade-out {
+            animation: fadeOut 0.5s ease-in forwards;
+        }
+
+        @keyframes fadeOut {
+            0% {
+                opacity: 1;
+            }
+            100% {
+                opacity: 0;
+            }
+        }
+
+        .login-box:hover, .welcome-box:hover {
+            transform: scale(1.02); /* تأثير خفيف عند الـ hover */
+        }
+
+        .login-box h2, .welcome-box h2 {
+            color: #D4AF37; /* ذهبي */
+            font-size: 26px;
+            margin-bottom: 20px;
+            font-weight: 700;
+        }
+
+        .welcome-box .logo {
+            margin-bottom: 20px;
+            display: block; /* التأكد من إن الـ div مش مخفي */
+            visibility: visible; /* التأكد من إن الـ div ظاهر */
+        }
+
+        .welcome-box .logo-img {
+            width: 100px; /* حجم اللوجو في الصفحة الرئيسية */
+            height: 100px; /* عشان تكون دائرة متساوية */
+            border-radius: 50%; /* شكل دائري */
+            filter: drop-shadow(0 2px 4px rgba(0, 0, 0, 0.1)); /* ظل ناعم */
+            animation: pulse 2s infinite ease-in-out; /* أنيميشن نبض */
+            object-fit: contain; /* عشان الشعار يظهر بالكامل بدون قص */
+            display: block; /* التأكد من إن الصورة مش مخفية */
+            visibility: visible; /* التأكد من إن الصورة ظاهرة */
+            opacity: 1; /* التأكد من إن الصورة مش شفافة */
+        }
+
+        /* أنيميشن النبض للشعار (معدل ليكون أنعم) */
+        @keyframes pulse {
+            0% {
+                transform: scale(1);
+                box-shadow: 0 0 0 0 rgba(212, 175, 55, 0.5);
+            }
+            50% {
+                transform: scale(1.03); /* تصغير النبض عشان يكون ألطف */
+                box-shadow: 0 0 0 10px rgba(212, 175, 55, 0); /* تصغير الظل */
+            }
+            100% {
+                transform: scale(1);
+                box-shadow: 0 0 0 0 rgba(212, 175, 55, 0);
+            }
+        }
+
+        /* أنيميشن ظهور الشعار من تحت */
+        .slide-up-logo {
+            opacity: 0;
+            transform: translateY(20px);
+            animation: slideUpLogo 0.7s ease-in-out forwards;
+            display: block; /* التأكد من إن الصورة مش مخفية */
+            visibility: visible; /* التأكد من إن الصورة ظاهرة */
+            opacity: 1; /* التأكد من إن الصورة مش شفافة */
+        }
+
+        @keyframes slideUpLogo {
+            0% {
+                opacity: 0;
+                transform: translateY(20px);
+            }
+            100% {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        .welcome-box p {
+            color: #4A4A4A; /* رمادي داكن */
+            font-size: 16px;
+            margin-bottom: 10px;
+            line-height: 1.5;
+        }
+
+        .welcome-box .english-text {
+            font-size: 14px;
+            color: #4A4A4A;
+            font-style: italic;
+        }
+
+        .login-box form, .single-box form {
+            display: flex;
+            flex-direction: column;
+            gap: 15px;
+            width: 100%;
+        }
+
+        .login-box label, .single-box label {
+            color: #4A4A4A;
+            font-size: 16px;
+            font-weight: 600;
+        }
+
+        .login-box input, .single-box input {
+            padding: 12px;
+            font-size: 16px;
+            border: 1px solid #D4AF37;
+            border-radius: 8px;
+            width: 100%;
+            background-color: #F9F9F9; /* خلفية فاتحة للحقول */
+            color: #4A4A4A;
+            transition: border-color 0.3s ease;
+        }
+
+        .login-box input:focus, .single-box input:focus {
+            border-color: #4A4A4A;
+            outline: none;
+            box-shadow: 0 0 5px rgba(212, 175, 55, 0.3); /* تأثير ذهبي عند التركيز */
+        }
+
+        .login-btn {
+            background-color: #D4AF37;
+            color: #FFFFFF;
+            padding: 12px;
+            border: none;
+            font-size: 16px;
+            font-weight: 600;
+            cursor: pointer;
+            border-radius: 8px;
+            transition: background-color 0.3s ease, transform 0.1s ease;
+            margin-bottom: 10px; /* مسافة بسيطة بين زر الدخول وزر الرجوع */
+        }
+
+        .login-btn:hover {
+            background-color: #4A4A4A;
+            transform: scale(1.05); /* تأثير خفيف عند الـ hover */
+        }
+
+        /* زر "الدخول للمنصة" */
+        .platform-btn {
+            background-color: #D4AF37;
+            color: #FFFFFF;
+            padding: 12px 30px; /* زيادة العرض */
+            border: none;
+            font-size: 16px;
+            font-weight: 600;
+            cursor: pointer;
+            border-radius: 8px;
+            margin-top: 20px;
+            text-decoration: none;
+            transition: background-color 0.3s ease, transform 0.1s ease;
+        }
+
+        .platform-btn:hover {
+            background-color: #4A4A4A;
+            transform: scale(1.05);
+        }
+
+        /* زر "رجوع" */
+        .back-btn {
+            background-color: #4A4A4A; /* رمادي داكن */
+            color: #FFFFFF;
+            padding: 12px 30px; /* نفس حجم زر الدخول */
+            border: none;
+            font-size: 16px;
+            font-weight: 600;
+            cursor: pointer;
+            border-radius: 8px;
+            text-decoration: none;
+            transition: background-color 0.3s ease, transform 0.1s ease;
+        }
+
+        .back-btn:hover {
+            background-color: #D4AF37; /* ذهبي */
+            transform: scale(1.05);
+        }
+
+        /* الجزء الجديد لتسجيل الدخول */
+        .single-box {
+            padding: 40px;
+            width: 100%;
+            text-align: center;
+            background: #FFFFFF; /* خلفية بيضاء */
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            position: relative;
+        }
+
+        /* تصغير اللوجو في تسجيل الدخول */
+        .single-box .logo {
+            margin-bottom: 20px; /* نفس المسافة زي الجزء الأول */
+            display: block; /* التأكد من إن الـ div بتاع اللوجو مش مخفي */
+            visibility: visible; /* التأكد من إن الـ div ظاهر */
+            opacity: 1; /* التأكد من إن الـ div مش شفاف */
+        }
+
+        .single-box .logo-img {
+            width: 100px; /* نفس حجم اللوجو في الجزء الأول */
+            height: 100px; /* نفس الحجم */
+            border-radius: 50%;
+            filter: drop-shadow(0 2px 4px rgba(0, 0, 0, 0.1));
+            animation: pulse 2s infinite ease-in-out; /* أنيميشن النبض */
+            object-fit: contain;
+            display: block !important; /* التأكد من إن الصورة مش مخفية */
+            visibility: visible !important; /* التأكد من إن الصورة ظاهرة */
+            opacity: 1 !important; /* التأكد من إن الصورة مش شفافة */
+            position: relative; /* التأكد من إن الصورة في مكانها */
+            z-index: 10; /* التأكد من إن الصورة فوق أي عناصر تانية */
+        }
+
+        /* أنيميشن الكتابة للعنوان */
+        .typing-text {
+            overflow: hidden;
+            white-space: nowrap; /* النص يبدأ في سطر واحد */
+            border-left: 2px solid #D4AF37; /* مؤشر الكتابة */
+            animation: typing 2s steps(40, end) forwards, blink 0.5s step-end infinite;
+            display: inline-block;
+            width: 100%; /* التأكد من أن النص يأخذ العرض الكامل */
+            opacity: 0; /* البداية مخفي */
+            animation-fill-mode: forwards;
+        }
+
+        @keyframes typing {
+            0% {
+                width: 0;
+                opacity: 1; /* يظهر مع بداية الكتابة */
+            }
+            100% {
+                width: 100%;
+                opacity: 1;
+            }
+        }
+
+        @keyframes blink {
+            50% {
+                border-color: transparent;
+            }
+        }
+
+        /* أنيميشن الكتابة للنص الإنجليزي */
+        .typing-text-english {
+            overflow: hidden;
+            white-space: nowrap; /* النص يبدأ في سطر واحد */
+            border-left: 2px solid #D4AF37; /* مؤشر الكتابة */
+            animation: typing 1.5s steps(40, end) forwards 0.5s, blink 0.5s step-end infinite;
+            display: inline-block;
+            width: 100%; /* التأكد من أن النص يأخذ العرض الكامل */
+            opacity: 0; /* البداية مخفي */
+            animation-fill-mode: forwards;
+        }
+
+        /* ظهور نموذج تسجيل الدخول من تحت */
+        .slide-up {
+            opacity: 0;
+            transform: translateY(20px);
+            animation: slideUp 0.5s ease-in forwards 1s; /* تأخير 1 ثانية */
+        }
+
+        @keyframes slideUp {
+            0% {
+                opacity: 0;
+                transform: translateY(20px);
+            }
+            100% {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        /* Responsive Design */
+        @media (max-width: 768px) {
+            .container {
+                flex-direction: column;
+                min-height: auto; /* للتكيف مع الشاشات الصغيرة */
+            }
+
+            .login-box, .welcome-box, .single-box {
+                width: 100%;
+                min-height: 400px; /* ارتفاع موحد للشاشات الصغيرة */
+            }
+
+            .login-box {
+                animation: slideInRight 0.8s ease-out forwards;
+            }
+
+            .welcome-box {
+                animation: slideInLeft 0.8s ease-out forwards;
+            }
+
+            /* ضبط النصوص للشاشات الصغيرة */
+            .typing-text, .typing-text-english {
+                font-size: 16px; /* تصغير الخط للشاشات الصغيرة */
+                white-space: normal; /* النص يتقسم لأسطر على الموبايل */
+                overflow-x: hidden; /* إزالة الـ scroll الأفقي */
+                width: 100%;
+                display: inline-block;
+                line-height: 1.5; /* زيادة المسافة بين الأسطر */
+            }
+
+            /* التأكد من إن الـ single-box مش بيعمل scroll أفقي */
+            .single-box {
+                overflow-x: hidden; /* إزالة الـ scroll الأفقي */
+            }
+
+            /* ضبط اللوجو على الموبايل */
+            .single-box .logo-img {
+                width: 80px; /* تصغير اللوجو على الموبايل لكن أكبر من القديم (كان 60px) */
+                height: 80px;
+                display: block !important;
+                visibility: visible !important;
+                opacity: 1 !important;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container" id="container">
+        <!-- الجزء الأيسر: الترحيب -->
+        <div class="welcome-box" id="welcome-box">
+            <div class="logo" id="logo">
+                <img src="{{ url_for('static', filename='images/download.png') }}" alt="شعار جمهورية مصر العربية" class="logo-img" onload="console.log('Logo loaded in welcome-box'); console.log('Welcome-box logo visibility:', this.style.visibility); console.log('Welcome-box logo display:', this.style.display);" onerror="this.src='https://via.placeholder.com/100'; console.log('Error loading logo in welcome-box');">
+            </div>
+            <h2 id="welcome-title">المنصة الرقمية للوظائف القيادية والاشرافية بالجهاز الاداري بالدولة</h2>
+            <p class="english-text" id="welcome-text">The Electronic Platform for Leadership and Supervisory position in the Administrative State Apartments</p>
+            <button class="platform-btn" onclick="showLoginForm()">الدخول للمنصة</button>
+        </div>
+
+        <!-- الجزء الأيمن: تسجيل مستخدم جديد -->
+        <div class="login-box" id="signup-box">
+            <h2>تسجيل الدخول كمستخدم جديد</h2>
+            <form method="POST" action="{{ url_for('signup') }}" id="signup-form">
+                <label for="username">اسم المستخدم:</label>
+                <input type="text" id="username" name="username" required>
+
+                <label for="password">كلمة المرور:</label>
+                <input type="password" id="password" name="password" required>
+
+                <label for="confirm-password">تأكيد كلمة المرور:</label>
+                <input type="password" id="confirm-password" name="confirm-password" required>
+
+                <label for="email">البريد الإلكتروني:</label>
+                <input type="email" id="email" name="email" required>
+
+                <button type="submit" class="login-btn">تسجيل</button>
+            </form>
+        </div>
+    </div>
+
+    <!-- إضافة محتوى وهمي لزيادة الارتفاع وظهور الـ scroll -->
+    <div style="height: 500px;"></div>
+
+    <!-- JavaScript لعرض نموذج تسجيل الدخول -->
+    <script>
+        function showLoginForm() {
+            // إضافة أنيميشن دمج الجزئين
+            const welcomeBox = document.getElementById('welcome-box');
+            const signupBox = document.getElementById('signup-box');
+            const welcomeTitle = document.getElementById('welcome-title');
+            const welcomeText = document.getElementById('welcome-text');
+            const logo = document.getElementById('logo');
+
+            welcomeBox.classList.add('merge-left');
+            signupBox.classList.add('merge-right');
+            welcomeTitle.classList.add('fade-out');
+            welcomeText.classList.add('fade-out');
+            logo.classList.add('fade-out');
+
+            // بعد انتهاء الأنيميشن، نعرض الجزء الجديد
+            setTimeout(() => {
+                const container = document.getElementById('container');
+                const logoPath = "{{ url_for('static', filename='images/download.png') }}";
+                console.log("Logo Path in single-box:", logoPath); // للتأكد من المسار
+                container.innerHTML = `
+                    <div class="single-box">
+                        <div class="logo">
+                            <img src="${logoPath}" alt="شعار جمهورية مصر العربية" class="logo-img" onload="console.log('Logo loaded in single-box'); console.log('Single-box logo visibility:', this.style.visibility); console.log('Single-box logo display:', this.style.display); console.log('Single-box logo opacity:', this.style.opacity);" onerror="this.src='https://via.placeholder.com/100'; console.log('Error loading logo in single-box');">
+                        </div>
+                        <h2 class="typing-text">المنصة الرقمية للوظائف القيادية والاشرافية بالجهاز الاداري بالدولة</h2>
+                        <p class="english-text typing-text-english">The Electronic Platform for Leadership and Supervisory position in the Administrative State Apartments</p>
+                        <form method="POST" action="{{ url_for('login') }}" id="login-form" class="slide-up">
+                            <label for="full-name">الاسم الكامل:</label>
+                            <input type="text" id="full-name" name="full_name" required>
+
+                            <label for="login-password">كلمة المرور:</label>
+                            <input type="password" id="login-password" name="password" required>
+
+                            <button type="submit" class="login-btn">دخول</button>
+                            <button type="button" class="back-btn" onclick="resetForm()">رجوع</button>
+                        </form>
+                    </div>
+                `;
+            }, 500); // نفس مدة أنيميشن الدمج
+        }
+
+        function resetForm() {
+            const container = document.getElementById('container');
+            container.innerHTML = `
+                <div class="welcome-box" id="welcome-box">
+                    <div class="logo" id="logo">
+                        <img src="{{ url_for('static', filename='images/download.png') }}" alt="شعار جمهورية مصر العربية" class="logo-img" onload="console.log('Logo loaded in welcome-box'); console.log('Welcome-box logo visibility:', this.style.visibility); console.log('Welcome-box logo display:', this.style.display);" onerror="this.src='https://via.placeholder.com/100'; console.log('Error loading logo in welcome-box');">
+                    </div>
+                    <h2 id="welcome-title">المنصة الرقمية للوظائف القيادية والاشرافية بالجهاز الاداري بالدولة</h2>
+                    <p class="english-text" id="welcome-text">The Electronic Platform for Leadership and Supervisory position in the Administrative State Apartments</p>
+                    <button class="platform-btn" onclick="showLoginForm()">الدخول للمنصة</button>
+                </div>
+                <div class="login-box" id="signup-box">
+                    <h2>تسجيل الدخول كمستخدم جديد</h2>
+                    <form method="POST" action="{{ url_for('signup') }}" id="signup-form">
+                        <label for="username">اسم المستخدم:</label>
+                        <input type="text" id="username" name="username" required>
+
+                        <label for="password">كلمة المرور:</label>
+                        <input type="password" id="password" name="password" required>
+
+                        <label for="confirm-password">تأكيد كلمة المرور:</label>
+                        <input type="password" id="confirm-password" name="confirm-password" required>
+
+                        <label for="email">البريد الإلكتروني:</label>
+                        <input type="email" id="email" name="email" required>
+
+                        <button type="submit" class="login-btn">تسجيل</button>
+                    </form>
+                </div>
+            `;
+        }
+
+        // التحقق من وجود رسالة نجاح في الـ session
+        {% with messages = get_flashed_messages(with_categories=true) %}
+            {% if messages %}
+                {% for category, message in messages %}
+                    {% if category == 'success' %}
+                        Swal.fire({
+                            title: 'تم التسجيل بنجاح!',
+                            text: '{{ message }}',  // الرسالة الجديدة: "تم التسجيل بنجاح، وانتظر السماح لك بالدخول للمنصة"
+                            icon: 'success',
+                            confirmButtonText: 'موافق',
+                            confirmButtonColor: '#D4AF37'
+                        });
+                    {% elif category == 'warning' %}
+                        Swal.fire({
+                            title: 'انتظار!',
+                            text: '{{ message }}',
+                            icon: 'warning',
+                            confirmButtonText: 'موافق',
+                            confirmButtonColor: '#D4AF37'
+                        });
+                    {% elif category == 'error' %}
+                        Swal.fire({
+                            title: 'خطأ!',
+                            text: '{{ message }}',
+                            icon: 'error',
+                            confirmButtonText: 'موافق',
+                            confirmButtonColor: '#D4AF37'
+                        });
+                    {% endif %}
+                {% endfor %}
+            {% endif %}
+        {% endwith %}
+    </script>
+</body>
+</html>

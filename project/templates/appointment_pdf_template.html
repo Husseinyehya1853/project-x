@@ -1,0 +1,114 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+    <meta charset="UTF-8">
+    <title>قرار تعيين</title>
+    <style>
+        @page {
+            size: A4;
+            margin: 1cm;
+            @bottom-right {
+                content: "تاريخ الإصدار: " string(current_date) " | الصفحة " counter(page) " من " counter(pages);
+                font-family: 'DejaVu Sans', Arial, sans-serif;
+                font-size: 10px;
+                color: #4A4A4A;
+            }
+        }
+        body {
+            font-family: 'DejaVu Sans', Arial, sans-serif;
+            font-size: 14px;
+            line-height: 1.6;
+            color: #333;
+            direction: rtl;
+            text-align: right;
+        }
+        .container {
+            border: 2px solid #D4AF37;
+            padding: 15px;
+            border-radius: 8px;
+            background-color: #f9f9f9;
+            box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+        }
+        h1 {
+            font-size: 20px;
+            color: #D4AF37;
+            text-align: center;
+            margin-bottom: 15px;
+        }
+        h2 {
+            font-size: 18px;
+            color: #4A4A4A;
+            margin-top: 15px;
+            margin-bottom: 8px;
+        }
+        p, li {
+            margin: 3px 0;
+        }
+        .section {
+            margin-bottom: 15px;
+        }
+        .signature {
+            margin-top: 20px;
+            text-align: center;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>قرار تعيين</h1>
+        <div class="section">
+            <p><strong>رقم القرار:</strong> {{ appointment_data.decision_number }}</p>
+            <p><strong>تاريخ القرار:</strong> {{ appointment_data.decision_date }}</p>
+            <p><strong>المحافظة:</strong> {{ appointment_data.governorate }}</p>
+        </div>
+
+        <div class="section">
+            <h2>تفاصيل الإعلان:</h2>
+            <p><strong>رقم الإعلان:</strong> {{ appointment_data.announcement_number }}</p>
+            <p><strong>كود المرشح:</strong> {{ appointment_data.candidate_code }}</p>
+        </div>
+
+        <div class="section">
+            <h2>المادة الأولى</h2>
+            <p>{{ appointment_data.article_one_text }}</p>
+        </div>
+
+        <div class="section">
+            <h2>المادة الثانية</h2>
+            <p>{{ appointment_data.article_two_text }}</p>
+        </div>
+
+        <div class="section">
+            <h2>المادة الثالثة</h2>
+            <p>{{ appointment_data.article_three_text }}</p>
+        </div>
+
+        <div class="section">
+            <h2>السلطة المختصة</h2>
+            <p><strong>صاحب الاختصاص:</strong> {{ appointment_data.competent_authority }}</p>
+            <p><strong>اعتماد السلطة المختصة:</strong> {{ appointment_data.authority_approval }}</p>
+        </div>
+
+        <div class="section">
+            <h2>الملفات المرفقة</h2>
+            {% if appointment_data.files %}
+                {% if appointment_data.files.announcement_file %}
+                    <p><strong>ملف الإعلان:</strong> {{ appointment_data.files.announcement_file }}</p>
+                {% endif %}
+                {% if appointment_data.files.candidate_file %}
+                    <p><strong>ملف المرشح:</strong> {{ appointment_data.files.candidate_file }}</p>
+                {% endif %}
+                {% if appointment_data.files.decision_file %}
+                    <p><strong>ملف القرار:</strong> {{ appointment_data.files.decision_file }}</p>
+                {% endif %}
+            {% else %}
+                <p>لا توجد ملفات مرفقة</p>
+            {% endif %}
+        </div>
+
+        <div class="section">
+            <p><strong>صدر هذا القرار في:</strong> {{ appointment_data.current_date }} بتوقيع {{ appointment_data.authority_approval }}</p>
+        </div>
+    </div>
+</body>
+</html>

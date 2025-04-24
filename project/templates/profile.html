@@ -1,0 +1,447 @@
+{% extends 'base.html' %}
+
+{% block title %}الملف الشخصي{% endblock %}
+
+{% block styles %}
+{{ super() }}
+<style>
+    /* ===== GENERAL STYLES ===== */
+    .container {
+        max-width: 1200px;
+        margin-top: 3rem !important;
+    }
+
+    /* ===== PROFILE CARD STYLES ===== */
+    .card {
+        border: none;
+        border-radius: 15px;
+        box-shadow: 0 0.5rem 1.5rem rgba(0, 0, 0, 0.2);
+        overflow: hidden;
+    }
+
+    .card-header {
+        border-radius: 15px 15px 0 0 !important;
+        padding: 1.25rem 1.75rem;
+    }
+
+    .card-footer {
+        border-radius: 0 0 15px 15px !important;
+        background-color: #f8f9fa;
+        padding: 1.25rem 1.75rem;
+    }
+
+    /* ===== PROFILE INFO STYLES ===== */
+    .profile-info {
+        padding: 25px;
+    }
+
+    .info-item {
+        margin-bottom: 25px;
+        padding: 18px;
+        border-radius: 10px;
+        background-color: #f8f9fa;
+        transition: all 0.3s ease;
+        display: flex;
+        align-items: center;
+    }
+
+    .info-item:hover {
+        background-color: #e9ecef;
+        transform: translateX(-8px);
+        box-shadow: 0 5px 15px rgba(0, 0, 0, 0.15);
+    }
+
+    .info-label {
+        font-weight: bold;
+        color: #495057;
+        margin-right: 15px;
+        min-width: 140px;
+        font-size: 1.1rem;
+    }
+
+    .info-value {
+        color: #212529;
+        flex-grow: 1;
+        font-size: 1.1rem;
+    }
+
+    .fas {
+        color: #0d6efd;
+        margin-left: 15px;
+        width: 25px;
+        text-align: center;
+        font-size: 1.2rem;
+    }
+
+    /* ===== BADGE STYLES ===== */
+    .badge {
+        font-size: 1em;
+        padding: 0.6em 0.85em;
+    }
+
+    /* ===== RESPONSIVE STYLES ===== */
+    @media (max-width: 768px) {
+        .info-item {
+            flex-direction: column;
+            align-items: flex-start;
+        }
+        
+        .info-label {
+            margin-bottom: 10px;
+            min-width: 100%;
+        }
+        
+        .info-value {
+            width: 100%;
+        }
+        
+        .fas {
+            margin-bottom: 10px;
+        }
+        
+        .card-header h2 {
+            font-size: 1.5rem;
+        }
+    }
+
+    @media (min-width: 769px) and (max-width: 992px) {
+        .info-label {
+            min-width: 120px;
+        }
+    }
+
+    /* Button styles */
+    .btn {
+        padding: 0.5rem 1rem;
+        font-size: 1rem;
+    }
+
+    .btn-sm {
+        padding: 0.4rem 0.8rem;
+        font-size: 0.95rem;
+    }
+
+    /* Card header title */
+    .card-header h2 {
+        font-size: 1.75rem;
+    }
+    /* ===== ANIMATION STYLES ===== */
+    .slide-up {
+        animation: slideUp 0.5s ease forwards;
+    }
+
+    @keyframes slideUp {
+        from {
+            opacity: 0;
+            transform: translateY(20px);
+        }
+        to {
+            opacity: 1;
+            transform: translateY(0);
+        }
+    }
+
+    .typing-text {
+        overflow: hidden;
+        white-space: nowrap;
+        animation: typing 3.5s steps(40, end);
+    }
+
+    @keyframes typing {
+        from { width: 0 }
+        to { width: 100% }
+    }
+
+    /* ===== MODAL STYLES ===== */
+    .modal-dialog-centered {
+        display: flex;
+        align-items: center;
+        min-height: calc(100% - 1rem);
+    }
+
+    .modal-content {
+        border-radius: 10px;
+        border: none;
+        box-shadow: 0 0.5rem 1rem rgba(0, 0, 0, 0.15);
+    }
+
+    .modal-header {
+        border-bottom: 1px solid #e9ecef;
+        padding: 1rem 1.5rem;
+    }
+
+    .modal-body {
+        padding: 1.5rem;
+    }
+
+    .modal-footer {
+        border-top: 1px solid #e9ecef;
+        padding: 1rem 1.5rem;
+    }
+
+    .input-group .btn-outline-secondary {
+        border-color: #ced4da;
+        z-index: 0;
+    }
+
+    .input-group .btn-outline-secondary:hover {
+        background-color: #f8f9fa;
+    }
+
+    .invalid-feedback {
+        display: block;
+        text-align: right;
+        margin-top: 0.5rem;
+    }
+</style>
+{% endblock %}
+
+{% block scripts %}
+{{ super() }}
+<script>
+    /**
+     * Form validation function
+     * Validates password fields and shows appropriate error messages
+     */
+    function validateForm() {
+        const currentPassword = document.getElementById('current_password');
+        const newPassword = document.getElementById('new_password');
+        const confirmPassword = document.getElementById('confirm_password');
+        let isValid = true;
+    
+        // Reset previous validations
+        [currentPassword, newPassword, confirmPassword].forEach(input => {
+            input.classList.remove('is-invalid');
+            input.classList.remove('is-valid');
+        });
+    
+        // Validate current password
+        if (currentPassword.value.length < 6) {
+            showError(currentPassword, 'كلمة المرور الحالية يجب أن تكون 6 أحرف على الأقل');
+            isValid = false;
+        } else {
+            currentPassword.classList.add('is-valid');
+        }
+    
+        // Validate new password
+        if (newPassword.value.length < 6) {
+            showError(newPassword, 'كلمة المرور الجديدة يجب أن تكون 6 أحرف على الأقل');
+            isValid = false;
+        } else {
+            newPassword.classList.add('is-valid');
+        }
+    
+        // Validate password confirmation
+        if (newPassword.value !== confirmPassword.value) {
+            showError(confirmPassword, 'كلمة المرور الجديدة وتأكيدها غير متطابقين');
+            isValid = false;
+        } else if (confirmPassword.value.length > 0) {
+            confirmPassword.classList.add('is-valid');
+        }
+    
+        return isValid;
+    }
+
+    /**
+     * Shows error message for invalid input
+     */
+    function showError(input, message) {
+        input.classList.add('is-invalid');
+        const feedback = document.getElementById(input.id + '_feedback');
+        if (feedback) {
+            feedback.textContent = message;
+        }
+    }
+
+    /**
+     * Toggles password visibility
+     */
+    function togglePassword(inputId) {
+        const input = document.getElementById(inputId);
+        const icon = event.currentTarget.querySelector('i');
+        
+        if (input.type === 'password') {
+            input.type = 'text';
+            icon.classList.remove('fa-eye');
+            icon.classList.add('fa-eye-slash');
+        } else {
+            input.type = 'password';
+            icon.classList.remove('fa-eye-slash');
+            icon.classList.add('fa-eye');
+        }
+    }
+
+    // Initialize when DOM is loaded
+    document.addEventListener('DOMContentLoaded', function() {
+        initializePasswordModal();
+    });
+    
+    /**
+     * Initializes the password change modal
+     */
+    function initializePasswordModal() {
+        const modalTrigger = document.querySelector('[data-bs-target="#changePasswordModal"]');
+        const modalContainer = document.getElementById('changePasswordModal');
+        
+        if (modalTrigger && modalContainer) {
+            modalTrigger.addEventListener('click', function(e) {
+                e.preventDefault();
+                
+                // Create modal content
+                modalContainer.innerHTML = `
+                    <div class="modal-dialog modal-dialog-centered">
+                        <div class="modal-content">
+                            <div class="modal-header">
+                                <h5 class="modal-title">تغيير كلمة المرور</h5>
+                                <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+                            </div>
+                            <form id="changePasswordForm" action="{{ url_for('change_password') }}" method="POST" onsubmit="return validateForm()">
+                                <div class="modal-body">
+                                    <div class="mb-3">
+                                        <label class="form-label">كلمة المرور الحالية</label>
+                                        <div class="input-group">
+                                            <input type="password" name="current_password" id="current_password" class="form-control" required>
+                                            <button class="btn btn-outline-secondary" type="button" onclick="togglePassword('current_password')">
+                                                <i class="fas fa-eye"></i>
+                                            </button>
+                                        </div>
+                                        <div class="invalid-feedback" id="current_password_feedback"></div>
+                                    </div>
+                                    <div class="mb-3">
+                                        <label class="form-label">كلمة المرور الجديدة</label>
+                                        <div class="input-group">
+                                            <input type="password" name="new_password" id="new_password" class="form-control" required>
+                                            <button class="btn btn-outline-secondary" type="button" onclick="togglePassword('new_password')">
+                                                <i class="fas fa-eye"></i>
+                                            </button>
+                                        </div>
+                                        <div class="invalid-feedback" id="new_password_feedback"></div>
+                                    </div>
+                                    <div class="mb-3">
+                                        <label class="form-label">تأكيد كلمة المرور الجديدة</label>
+                                        <div class="input-group">
+                                            <input type="password" name="confirm_password" id="confirm_password" class="form-control" required>
+                                            <button class="btn btn-outline-secondary" type="button" onclick="togglePassword('confirm_password')">
+                                                <i class="fas fa-eye"></i>
+                                            </button>
+                                        </div>
+                                        <div class="invalid-feedback" id="confirm_password_feedback"></div>
+                                    </div>
+                                </div>
+                                <div class="modal-footer">
+                                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">إلغاء</button>
+                                    <button type="submit" class="btn btn-primary">حفظ التغييرات</button>
+                                </div>
+                            </form>
+                        </div>
+                    </div>
+                `;
+                
+                // Show the modal
+                const modal = new bootstrap.Modal(modalContainer);
+                modal.show();
+            });
+
+            // Reset form when modal is closed
+            modalContainer.addEventListener('hidden.bs.modal', function () {
+                const form = document.getElementById('changePasswordForm');
+                if (form) {
+                    form.reset();
+                    const invalidInputs = form.querySelectorAll('.is-invalid, .is-valid');
+                    invalidInputs.forEach(input => {
+                        input.classList.remove('is-invalid', 'is-valid');
+                    });
+                }
+            });
+        }
+    }
+</script>
+{% endblock %}
+
+{% block content %}
+<div class="container mt-5">
+    <div class="card shadow-lg">
+        <!-- Card Header -->
+        <div class="card-header bg-primary text-white d-flex justify-content-between align-items-center">
+            <h2 class="typing-text mb-0">الملف الشخصي</h2>
+            <span class="badge bg-light text-primary">{{ governorate }}</span>
+        </div>
+        
+        <!-- Card Body -->
+        <div class="card-body">
+            <div class="row">
+                <div class="col-md-12">
+                    <div class="profile-info">
+                        <!-- Personal Information -->
+                        <div class="info-item slide-up">
+                            <i class="fas fa-user"></i>
+                            <span class="info-label">الاسم:</span>
+                            <span class="info-value">{{ full_name }}</span>
+                        </div>
+                        
+                        <!-- Email Information -->
+                        <div class="info-item slide-up">
+                            <i class="fas fa-envelope"></i>
+                            <span class="info-label">البريد الإلكتروني:</span>
+                            <span class="info-value">{{ email }}</span>
+                            <a href="#" class="btn btn-sm btn-outline-primary ms-2" title="تغيير البريد الإلكتروني">
+                                <i class="fas fa-edit"></i>
+                            </a>
+                        </div>
+                        
+                        <!-- User Roles -->
+                        <div class="info-item slide-up">
+                            <i class="fas fa-user-tag"></i>
+                            <span class="info-label">الأدوار:</span>
+                            <span class="info-value">
+                                {% set role_list = roles|replace('["', '')|replace('"]', '')|replace('"', '')|trim %}
+                                {% for role in role_list.split(',') %}
+                                    <span class="badge bg-info me-1">{{ role|trim }}</span>
+                                {% endfor %}
+                            </span>
+                        </div>
+                        
+                        <!-- Governorate Information -->
+                        <div class="info-item slide-up">
+                            <i class="fas fa-map-marker-alt"></i>
+                            <span class="info-label">المحافظة:</span>
+                            <span class="info-value">{{ governorate }}</span>
+                        </div>
+                        
+                        <!-- Registration Date -->
+                        <div class="info-item slide-up">
+                            <i class="fas fa-calendar-alt"></i>
+                            <span class="info-label">تاريخ التسجيل:</span>
+                            <span class="info-value">{{ created_at.strftime('%Y-%m-%d') }}</span>
+                        </div>
+                        
+                        <!-- Password Change -->
+                        <div class="info-item slide-up">
+                            <i class="fas fa-key"></i>
+                            <span class="info-label">كلمة المرور:</span>
+                            <a href="#" class="btn btn-sm btn-outline-primary" data-bs-toggle="modal" data-bs-target="#changePasswordModal">
+                                تغيير كلمة المرور
+                            </a>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        <!-- Card Footer -->
+        <div class="card-footer bg-light d-flex justify-content-between">
+            <a href="{{ url_for('dashboard') }}" class="btn btn-secondary slide-up">
+                <i class="fas fa-arrow-right ml-2"></i> العودة للوحة التحكم
+            </a>
+            <a href="{{ url_for('logout') }}" class="btn btn-danger slide-up">
+                <i class="fas fa-sign-out-alt ml-2"></i> تسجيل الخروج
+            </a>
+        </div>
+    </div>
+</div>
+
+<!-- Password Change Modal - Empty container to be filled dynamically -->
+<div class="modal fade" id="changePasswordModal" tabindex="-1" aria-hidden="true">
+    <!-- Modal content will be loaded here -->
+</div>
+{% endblock %}

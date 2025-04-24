@@ -1,0 +1,448 @@
+{% extends 'base.html' %}
+
+{% block title %}
+إصدار قرار تعيين
+{% endblock %}
+
+{% block extra_styles %}
+    <style>
+        .form-section {
+            max-width: 800px;
+            margin: 0 auto;
+        }
+
+        .section-title {
+            color: #D4AF37;
+            font-size: 22px;
+            margin-top: 20px;
+            margin-bottom: 10px;
+            font-weight: 700;
+        }
+
+        .form-group {
+            margin-bottom: 15px;
+            position: relative;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            flex-wrap: wrap;
+        }
+
+        .form-group label {
+            display: block;
+            color: #4A4A4A;
+            font-weight: 600;
+            margin-bottom: 5px;
+        }
+
+        .form-group input,
+        .form-group textarea {
+            width: 100%;
+            padding: 10px;
+            border: 2px solid #D4AF37;
+            border-radius: 8px;
+            font-size: 16px;
+            transition: border-color 0.3s ease, box-shadow 0.3s ease;
+        }
+
+        .form-group input:focus,
+        .form-group textarea:focus {
+            border-color: #4A4A4A;
+            box-shadow: 0 0 5px rgba(212, 175, 55, 0.5);
+            outline: none;
+        }
+
+        .form-group .upload-btn {
+            background-color: #D4AF37;
+            color: white;
+            border: none;
+            padding: 8px 15px;
+            border-radius: 5px;
+            cursor: pointer;
+            font-size: 14px;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            gap: 5px;
+            transition: background-color 0.3s ease;
+        }
+
+        .form-group .upload-btn:hover {
+            background-color: #b89c2f;
+        }
+
+        .form-group .upload-btn i {
+            font-size: 16px;
+        }
+
+        .form-group input[type="file"] {
+            display: none;
+        }
+
+        .field-error {
+            color: red;
+            font-size: 12px;
+            margin-top: 3px;
+            display: none;
+        }
+
+        .file-display {
+            color: green;
+            font-size: 12px;
+            margin-top: 3px;
+            display: none;
+        }
+
+        .mini-report {
+            width: 400px;
+            margin: 20px auto;
+            background: #F9F9F9;
+            border: 2px solid #D4AF37;
+            border-radius: 10px;
+            padding: 15px;
+            text-align: center;
+            transition: background 0.3s ease;
+        }
+
+        .mini-report:hover {
+            background: #F0E68C;
+        }
+
+        .mini-report-buttons {
+            display: flex;
+            justify-content: center;
+            gap: 10px;
+            margin-bottom: 10px;
+            border: 2px solid #D4AF37;
+            border-radius: 8px;
+            padding: 8px;
+            width: 400px;
+            margin: 0 auto 10px auto;
+        }
+
+        .mini-report-buttons button {
+            background-color: #D4AF37;
+            color: white;
+            border: none;
+            padding: 8px 15px;
+            border-radius: 5px;
+            cursor: pointer;
+            font-size: 14px;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            gap: 5px;
+            transition: background-color 0.3s ease;
+        }
+
+        .mini-report-buttons button:hover {
+            background-color: #b89c2f;
+        }
+
+        .mini-report-buttons i {
+            font-size: 16px;
+        }
+
+        .mini-report h3 {
+            color: #D4AF37;
+            font-size: 18px;
+            margin-bottom: 10px;
+        }
+
+        .mini-report p {
+            color: #4A4A4A;
+            font-size: 14px;
+        }
+
+        .alert {
+            padding: 10px;
+            margin: 10px 0;
+            border-radius: 5px;
+            text-align: center;
+        }
+
+        .alert-success {
+            background-color: #d4edda;
+            color: #155724;
+            border: 1px solid #c3e6cb;
+        }
+
+        .alert-error {
+            background-color: #f8d7da;
+            color: #721c24;
+            border: 1px solid #f5c6cb;
+        }
+
+        .alert-warning {
+            background-color: #fff3cd;
+            color: #856404;
+            border: 1px solid #ffeeba;
+        }
+
+        /* تنسيق أزرار النموذج على الشاشات الكبيرة (اللاب توب) */
+        .form-buttons {
+            display: flex;
+            flex-direction: row;
+            flex-wrap: wrap;
+            gap: 10px;
+            margin-top: 20px;
+            width: 600px;
+            margin: 0 auto;
+            justify-content: center;
+        }
+
+        .form-buttons button {
+            width: auto;
+            max-width: 150px;
+            padding: 10px 15px;
+            font-size: 18px;
+            justify-content: center;
+            align-items: center;
+            text-align: center;
+        }
+
+        /* تحسين التجاوب على الموبايل */
+        @media (max-width: 576px) {
+            .mini-report-buttons {
+                width: 100%;
+                flex-wrap: nowrap;
+                gap: 6px;
+                padding: 6px;
+            }
+
+            .mini-report-buttons button {
+                padding: 6px 10px;
+                font-size: 12px;
+                flex: 1;
+                min-width: 80px;
+                justify-content: center;
+                align-items: center;
+            }
+
+            .mini-report-buttons i {
+                font-size: 14px;
+            }
+
+            .mini-report {
+                width: 100%;
+                padding: 10px;
+            }
+
+            .mini-report h3 {
+                font-size: 16px;
+            }
+
+            .mini-report p {
+                font-size: 12px;
+            }
+
+            /* أزرار النموذج على الموبايل */
+            .form-buttons {
+                flex-direction: column;
+                width: 180px;
+                margin: 0 auto;
+            }
+
+            .form-buttons button {
+                width: 100%;
+                max-width: 150px;
+                margin: 0 auto;
+                padding: 8px;
+                font-size: 14px;
+            }
+
+            .form-group .upload-btn {
+                padding: 6px 10px;
+                font-size: 12px;
+            }
+
+            .form-group .upload-btn i {
+                font-size: 14px;
+            }
+        }
+    </style>
+{% endblock %}
+
+{% block extra_scripts %}
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+    <script>
+        // دالة لتحميل الصورة عند الضغط على زر "أرفق"
+        function triggerFileUpload(inputId) {
+            document.getElementById(inputId).click();
+        }
+
+        // دالة لعرض اسم الملف المختار
+        function displayFileName(inputId, displayId) {
+            const input = document.getElementById(inputId);
+            const display = document.getElementById(displayId);
+            if (input.files.length > 0) {
+                display.textContent = `تم اختيار: ${input.files[0].name}`;
+                display.style.display = 'block';
+            } else {
+                display.style.display = 'none';
+            }
+        }
+
+        // إضافة مستمع للأحداث على حقول رفع الملفات
+        document.querySelectorAll('input[type="file"]').forEach(input => {
+            input.addEventListener('change', function() {
+                const displayId = this.id + '_display';
+                displayFileName(this.id, displayId);
+            });
+        });
+
+        // دالة لطباعة PDF
+        function printPDF(url) {
+            window.open(url, '_blank').print();
+        }
+
+        // دالة لمسح حقول النموذج
+        function clearForm() {
+            const form = document.querySelector('form');
+            form.reset(); // مسح جميع حقول النموذج
+            // مسح عروض الملفات المرفقة (file-display)
+            document.querySelectorAll('.file-display').forEach(display => {
+                display.textContent = '';
+                display.style.display = 'none';
+            });
+        }
+
+        // عرض SweetAlert بناءً على رسائل flash
+        {% with messages = get_flashed_messages(with_categories=true) %}
+            {% if messages %}
+                {% for category, message in messages %}
+                    {% if category == 'success' %}
+                        Swal.fire({
+                            icon: 'success',
+                            title: 'تم بنجاح',
+                            text: '{{ message }}',
+                            confirmButtonText: 'موافق'
+                        }).then((result) => {
+                            if (result.isConfirmed) {
+                                clearForm(); // مسح النموذج بعد إغلاق SweetAlert
+                            }
+                        });
+                    {% elif category == 'error' %}
+                        Swal.fire({
+                            icon: 'error',
+                            title: 'خطأ',
+                            text: '{{ message }}',
+                            confirmButtonText: 'موافق'
+                        });
+                    {% endif %}
+                {% endfor %}
+            {% endif %}
+        {% endwith %}
+    </script>
+{% endblock %}
+
+{% block content %}
+    <h2>إصدار قرار تعيين</h2>
+    <p class="slide-up">يرجى ملء البيانات التالية لإصدار قرار تعيين.</p>
+
+    <form method="POST" action="{{ url_for('issue_appointment_decision') }}" enctype="multipart/form-data" class="form-section">
+        <!-- بيانات القرار -->
+        <h3 class="section-title">بيانات القرار</h3>
+        <div class="form-group">
+            <label for="announcement_number">رقم الإعلان:</label>
+            <input type="text" id="announcement_number" name="announcement_number" required>
+            <button type="button" class="upload-btn" onclick="triggerFileUpload('announcement_file')">
+                <i class="fas fa-upload"></i> أرفق
+            </button>
+            <input type="file" id="announcement_file" name="announcement_file" accept="image/*" onchange="displayFileName('announcement_file', 'announcement_file_display')">
+            <div id="announcement_file_display" class="file-display"></div>
+        </div>
+        <div class="form-group">
+            <label for="candidate_code">كود المرشح:</label>
+            <input type="text" id="candidate_code" name="candidate_code" required>
+            <button type="button" class="upload-btn" onclick="triggerFileUpload('candidate_file')">
+                <i class="fas fa-upload"></i> أرفق
+            </button>
+            <input type="file" id="candidate_file" name="candidate_file" accept="image/*" onchange="displayFileName('candidate_file', 'candidate_file_display')">
+            <div id="candidate_file_display" class="file-display"></div>
+        </div>
+        <div class="form-group">
+            <label for="decision_number">رقم القرار:</label>
+            <input type="text" id="decision_number" name="decision_number" required>
+            <button type="button" class="upload-btn" onclick="triggerFileUpload('decision_file')">
+                <i class="fas fa-upload"></i> أرفق
+            </button>
+            <input type="file" id="decision_file" name="decision_file" accept="image/*" onchange="displayFileName('decision_file', 'decision_file_display')">
+            <div id="decision_file_display" class="file-display"></div>
+        </div>
+        <div class="form-group">
+            <label for="decision_date">تاريخ القرار:</label>
+            <input type="date" id="decision_date" name="decision_date" required>
+        </div>
+
+        <!-- المادة الأولى -->
+        <h3 class="section-title">المادة الأولى</h3>
+        <div class="form-group">
+            <textarea id="article_one_text" name="article_one_text" rows="4" placeholder="أدخل نص المادة الأولى هنا..." required></textarea>
+        </div>
+
+        <!-- المادة الثانية -->
+        <h3 class="section-title">المادة الثانية</h3>
+        <div class="form-group">
+            <textarea id="article_two_text" name="article_two_text" rows="4" placeholder="أدخل نص المادة الثانية هنا..." required></textarea>
+        </div>
+
+        <!-- المادة الثالثة -->
+        <h3 class="section-title">المادة الثالثة</h3>
+        <div class="form-group">
+            <textarea id="article_three_text" name="article_three_text" rows="4" placeholder="أدخل نص المادة الثالثة هنا..." required></textarea>
+        </div>
+
+        <!-- السلطة المختصة -->
+        <h3 class="section-title">السلطة المختصة</h3>
+        <div class="form-group">
+            <label for="competent_authority">صاحب الاختصاص:</label>
+            <input type="text" id="competent_authority" name="competent_authority" required>
+        </div>
+        <div class="form-group">
+            <label for="authority_approval">اعتماد السلطة المختصة (التوقيع الإلكتروني):</label>
+            <input type="text" id="authority_approval" name="authority_approval" placeholder="أدخل رمز التوقيع الإلكتروني" required>
+        </div>
+
+        <!-- الأزرار الثلاثة مع الحدود الذهبية -->
+<div class="mini-report-buttons">
+    <button type="button" onclick="window.location.href='{{ url_for('view_pdf', type='appointment') }}'">
+        <i class="fas fa-eye"></i>
+    </button>
+    <button type="button" onclick="printPDF('{{ url_for('print_pdf', type='appointment') }}')">
+        مسح ضوئي
+    </button>
+    <button type="button" onclick="window.location.href='{{ url_for('download_pdf', type='appointment') }}'">
+        ارفاق من جهازك
+    </button>
+</div>
+
+        <!-- المربع المصغر لعرض آخر بيانات أو رسالة -->
+<div class="mini-report">
+    {% if session.get('latest_appointment') %}
+        <h3>قرار محافظ {{ session['latest_appointment']['governorate'] }} - رقم القرار {{ session['latest_appointment']['decision_number'] }} - تاريخ {{ session['latest_appointment']['decision_date'] }}</h3>
+        <p>بشأن إصدار قرار تعيين</p>
+        <p><strong>رقم الإعلان:</strong> {{ session['latest_appointment']['announcement_number'] }}</p>
+        <p><strong>كود المرشح:</strong> {{ session['latest_appointment']['candidate_code'] }}</p>
+    {% else %}
+        <h3>لا يوجد بيانات حتى الآن</h3>
+    {% endif %}
+</div>
+
+        <!-- أزرار الفورم -->
+        <div class="form-buttons">
+            <button type="submit" name="action" value="create_decision" class="btn">إنشاء قرار</button>
+            <button type="submit" name="action" value="save_draft" class="btn">حفظ كمسودة</button>
+            <button type="submit" name="action" value="refer_to" class="btn">إحالة إلى</button>
+            <button type="submit" name="action" value="next" class="btn">التالي</button>
+        </div>
+    </form>
+
+    {% with messages = get_flashed_messages(with_categories=true) %}
+        {% if messages %}
+            {% for category, message in messages %}
+                <div class="alert alert-{{ category }}">{{ message }}</div>
+            {% endfor %}
+        {% endif %}
+    {% endwith %}
+{% endblock %}
