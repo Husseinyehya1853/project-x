@@ -1,0 +1,270 @@
+{% extends 'base.html' %}
+
+{% block title %}وظائف تحت الإجراء{% endblock %}
+
+{% block extra_styles %}
+    <style>
+        /* تنسيق العنوان */
+        h2 {
+            color: #1B5E20;
+            font-size: 24px;
+            font-weight: 700;
+            margin-bottom: 20px;
+            text-align: right;
+        }
+
+        /* تنسيق الفلاتر */
+        .filters-container {
+            display: flex;
+            justify-content: flex-end;
+            gap: 15px;
+            margin-bottom: 20px;
+            flex-wrap: wrap;
+        }
+
+        .filters-container select,
+        .filters-container input {
+            padding: 8px;
+            border: 1px solid #e6f0e6;
+            border-radius: 4px;
+            font-size: 14px;
+            color: #4A4A4A;
+            background: #FFFFFF;
+            direction: rtl;
+            width: 200px;
+        }
+
+        .filters-container button {
+            background: #1B5E20;
+            color: #FFFFFF;
+            border: none;
+            padding: 8px 12px;
+            border-radius: 4px;
+            font-size: 14px;
+            cursor: pointer;
+            transition: background 0.3s ease;
+            display: flex;
+            align-items: center;
+            gap: 5px;
+        }
+
+        .filters-container button:hover {
+            background: #2e7d32;
+        }
+
+        .filters-container button i {
+            font-size: 12px;
+        }
+
+        /* تنسيق الجدول */
+        .jobs-table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-bottom: 20px;
+            direction: rtl;
+        }
+
+        .jobs-table th,
+        .jobs-table td {
+            padding: 12px 15px;
+            text-align: right;
+            font-size: 14px;
+            color: #4A4A4A;
+        }
+
+        .jobs-table th {
+            background: #b1e3b5dc;
+            color: #1B5E20;
+            font-weight: 600;
+            border-bottom: 2px solid #e6f0e6;
+        }
+
+        .jobs-table td {
+            background: #FFFFFF;
+            border-bottom: 1px solid #e6f0e6;
+        }
+
+        .jobs-table tr:hover td {
+            background: #E6F0E6;
+        }
+
+        /* تنسيق التقدم */
+        .progress {
+            padding: 5px 10px;
+            border-radius: 4px;
+            font-size: 12px;
+            font-weight: 600;
+            background: #f5f5f5;
+            color: #4A4A4A;
+        }
+
+        /* تنسيق الأزرار */
+        .action-buttons {
+            display: flex;
+            gap: 8px;
+            justify-content: flex-end;
+        }
+
+        .action-buttons button {
+            background: #1B5E20;
+            color: #FFFFFF;
+            border: none;
+            padding: 8px 12px;
+            border-radius: 4px;
+            font-size: 14px;
+            cursor: pointer;
+            transition: background 0.3s ease;
+            display: flex;
+            align-items: center;
+            gap: 5px;
+        }
+
+        .action-buttons button:hover {
+            background: #2e7d32;
+        }
+
+        .action-buttons button i {
+            font-size: 12px;
+        }
+
+        /* تنسيق الرسالة في حالة عدم وجود وظائف */
+        .no-jobs {
+            color: #4A4A4A;
+            font-size: 16px;
+            text-align: center;
+            margin: 20px 0;
+        }
+
+        /* زر العودة */
+        .back-btn-container {
+            text-align: center;
+            margin-top: 20px;
+        }
+    </style>
+{% endblock %}
+
+{% block content %}
+    <h2>وظائف تحت الإجراء</h2>
+
+    <!-- الفلاتر -->
+    <div class="filters-container">
+        <input type="text" id="jobName" placeholder="ابحث باسم الوظيفة..." onkeyup="filterJobs()">
+        <select id="progressFilter" onchange="filterJobs()">
+            <option value="">كل مراحل التقدم</option>
+            <option value="review">تحت المراجعة</option>
+            <option value="interviews">المقابلات</option>
+            <option value="final_selection">الاختيار النهائي</option>
+        </select>
+        <button onclick="filterJobs()"><i class="fas fa-filter"></i> تصفية</button>
+    </div>
+
+    <!-- جدول الوظائف -->
+    <table class="jobs-table" id="jobsTable">
+        <thead>
+            <tr>
+                <th>اسم الوظيفة</th>
+                <th>كود الوظيفة</th>
+                <th>تاريخ البدء</th>
+                <th>مرحلة التقدم</th>
+                <th>الإجراءات</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% if jobs %}
+                {% for job in jobs %}
+                <tr>
+                    <td>{{ job.job_title }}</td>
+                    <td>{{ job.job_code }}</td>
+                    <td>{{ job.created_at.strftime('%Y-%m-%d') }}</td>
+                    <td><span class="progress review">تحت المراجعة</span></td>
+                    <td>
+                        <div class="action-buttons">
+                            <button onclick="viewProgress('{{ job.job_code }}')"><i class="fas fa-eye"></i> متابعة التقدم</button>
+                        </div>
+                    </td>
+                </tr>
+                {% endfor %}
+            {% else %}
+                <tr>
+                    <td colspan="5" class="text-center">لا توجد وظائف تحت الإجراء حالياً</td>
+                </tr>
+            {% endif %}
+        </tbody>
+    </table>
+
+    <!-- رسالة في حالة عدم وجود وظائف -->
+    <p class="no-jobs" id="noJobsMessage" style="display: none;">لا توجد وظائف تطابق معايير التصفية.</p>
+
+{% endblock %}
+
+{% block extra_scripts %}
+    <script>
+        // دالة لمتابعة التقدم
+        function viewProgress(jobCode) {
+            // استدعاء API للحصول على بيانات تقدم الوظيفة
+            fetch(`/job_progress/${jobCode}`)
+                .then(response => {
+                    if (!response.ok) {
+                        throw new Error('حدث خطأ في جلب بيانات الوظيفة');
+                    }
+                    return response.json();
+                })
+                .then(data => {
+                    // عرض بيانات تقدم الوظيفة في نافذة منبثقة
+                    Swal.fire({
+                        title: `متابعة تقدم الوظيفة: ${data.job_title}`,
+                        html: `
+                            <div style="text-align: right; direction: rtl;">
+                                <p><strong>كود الوظيفة:</strong> ${data.job_code}</p>
+                                <p><strong>مرحلة التقدم:</strong> ${data.progress_stage}</p>
+                                <p><strong>تاريخ البدء:</strong> ${data.created_at}</p>
+                                <p><strong>تاريخ الانتهاء:</strong> ${data.deadline}</p>
+                                <p><strong>تفاصيل إضافية:</strong> ${data.details}</p>
+                            </div>
+                        `,
+                        icon: 'info',
+                        confirmButtonText: 'موافق',
+                        confirmButtonColor: '#1B5E20'
+                    });
+                })
+                .catch(error => {
+                    console.error('خطأ:', error);
+                    Swal.fire({
+                        title: 'خطأ',
+                        text: 'حدث خطأ أثناء جلب بيانات الوظيفة',
+                        icon: 'error',
+                        confirmButtonText: 'موافق',
+                        confirmButtonColor: '#1B5E20'
+                    });
+                });
+        }
+
+        // دالة التصفية
+        function filterJobs() {
+            const jobName = document.getElementById('jobName').value.toLowerCase();
+            const progressFilter = document.getElementById('progressFilter').value;
+            const rows = document.querySelectorAll('#jobsTable tbody tr');
+            const noJobsMessage = document.getElementById('noJobsMessage');
+            let hasVisibleRows = false;
+
+            rows.forEach(row => {
+                const rowJobName = row.cells[0].textContent.toLowerCase();
+                const rowProgress = row.cells[3].querySelector('.progress').classList.contains('review') ? 'review' :
+                                   row.cells[3].querySelector('.progress').classList.contains('interviews') ? 'interviews' :
+                                   'final_selection';
+
+                const matchesJobName = jobName === '' || rowJobName.includes(jobName);
+                const matchesProgress = progressFilter === '' || rowProgress === progressFilter;
+
+                if (matchesJobName && matchesProgress) {
+                    row.style.display = '';
+                    hasVisibleRows = true;
+                } else {
+                    row.style.display = 'none';
+                }
+            });
+
+            noJobsMessage.style.display = hasVisibleRows ? 'none' : 'block';
+        }
+    </script>
+{% endblock %}

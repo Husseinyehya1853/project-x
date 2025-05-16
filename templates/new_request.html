@@ -1,0 +1,290 @@
+{% extends 'base.html' %}
+
+{% block title %}طلب جديد{% endblock %}
+
+{% block extra_styles %}
+    <style>
+        /* تنسيق العنوان */
+        h2 {
+            color: #1B5E20;
+            font-size: 24px;
+            font-weight: 700;
+            margin-bottom: 20px;
+            text-align: right;
+        }
+
+        /* تنسيق النموذج */
+        .form-section {
+            margin-right: 0;
+            margin-left: auto;
+            direction: rtl;
+            display: flex;
+            flex-direction: column;
+        }
+
+        .form-group {
+            display: flex;
+            align-items: center;
+            margin-bottom: 15px;
+            margin-left: 20px;
+            margin-right: 20px;
+            justify-content: flex-start;
+        }
+
+        .form-group label {
+            color: #4A4A4A;
+            font-size: 14px;
+            font-weight: 600;
+            width: 150px;
+            text-align: right;
+            margin-right: 10px;
+        }
+
+        .form-group input,
+        .form-group textarea,
+        .form-group select {
+            padding: 8px;
+            font-size: 14px;
+            border: 1.5px solid #6a9262;
+            border-radius: 4px;
+            background-color: #FFF;
+            color: #4A4A4A;
+            transition: border-color 0.3s ease;
+            flex: 1;
+        }
+
+        .form-group input:focus,
+        .form-group textarea:focus,
+        .form-group select:focus {
+            outline: none;
+            border-color: #1B5E20;
+        }
+
+        /* تنسيق textarea */
+        .form-group textarea {
+            height: 100px;
+            resize: vertical;
+        }
+
+        /* تنسيق الأزرار */
+        .form-buttons {
+            display: flex;
+            justify-content: center;
+            gap: 10px;
+            margin-top: 20px;
+        }
+
+        .form-buttons button {
+            background-color: #1B5E20;
+            color: #FFF;
+            padding: 8px 16px;
+            border: none;
+            font-size: 14px;
+            font-weight: 600;
+            cursor: pointer;
+            border-radius: 4px;
+            transition: background-color 0.3s ease;
+        }
+
+        .form-buttons button:hover {
+            background-color: #2e7d32;
+        }
+
+        .form-buttons .cancel-btn {
+            background-color: #4A4A4A;
+        }
+
+        .form-buttons .cancel-btn:hover {
+            background-color: #6a6a6a;
+        }
+
+        /* تنسيق رسائل الخطأ */
+        .field-error {
+            color: red;
+            font-size: 12px;
+            margin-top: 5px;
+            display: none;
+            margin-right: 160px;
+        }
+
+        /* تنسيق رسائل التنبيه */
+        .alert {
+            padding: 10px;
+            margin: 10px 0;
+            border-radius: 4px;
+            text-align: center;
+        }
+
+        .alert-success {
+            background-color: #d4edda;
+            color: #155724;
+            border: 1px solid #c3e6cb;
+        }
+
+        .alert-error {
+            background-color: #f8d7da;
+            color: #721c24;
+            border: 1px solid #f5c6cb;
+        }
+
+        /* زر العودة */
+        .back-btn-container {
+            text-align: center;
+            margin-top: 20px;
+        }
+
+        /* تحسين التجاوب على الموبايل */
+        @media (max-width: 576px) {
+            .form-section {
+                padding: 10px;
+            }
+
+            .form-group {
+                flex-direction: column;
+                align-items: flex-end;
+                margin-left: 0;
+                margin-right: 0;
+            }
+
+            .form-group label {
+                width: 100%;
+                text-align: right;
+                margin-right: 0;
+                margin-bottom: 5px;
+            }
+
+            .form-group input,
+            .form-group textarea,
+            .form-group select {
+                width: 100%;
+            }
+
+            .field-error {
+                margin-right: 0;
+            }
+
+            .form-buttons {
+                flex-direction: column;
+                gap: 5px;
+            }
+
+            .form-buttons button {
+                width: 100%;
+                padding: 10px;
+            }
+        }
+    </style>
+{% endblock %}
+
+{% block content %}
+    <h2>طلب جديد</h2>
+
+    <!-- النموذج -->
+    <div class="form-section">
+        <div class="form-container">
+            <form method="POST" action="{{ url_for('new_request') }}">
+                <!-- نوع الطلب -->
+                <div class="form-group">
+                    <label for="request_type">نوع الطلب:</label>
+                    <select id="request_type" name="request_type" required>
+                        <option value="">اختر نوع الطلب</option>
+                        <option value="leadership_job">طلب وظيفة قيادية</option>
+                        <option value="supervisory_job">طلب وظيفة إشرافية</option>
+                        <option value="training">طلب تدريب</option>
+                        <option value="other">طلب آخر</option>
+                    </select>
+                    <div id="request_type_error" class="field-error"></div>
+                </div>
+
+                <!-- تفاصيل الطلب -->
+                <div class="form-group">
+                    <label for="request_details">تفاصيل الطلب:</label>
+                    <textarea id="request_details" name="request_details" placeholder="أدخل تفاصيل الطلب..." required></textarea>
+                    <div id="request_details_error" class="field-error"></div>
+                </div>
+
+                <!-- تاريخ التقديم -->
+                <div class="form-group">
+                    <label for="submission_date">تاريخ التقديم:</label>
+                    <input type="date" id="submission_date" name="submission_date" required>
+                    <div id="submission_date_error" class="field-error"></div>
+                </div>
+
+                <!-- الجهة المقدم إليها -->
+                <div class="form-group">
+                    <label for="submitted_to">الجهة المقدم إليها:</label>
+                    <input type="text" id="submitted_to" name="submitted_to" placeholder="أدخل اسم الجهة..." required>
+                    <div id="submitted_to_error" class="field-error"></div>
+                </div>
+
+                <!-- أزرار النموذج -->
+                <div class="form-buttons">
+                    <button type="submit" name="action" value="submit">إرسال الطلب</button>
+                    <button type="button" class="cancel-btn" onclick="window.location.href='{{ url_for('dashboard') }}'">إلغاء</button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    {% with messages = get_flashed_messages(with_categories=true) %}
+        {% if messages %}
+            {% for category, message in messages %}
+                <div class="alert alert-{{ category }}">{{ message }}</div>
+            {% endfor %}
+        {% endif %}
+    {% endwith %}
+
+{% endblock %}
+
+{% block extra_scripts %}
+    <script>
+        // دالة التحقق من الحقول
+        document.querySelector('form').addEventListener('submit', function (event) {
+            let valid = true;
+
+            // التحقق من نوع الطلب
+            const requestType = document.getElementById('request_type').value;
+            if (!requestType) {
+                document.getElementById('request_type_error').textContent = 'نوع الطلب مطلوب';
+                document.getElementById('request_type_error').style.display = 'block';
+                valid = false;
+            } else {
+                document.getElementById('request_type_error').style.display = 'none';
+            }
+
+            // التحقق من تفاصيل الطلب
+            const requestDetails = document.getElementById('request_details').value;
+            if (!requestDetails || requestDetails.trim() === '') {
+                document.getElementById('request_details_error').textContent = 'تفاصيل الطلب مطلوبة';
+                document.getElementById('request_details_error').style.display = 'block';
+                valid = false;
+            } else {
+                document.getElementById('request_details_error').style.display = 'none';
+            }
+
+            // التحقق من تاريخ التقديم
+            const submissionDate = document.getElementById('submission_date').value;
+            if (!submissionDate) {
+                document.getElementById('submission_date_error').textContent = 'تاريخ التقديم مطلوب';
+                document.getElementById('submission_date_error').style.display = 'block';
+                valid = false;
+            } else {
+                document.getElementById('submission_date_error').style.display = 'none';
+            }
+
+            // التحقق من الجهة المقدم إليها
+            const submittedTo = document.getElementById('submitted_to').value;
+            if (!submittedTo || submittedTo.trim() === '') {
+                document.getElementById('submitted_to_error').textContent = 'الجهة المقدم إليها مطلوبة';
+                document.getElementById('submitted_to_error').style.display = 'block';
+                valid = false;
+            } else {
+                document.getElementById('submitted_to_error').style.display = 'none';
+            }
+
+            if (!valid) {
+                event.preventDefault();
+            }
+        });
+    </script>
+{% endblock %}

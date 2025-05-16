@@ -1,0 +1,16 @@
+{% extends "base.html" %}
+
+{% block title %}ممنوع الوصول{% endblock %}
+
+{% block content %}
+<div class="error-container">
+    <div class="error-code">403</div>
+    <div class="error-title">ممنوع الوصول</div>
+    <div class="error-message">عذراً، ليس لديك صلاحية للوصول إلى هذه الصفحة.</div>
+    <div class="error-actions">
+        <a href="{{ url_for('index') }}" class="btn btn-primary">
+            <i class="fas fa-home"></i> العودة للصفحة الرئيسية
+        </a>
+    </div>
+</div>
+{% endblock %}

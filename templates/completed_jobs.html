@@ -1,0 +1,268 @@
+{% extends 'base.html' %}
+
+{% block title %}وظائف منجزة{% endblock %}
+
+{% block extra_styles %}
+    <style>
+        /* تنسيق العنوان */
+        h2 {
+            color: #1B5E20;
+            font-size: 24px;
+            font-weight: 700;
+            margin-bottom: 20px;
+            text-align: right;
+        }
+
+        /* تنسيق الفلاتر */
+        .filters-container {
+            display: flex;
+            justify-content: flex-end;
+            gap: 15px;
+            margin-bottom: 20px;
+            flex-wrap: wrap;
+        }
+
+        .filters-container input,
+        .filters-container select {
+            padding: 8px;
+            border: 1px solid #e6f0e6;
+            border-radius: 4px;
+            font-size: 14px;
+            color: #4A4A4A;
+            background: #FFFFFF;
+            direction: rtl;
+            width: 200px;
+        }
+
+        .filters-container button {
+            background: #1B5E20;
+            color: #FFFFFF;
+            border: none;
+            padding: 8px 12px;
+            border-radius: 4px;
+            font-size: 14px;
+            cursor: pointer;
+            transition: background 0.3s ease;
+            display: flex;
+            align-items: center;
+            gap: 5px;
+        }
+
+        .filters-container button:hover {
+            background: #2e7d32;
+        }
+
+        .filters-container button i {
+            font-size: 12px;
+        }
+
+        /* تنسيق الجدول */
+        .completed-jobs-table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-bottom: 20px;
+            direction: rtl;
+        }
+
+        .completed-jobs-table th,
+        .completed-jobs-table td {
+            padding: 12px 15px;
+            text-align: right;
+            font-size: 14px;
+            color: #4A4A4A;
+        }
+
+        .completed-jobs-table th {
+            background: #b1e3b5dc;
+            color: #1B5E20;
+            font-weight: 600;
+            border-bottom: 2px solid #e6f0e6;
+        }
+
+        .completed-jobs-table td {
+            background: #FFFFFF;
+            border-bottom: 1px solid #e6f0e6;
+        }
+
+        .completed-jobs-table tr:hover td {
+            background: #E6F0E6;
+        }
+
+        /* تنسيق الحالة */
+        .status {
+            padding: 5px 10px;
+            border-radius: 4px;
+            font-size: 12px;
+            font-weight: 600;
+            background: #b1e3b5dc;
+            color: #1B5E20;
+        }
+
+        /* تنسيق الأزرار */
+        .action-buttons {
+            display: flex;
+            gap: 8px;
+            justify-content: flex-end;
+        }
+
+        .action-buttons button {
+            background: #1B5E20;
+            color: #FFFFFF;
+            border: none;
+            padding: 8px 12px;
+            border-radius: 4px;
+            font-size: 14px;
+            cursor: pointer;
+            transition: background 0.3s ease;
+            display: flex;
+            align-items: center;
+            gap: 5px;
+        }
+
+        .action-buttons button:hover {
+            background: #2e7d32;
+        }
+
+        .action-buttons button i {
+            font-size: 12px;
+        }
+
+        /* تنسيق الرسالة في حالة عدم وجود وظائف */
+        .no-jobs {
+            color: #4A4A4A;
+            font-size: 16px;
+            text-align: center;
+            margin: 20px 0;
+        }
+
+        /* زر العودة */
+        .back-btn-container {
+            text-align: center;
+            margin-top: 20px;
+        }
+    </style>
+{% endblock %}
+
+{% block content %}
+    <h2>وظائف منجزة</h2>
+
+    <!-- الفلاتر -->
+    <div class="filters-container">
+        <input type="text" id="jobName" placeholder="ابحث باسم الوظيفة..." onkeyup="filterJobs()">
+        <input type="date" id="startDate" onchange="filterJobs()">
+        <input type="date" id="endDate" onchange="filterJobs()">
+        <button onclick="filterJobs()"><i class="fas fa-filter"></i> تصفية</button>
+    </div>
+
+    <!-- جدول الوظائف -->
+    <table class="completed-jobs-table" id="jobsTable">
+        <thead>
+            <tr>
+                <th>اسم الوظيفة</th>
+                <th>كود الوظيفة</th>
+                <th>تاريخ الإنجاز</th>
+                <th>المرشح المختار</th>
+                <th>الحالة</th>
+                <th>الإجراءات</th>
+            </tr>
+        </thead>
+        <tbody>
+            <!-- بيانات تجريبية -->
+            <tr>
+                <td>مدير إدارة الموارد البشرية</td>
+                <td>HR-2025-001</td>
+                <td>2025-04-15</td>
+                <td>أحمد خالد</td>
+                <td><span class="status">منجز</span></td>
+                <td>
+                    <div class="action-buttons">
+                        <button onclick="viewDetails('HR-2025-001')"><i class="fas fa-eye"></i> عرض التفاصيل</button>
+                        <button onclick="downloadReport('HR-2025-001')"><i class="fas fa-download"></i> تحميل تقرير</button>
+                    </div>
+                </td>
+            </tr>
+            <tr>
+                <td>رئيس قسم تكنولوجيا المعلومات</td>
+                <td>IT-2025-002</td>
+                <td>2025-04-20</td>
+                <td>سارة محمد</td>
+                <td><span class="status">منجز</span></td>
+                <td>
+                    <div class="action-buttons">
+                        <button onclick="viewDetails('IT-2025-002')"><i class="fas fa-eye"></i> عرض التفاصيل</button>
+                        <button onclick="downloadReport('IT-2025-002')"><i class="fas fa-download"></i> تحميل تقرير</button>
+                    </div>
+                </td>
+            </tr>
+            <tr>
+                <td>مستشار قانوني أول</td>
+                <td>LEGAL-2025-003</td>
+                <td>2025-04-25</td>
+                <td>محمد علي</td>
+                <td><span class="status">منجز</span></td>
+                <td>
+                    <div class="action-buttons">
+                        <button onclick="viewDetails('LEGAL-2025-003')"><i class="fas fa-eye"></i> عرض التفاصيل</button>
+                        <button onclick="downloadReport('LEGAL-2025-003')"><i class="fas fa-download"></i> تحميل تقرير</button>
+                    </div>
+                </td>
+            </tr>
+        </tbody>
+    </table>
+
+    <!-- رسالة في حالة عدم وجود وظائف */
+    <p class="no-jobs" id="noJobsMessage" style="display: none;">لا توجد وظائف منجزة تطابق معايير التصفية.</p> -->
+{% endblock %}
+
+{% block extra_scripts %}
+    <script>
+        // دالة لعرض التفاصيل (مؤقتة)
+        function viewDetails(jobCode) {
+            Swal.fire({
+                title: 'تفاصيل الوظيفة',
+                html: `كود الوظيفة: ${jobCode}<br>المرشح المختار: ${document.querySelector(`td:contains("${jobCode}")`).nextElementSibling.nextElementSibling.textContent}<br>تفاصيل إضافية: سيتم عرض المزيد من التفاصيل هنا.`,
+                icon: 'info',
+                confirmButtonText: 'موافق',
+                confirmButtonColor: '#1B5E20'
+            });
+        }
+
+        // دالة لتحميل التقرير (مؤقتة)
+        function downloadReport(jobCode) {
+            Swal.fire({
+                title: 'تحميل التقرير',
+                text: `جاري تحميل تقرير الوظيفة ${jobCode}...`,
+                icon: 'success',
+                confirmButtonText: 'موافق',
+                confirmButtonColor: '#1B5E20'
+            });
+        }
+
+        // دالة التصفية
+        function filterJobs() {
+            const jobName = document.getElementById('jobName').value.toLowerCase();
+            const startDate = document.getElementById('startDate').value;
+            const endDate = document.getElementById('endDate').value;
+            const rows = document.querySelectorAll('#jobsTable tbody tr');
+            const noJobsMessage = document.getElementById('noJobsMessage');
+            let hasVisibleRows = false;
+
+            rows.forEach(row => {
+                const rowJobName = row.cells[0].textContent.toLowerCase();
+                const rowDate = row.cells[2].textContent;
+
+                const matchesJobName = jobName === '' || rowJobName.includes(jobName);
+                const matchesDate = (!startDate || rowDate >= startDate) && (!endDate || rowDate <= endDate);
+
+                if (matchesJobName && matchesDate) {
+                    row.style.display = '';
+                    hasVisibleRows = true;
+                } else {
+                    row.style.display = 'none';
+                }
+            });
+
+            noJobsMessage.style.display = hasVisibleRows ? 'none' : 'block';
+        }
+    </script>
+{% endblock %}

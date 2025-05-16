@@ -1,0 +1,260 @@
+{% extends 'base.html' %}
+
+{% block title %}تقارير{% endblock %}
+
+{% block extra_styles %}
+    <style>
+        /* تنسيق العنوان */
+        h2 {
+            color: #1B5E20;
+            font-size: 24px;
+            font-weight: 700;
+            margin-bottom: 20px;
+            text-align: right;
+        }
+
+        /* تنسيق الفلاتر */
+        .filters-container {
+            display: flex;
+            justify-content: flex-end;
+            gap: 15px;
+            margin-bottom: 20px;
+            flex-wrap: wrap;
+        }
+
+        .filters-container select,
+        .filters-container input {
+            padding: 8px;
+            border: 1px solid #e6f0e6;
+            border-radius: 4px;
+            font-size: 14px;
+            color: #4A4A4A;
+            background: #FFFFFF;
+            direction: rtl;
+            width: 200px;
+        }
+
+        .filters-container button {
+            background: #1B5E20;
+            color: #FFFFFF;
+            border: none;
+            padding: 8px 12px;
+            border-radius: 4px;
+            font-size: 14px;
+            cursor: pointer;
+            transition: background 0.3s ease;
+            display: flex;
+            align-items: center;
+            gap: 5px;
+        }
+
+        .filters-container button:hover {
+            background: #2e7d32;
+        }
+
+        .filters-container button i {
+            font-size: 12px;
+        }
+
+        /* تنسيق الجدول */
+        .report-table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-bottom: 20px;
+            direction: rtl;
+        }
+
+        .report-table th,
+        .report-table td {
+            padding: 12px 15px;
+            text-align: right;
+            font-size: 14px;
+            color: #4A4A4A;
+        }
+
+        .report-table th {
+            background: #b1e3b5dc;
+            color: #1B5E20;
+            font-weight: 600;
+            border-bottom: 2px solid #e6f0e6;
+        }
+
+        .report-table td {
+            background: #FFFFFF;
+            border-bottom: 1px solid #e6f0e6;
+        }
+
+        .report-table tr:hover td {
+            background: #E6F0E6;
+        }
+
+        /* تنسيق الأزرار */
+        .action-buttons {
+            display: flex;
+            gap: 8px;
+            justify-content: flex-end;
+        }
+
+        .action-buttons button {
+            background: #1B5E20;
+            color: #FFFFFF;
+            border: none;
+            padding: 8px 12px;
+            border-radius: 4px;
+            font-size: 14px;
+            cursor: pointer;
+            transition: background 0.3s ease;
+            display: flex;
+            align-items: center;
+            gap: 5px;
+        }
+
+        .action-buttons button:hover {
+            background: #2e7d32;
+        }
+
+        .action-buttons button i {
+            font-size: 12px;
+        }
+
+        /* تنسيق الرسالة في حالة عدم وجود تقارير */
+        .no-reports {
+            color: #4A4A4A;
+            font-size: 16px;
+            text-align: center;
+            margin: 20px 0;
+        }
+
+        /* زر العودة */
+        .back-btn-container {
+            text-align: center;
+            margin-top: 20px;
+        }
+    </style>
+{% endblock %}
+
+{% block content %}
+    <h2>تقارير</h2>
+
+    <!-- الفلاتر -->
+    <div class="filters-container">
+        <select id="reportType" onchange="updateReport()">
+            <option value="">اختر نوع التقرير</option>
+            <option value="job_applications">تقرير طلبات الوظائف</option>
+            <option value="completed_jobs">تقرير الوظائف المنجزة</option>
+            <option value="performance">تقرير الأداء</option>
+        </select>
+        <input type="date" id="startDate" onchange="updateReport()">
+        <input type="date" id="endDate" onchange="updateReport()">
+        <button onclick="updateReport()"><i class="fas fa-filter"></i> تصفية</button>
+    </div>
+
+    <!-- الجدول -->
+    <table class="report-table" id="reportTable">
+        <thead>
+            <tr>
+                <th>اسم التقرير</th>
+                <th>التاريخ</th>
+                <th>العدد</th>
+                <th>الحالة</th>
+                <th>الإجراءات</th>
+            </tr>
+        </thead>
+        <tbody>
+            <!-- بيانات تجريبية -->
+            <tr>
+                <td>تقرير طلبات الوظائف</td>
+                <td>2025-04-15</td>
+                <td>120</td>
+                <td>مكتمل</td>
+                <td>
+                    <div class="action-buttons">
+                        <button onclick="viewReport('job_applications_2025-04-15')"><i class="fas fa-eye"></i> عرض</button>
+                        <button onclick="exportReport('job_applications_2025-04-15')"><i class="fas fa-download"></i> تصدير</button>
+                    </div>
+                </td>
+            </tr>
+            <tr>
+                <td>تقرير الوظائف المنجزة</td>
+                <td>2025-04-20</td>
+                <td>45</td>
+                <td>مكتمل</td>
+                <td>
+                    <div class="action-buttons">
+                        <button onclick="viewReport('completed_jobs_2025-04-20')"><i class="fas fa-eye"></i> عرض</button>
+                        <button onclick="exportReport('completed_jobs_2025-04-20')"><i class="fas fa-download"></i> تصدير</button>
+                    </div>
+                </td>
+            </tr>
+            <tr>
+                <td>تقرير الأداء</td>
+                <td>2025-04-25</td>
+                <td>30</td>
+                <td>قيد الإعداد</td>
+                <td>
+                    <div class="action-buttons">
+                        <button onclick="viewReport('performance_2025-04-25')"><i class="fas fa-eye"></i> عرض</button>
+                        <button onclick="exportReport('performance_2025-04-25')"><i class="fas fa-download"></i> تصدير</button>
+                    </div>
+                </td>
+            </tr>
+        </tbody>
+    </table>
+
+    <!-- رسالة في حالة عدم وجود تقارير -->
+    <p class="no-reports" id="noReportsMessage" style="display: none;">لا توجد تقارير تطابق معايير التصفية.</p>
+
+
+{% endblock %}
+
+{% block extra_scripts %}
+    <script>
+        // دالة لعرض التقرير (مؤقتة)
+        function viewReport(reportId) {
+            Swal.fire({
+                title: 'عرض التقرير',
+                html: `معرف التقرير: ${reportId}<br>الحالة: ${document.querySelector(`td:contains("${reportId.split('_')[0]}")`).nextElementSibling.nextElementSibling.textContent}<br>تفاصيل إضافية: سيتم عرض تفاصيل التقرير هنا.`,
+                icon: 'info',
+                confirmButtonText: 'موافق',
+                confirmButtonColor: '#1B5E20'
+            });
+        }
+
+        // دالة لتصدير التقرير (مؤقتة)
+        function exportReport(reportId) {
+            Swal.fire({
+                title: 'تصدير التقرير',
+                text: `جاري تصدير التقرير ${reportId} كملف PDF...`,
+                icon: 'success',
+                confirmButtonText: 'موافق',
+                confirmButtonColor: '#1B5E20'
+            });
+        }
+
+        // دالة التصفية
+        function updateReport() {
+            const reportType = document.getElementById('reportType').value;
+            const startDate = document.getElementById('startDate').value;
+            const endDate = document.getElementById('endDate').value;
+            const rows = document.querySelectorAll('#reportTable tbody tr');
+            const noReportsMessage = document.getElementById('noReportsMessage');
+            let hasVisibleRows = false;
+
+            rows.forEach(row => {
+                const reportName = row.cells[0].textContent;
+                const reportDate = row.cells[1].textContent;
+                const reportTypeMatch = reportType === '' || reportName.includes(reportType.replace('job_applications', 'طلبات الوظائف').replace('completed_jobs', 'الوظائف المنجزة').replace('performance', 'الأداء'));
+                const dateMatch = (!startDate || reportDate >= startDate) && (!endDate || reportDate <= endDate);
+
+                if (reportTypeMatch && dateMatch) {
+                    row.style.display = '';
+                    hasVisibleRows = true;
+                } else {
+                    row.style.display = 'none';
+                }
+            });
+
+            noReportsMessage.style.display = hasVisibleRows ? 'none' : 'block';
+        }
+    </script>
+{% endblock %}

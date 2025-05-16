@@ -1,0 +1,281 @@
+{% extends 'base.html' %}
+
+{% block title %}متابعة طلب{% endblock %}
+
+{% block extra_styles %}
+    <style>
+        /* تنسيق العنوان */
+        h2 {
+            color: #1B5E20;
+            font-size: 24px;
+            font-weight: 700;
+            margin-bottom: 20px;
+            text-align: right;
+        }
+
+        /* تنسيق الفلاتر */
+        .filters-container {
+            display: flex;
+            justify-content: flex-end;
+            gap: 15px;
+            margin-bottom: 20px;
+            flex-wrap: wrap;
+        }
+
+        .filters-container input,
+        .filters-container select {
+            padding: 8px;
+            border: 1px solid #e6f0e6;
+            border-radius: 4px;
+            font-size: 14px;
+            color: #4A4A4A;
+            background: #FFFFFF;
+            direction: rtl;
+            width: 200px;
+        }
+
+        .filters-container button {
+            background: #1B5E20;
+            color: #FFFFFF;
+            border: none;
+            padding: 8px 12px;
+            border-radius: 4px;
+            font-size: 14px;
+            cursor: pointer;
+            transition: background 0.3s ease;
+            display: flex;
+            align-items: center;
+            gap: 5px;
+        }
+
+        .filters-container button:hover {
+            background: #2e7d32;
+        }
+
+        .filters-container button i {
+            font-size: 12px;
+        }
+
+        /* تنسيق الجدول */
+        .requests-table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-bottom: 20px;
+            direction: rtl;
+        }
+
+        .requests-table th,
+        .requests-table td {
+            padding: 12px 15px;
+            text-align: right;
+            font-size: 14px;
+            color: #4A4A4A;
+        }
+
+        .requests-table th {
+            background: #b1e3b5dc;
+            color: #1B5E20;
+            font-weight: 600;
+            border-bottom: 2px solid #e6f0e6;
+        }
+
+        .requests-table td {
+            background: #FFFFFF;
+            border-bottom: 1px solid #e6f0e6;
+        }
+
+        .requests-table tr:hover td {
+            background: #E6F0E6;
+        }
+
+        /* تنسيق الحالة */
+        .status {
+            padding: 5px 10px;
+            border-radius: 4px;
+            font-size: 12px;
+            font-weight: 600;
+        }
+
+        .status.pending {
+            background: #fff3cd;
+            color: #856404;
+        }
+
+        .status.approved {
+            background: #b1e3b5dc;
+            color: #1B5E20;
+        }
+
+        .status.rejected {
+            background: #f8d7da;
+            color: #721c24;
+        }
+
+        /* تنسيق الأزرار */
+        .action-buttons {
+            display: flex;
+            gap: 8px;
+            justify-content: flex-end;
+        }
+
+        .action-buttons button {
+            background: #1B5E20;
+            color: #FFFFFF;
+            border: none;
+            padding: 8px 12px;
+            border-radius: 4px;
+            font-size: 14px;
+            cursor: pointer;
+            transition: background 0.3s ease;
+            display: flex;
+            align-items: center;
+            gap: 5px;
+        }
+
+        .action-buttons button:hover {
+            background: #2e7d32;
+        }
+
+        .action-buttons button i {
+            font-size: 12px;
+        }
+
+        /* تنسيق الرسالة في حالة عدم وجود طلبات */
+        .no-requests {
+            color: #4A4A4A;
+            font-size: 16px;
+            text-align: center;
+            margin: 20px 0;
+        }
+
+        /* زر العودة */
+        .back-btn-container {
+            text-align: center;
+            margin-top: 20px;
+        }
+    </style>
+{% endblock %}
+
+{% block content %}
+    <h2>متابعة طلب</h2>
+
+    <!-- الفلاتر -->
+    <div class="filters-container">
+        <input type="text" id="requestId" placeholder="ابحث برقم الطلب..." onkeyup="filterRequests()">
+        <select id="requestTypeFilter" onchange="filterRequests()">
+            <option value="">كل الأنواع</option>
+            <option value="leadership_job">طلب وظيفة قيادية</option>
+            <option value="supervisory_job">طلب وظيفة إشرافية</option>
+            <option value="training">طلب تدريب</option>
+            <option value="other">طلب آخر</option>
+        </select>
+        <select id="statusFilter" onchange="filterRequests()">
+            <option value="">كل الحالات</option>
+            <option value="pending">قيد المراجعة</option>
+            <option value="approved">معتمد</option>
+            <option value="rejected">مرفوض</option>
+        </select>
+        <button onclick="filterRequests()"><i class="fas fa-filter"></i> تصفية</button>
+    </div>
+
+    <!-- جدول الطلبات -->
+    <table class="requests-table" id="requestsTable">
+        <thead>
+            <tr>
+                <th>رقم الطلب</th>
+                <th>نوع الطلب</th>
+                <th>تاريخ التقديم</th>
+                <th>الجهة المقدم إليها</th>
+                <th>الحالة</th>
+                <th>الإجراءات</th>
+            </tr>
+        </thead>
+        <tbody>
+            <!-- بيانات تجريبية -->
+            <tr>
+                <td>REQ001</td>
+                <td>طلب وظيفة قيادية</td>
+                <td>2025-04-20</td>
+                <td>إدارة الموارد البشرية</td>
+                <td><span class="status pending">قيد المراجعة</span></td>
+                <td>
+                    <div class="action-buttons">
+                        <button onclick="viewDetails('REQ001')"><i class="fas fa-eye"></i> عرض التفاصيل</button>
+                    </div>
+                </td>
+            </tr>
+            <tr>
+                <td>REQ002</td>
+                <td>طلب تدريب</td>
+                <td>2025-04-22</td>
+                <td>قسم التدريب والتطوير</td>
+                <td><span class="status approved">معتمد</span></td>
+                <td>
+                    <div class="action-buttons">
+                        <button onclick="viewDetails('REQ002')"><i class="fas fa-eye"></i> عرض التفاصيل</button>
+                    </div>
+                </td>
+            </tr>
+            <tr>
+                <td>REQ003</td>
+                <td>طلب وظيفة إشرافية</td>
+                <td>2025-04-25</td>
+                <td>إدارة العمليات</td>
+                <td><span class="status rejected">مرفوض</span></td>
+                <td>
+                    <div class="action-buttons">
+                        <button onclick="viewDetails('REQ003')"><i class="fas fa-eye"></i> عرض التفاصيل</button>
+                    </div>
+                </td>
+            </tr>
+        </tbody>
+    </table>
+
+    <!-- رسالة في حالة عدم وجود طلبات -->
+    <p class="no-requests" id="noRequestsMessage" style="display: none;">لا توجد طلبات تطابق معايير التصفية.</p>
+
+{% endblock %}
+
+{% block extra_scripts %}
+    <script>
+        // دالة لعرض التفاصيل (مؤقتة)
+        function viewDetails(requestId) {
+            Swal.fire({
+                title: 'تفاصيل الطلب',
+                html: `رقم الطلب: ${requestId}<br>نوع الطلب: ${document.querySelector(`td:contains("${requestId}")`).nextElementSibling.textContent}<br>تاريخ التقديم: ${document.querySelector(`td:contains("${requestId}")`).nextElementSibling.nextElementSibling.textContent}<br>الجهة المقدم إليها: ${document.querySelector(`td:contains("${requestId}")`).nextElementSibling.nextElementSibling.nextElementSibling.textContent}<br>الحالة: ${document.querySelector(`td:contains("${requestId}")`).nextElementSibling.nextElementSibling.nextElementSibling.nextElementSibling.textContent}`,
+                icon: 'info',
+                confirmButtonText: 'موافق',
+                confirmButtonColor: '#1B5E20'
+            });
+        }
+
+        // دالة التصفية
+        function filterRequests() {
+            const requestId = document.getElementById('requestId').value.toLowerCase();
+            const requestTypeFilter = document.getElementById('requestTypeFilter').value;
+            const statusFilter = document.getElementById('statusFilter').value;
+            const rows = document.querySelectorAll('#requestsTable tbody tr');
+            const noRequestsMessage = document.getElementById('noRequestsMessage');
+            let hasVisibleRows = false;
+
+            rows.forEach(row => {
+                const rowRequestId = row.cells[0].textContent.toLowerCase();
+                const rowRequestType = row.cells[1].textContent;
+                const rowStatus = row.cells[4].querySelector('.status').classList.contains('pending') ? 'pending' : row.cells[4].querySelector('.status').classList.contains('approved') ? 'approved' : 'rejected';
+
+                const matchesRequestId = requestId === '' || rowRequestId.includes(requestId);
+                const matchesRequestType = requestTypeFilter === '' || rowRequestType === requestTypeFilter;
+                const matchesStatus = statusFilter === '' || rowStatus === statusFilter;
+
+                if (matchesRequestId && matchesRequestType && matchesStatus) {
+                    row.style.display = '';
+                    hasVisibleRows = true;
+                } else {
+                    row.style.display = 'none';
+                }
+            });
+
+            noRequestsMessage.style.display = hasVisibleRows ? 'none' : 'block';
+        }
+    </script>
+{% endblock %}

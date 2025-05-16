@@ -1,0 +1,257 @@
+{% extends 'base.html' %}
+
+{% block title %}بطاقات الوصف المعتمدة{% endblock %}
+
+{% block extra_styles %}
+    <style>
+        /* تنسيق العنوان */
+        h2 {
+            color: #1B5E20;
+            font-size: 24px;
+            font-weight: 700;
+            margin-bottom: 20px;
+            text-align: right;
+        }
+
+        /* تنسيق الفلاتر */
+        .filters-container {
+            display: flex;
+            justify-content: flex-end;
+            gap: 15px;
+            margin-bottom: 20px;
+            flex-wrap: wrap;
+        }
+
+        .filters-container input,
+        .filters-container select {
+            padding: 8px;
+            border: 1px solid #e6f0e6;
+            border-radius: 4px;
+            font-size: 14px;
+            color: #4A4A4A;
+            background: #FFFFFF;
+            direction: rtl;
+            width: 200px;
+        }
+
+        .filters-container button {
+            background: #1B5E20;
+            color: #FFFFFF;
+            border: none;
+            padding: 8px 12px;
+            border-radius: 4px;
+            font-size: 14px;
+            cursor: pointer;
+            transition: background 0.3s ease;
+            display: flex;
+            align-items: center;
+            gap: 5px;
+        }
+
+        .filters-container button:hover {
+            background: #2e7d32;
+        }
+
+        .filters-container button i {
+            font-size: 12px;
+        }
+
+        /* تنسيق الجدول */
+        .cards-table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-bottom: 20px;
+            direction: rtl;
+        }
+
+        .cards-table th,
+        .cards-table td {
+            padding: 12px 15px;
+            text-align: right;
+            font-size: 14px;
+            color: #4A4A4A;
+        }
+
+        .cards-table th {
+            background: #b1e3b5dc;
+            color: #1B5E20;
+            font-weight: 600;
+            border-bottom: 2px solid #e6f0e6;
+        }
+
+        .cards-table td {
+            background: #FFFFFF;
+            border-bottom: 1px solid #e6f0e6;
+        }
+
+        .cards-table tr:hover td {
+            background: #E6F0E6;
+        }
+
+        /* تنسيق الأزرار */
+        .action-buttons {
+            display: flex;
+            gap: 8px;
+            justify-content: flex-end;
+        }
+
+        .action-buttons button {
+            background: #1B5E20;
+            color: #FFFFFF;
+            border: none;
+            padding: 8px 12px;
+            border-radius: 4px;
+            font-size: 14px;
+            cursor: pointer;
+            transition: background 0.3s ease;
+            display: flex;
+            align-items: center;
+            gap: 5px;
+        }
+
+        .action-buttons button:hover {
+            background: #2e7d32;
+        }
+
+        .action-buttons button i {
+            font-size: 12px;
+        }
+
+        /* تنسيق الرسالة في حالة عدم وجود بطاقات */
+        .no-cards {
+            color: #4A4A4A;
+            font-size: 16px;
+            text-align: center;
+            margin: 20px 0;
+        }
+
+        /* زر العودة */
+        .back-btn-container {
+            text-align: center;
+            margin-top: 20px;
+        }
+    </style>
+{% endblock %}
+
+{% block content %}
+    <h2>بطاقات الوصف المعتمدة</h2>
+
+    <!-- الفلاتر -->
+    <div class="filters-container">
+        <input type="text" id="jobTitle" placeholder="ابحث باسم الوظيفة..." onkeyup="filterCards()">
+        <select id="jobTypeFilter" onchange="filterCards()">
+            <option value="">كل الأنواع</option>
+            <option value="leadership">وظيفة قيادية</option>
+            <option value="supervisory">وظيفة إشرافية</option>
+        </select>
+        <input type="date" id="approvalDate" onchange="filterCards()">
+        <button onclick="filterCards()"><i class="fas fa-filter"></i> تصفية</button>
+    </div>
+
+    <!-- جدول بطاقات الوصف -->
+    <table class="cards-table" id="cardsTable">
+        <thead>
+            <tr>
+                <th>اسم الوظيفة</th>
+                <th>نوع الوظيفة</th>
+                <th>تاريخ الاعتماد</th>
+                <th>الإجراءات</th>
+            </tr>
+        </thead>
+        <tbody>
+            <!-- بيانات تجريبية -->
+            <tr>
+                <td>مدير عام</td>
+                <td>وظيفة قيادية</td>
+                <td>2025-04-15</td>
+                <td>
+                    <div class="action-buttons">
+                        <button onclick="viewDetails('مدير عام')"><i class="fas fa-eye"></i> عرض التفاصيل</button>
+                        <button onclick="downloadCard('مدير عام')"><i class="fas fa-download"></i> تحميل البطاقة</button>
+                    </div>
+                </td>
+            </tr>
+            <tr>
+                <td>رئيس قسم</td>
+                <td>وظيفة إشرافية</td>
+                <td>2025-04-18</td>
+                <td>
+                    <div class="action-buttons">
+                        <button onclick="viewDetails('رئيس قسم')"><i class="fas fa-eye"></i> عرض التفاصيل</button>
+                        <button onclick="downloadCard('رئيس قسم')"><i class="fas fa-download"></i> تحميل البطاقة</button>
+                    </div>
+                </td>
+            </tr>
+            <tr>
+                <td>مدير تنفيذي</td>
+                <td>وظيفة قيادية</td>
+                <td>2025-04-20</td>
+                <td>
+                    <div class="action-buttons">
+                        <button onclick="viewDetails('مدير تنفيذي')"><i class="fas fa-eye"></i> عرض التفاصيل</button>
+                        <button onclick="downloadCard('مدير تنفيذي')"><i class="fas fa-download"></i> تحميل البطاقة</button>
+                    </div>
+                </td>
+            </tr>
+        </tbody>
+    </table>
+
+    <!-- رسالة في حالة عدم وجود بطاقات -->
+    <p class="no-cards" id="noCardsMessage" style="display: none;">لا توجد بطاقات وصف تطابق معايير التصفية.</p>
+
+{% endblock %}
+
+{% block extra_scripts %}
+    <script>
+        // دالة لعرض التفاصيل (مؤقتة)
+        function viewDetails(jobTitle) {
+            Swal.fire({
+                title: 'تفاصيل بطاقة الوصف',
+                html: `اسم الوظيفة: ${jobTitle}<br>نوع الوظيفة: ${document.querySelector(`td:contains("${jobTitle}")`).nextElementSibling.textContent}<br>تاريخ الاعتماد: ${document.querySelector(`td:contains("${jobTitle}")`).nextElementSibling.nextElementSibling.textContent}<br>تفاصيل إضافية: سيتم عرض المزيد من التفاصيل هنا.`,
+                icon: 'info',
+                confirmButtonText: 'موافق',
+                confirmButtonColor: '#1B5E20'
+            });
+        }
+
+        // دالة لتحميل البطاقة (مؤقتة)
+        function downloadCard(jobTitle) {
+            Swal.fire({
+                title: 'تحميل بطاقة الوصف',
+                text: `جاري تحميل بطاقة الوصف لـ ${jobTitle}...`,
+                icon: 'success',
+                confirmButtonText: 'موافق',
+                confirmButtonColor: '#1B5E20'
+            });
+        }
+
+        // دالة التصفية
+        function filterCards() {
+            const jobTitle = document.getElementById('jobTitle').value.toLowerCase();
+            const jobTypeFilter = document.getElementById('jobTypeFilter').value;
+            const approvalDate = document.getElementById('approvalDate').value;
+            const rows = document.querySelectorAll('#cardsTable tbody tr');
+            const noCardsMessage = document.getElementById('noCardsMessage');
+            let hasVisibleRows = false;
+
+            rows.forEach(row => {
+                const rowJobTitle = row.cells[0].textContent.toLowerCase();
+                const rowJobType = row.cells[1].textContent;
+                const rowApprovalDate = row.cells[2].textContent;
+
+                const matchesJobTitle = jobTitle === '' || rowJobTitle.includes(jobTitle);
+                const matchesJobType = jobTypeFilter === '' || rowJobType === jobTypeFilter;
+                const matchesDate = approvalDate === '' || rowApprovalDate === approvalDate;
+
+                if (matchesJobTitle && matchesJobType && matchesDate) {
+                    row.style.display = '';
+                    hasVisibleRows = true;
+                } else {
+                    row.style.display = 'none';
+                }
+            });
+
+            noCardsMessage.style.display = hasVisibleRows ? 'none' : 'block';
+        }
+    </script>
+{% endblock %}

@@ -1,0 +1,751 @@
+{% extends 'base.html' %}
+
+{% block title %}
+تشكيل لجنة وظائف قيادية
+{% endblock %}
+
+{% block extra_styles %}
+    <style>
+        .form-section {
+            margin-right: 0; /* النموذج على أقصى اليمين */
+            margin-left: auto;
+            direction: rtl; /* اتجاه من اليمين للشمال */
+            display: flex;
+            flex-direction: column;
+        }
+
+        .form-container {
+            width: 100%; /* العرض الكامل */
+            background: #FFF;
+            padding: 10px;
+            border-radius: 4px;
+        }
+
+        .section-title {
+            color: #1B5E20; /* أخضر داكن */
+            font-size: 14px; /* تصغير حجم الخط */
+            margin-top: 15px;
+            margin-bottom: 10px;
+            font-weight: 700;
+            text-align: right;
+        }
+
+        /* تنسيق عام للحقول مع مسافات أقل */
+        .form-group,
+        .decision-details-row,
+        .chairperson-row,
+        .member-row,
+        .secretary-row {
+            display: flex;
+            align-items: center;
+            margin-bottom: 10px; /* تقليل المسافة العمودية بين الصفوف */
+            margin-left: 20px; /* تقليل المساحة على الشمال */
+            margin-right: 20px; /* مساحة على اليمين للمحاذاة */
+            justify-content: flex-start; /* محاذاة العناصر من بداية السطر */
+        }
+
+        /* تنسيق الـ label في كل الصفوف */
+        .form-group label,
+        .decision-details-row label,
+        .chairperson-row label,
+        .member-row label,
+        .secretary-row label {
+            color: #4A4A4A; /* رمادي داكن */
+            font-size: 12px; /* تصغير حجم الخط */
+            font-weight: 600;
+            width: 100px; /* عرض ثابت للـ label */
+            text-align: right;
+            margin: 0 !important; /* إزالة أي margin خارجي */
+            padding: 0 !important; /* إزالة أي padding خارجي */
+            margin-right: 2px !important; /* تقليل المسافة بين الـ label والحقل */
+        }
+
+        /* تقليل المسافة بين رقم القرار وتاريخ القرار */
+        .decision-details-row label[for="decision_number"] {
+            margin-right: 10px !important; /* تقليل المسافة بين رقم القرار وتاريخ القرار */
+        }
+
+        /* تنسيق الـ input و textarea في كل الصفوف */
+        .form-group input,
+        .form-group textarea,
+        .decision-details-row input,
+        .chairperson-row input,
+        .member-row input,
+        .secretary-row input {
+            padding: 6px;
+            font-size: 12px;
+            border: 1.5px solid #6a9262;
+            border-radius: 4px;
+            background-color: #FFF;
+            color: #4A4A4A;
+            transition: border-color 0.3s ease;
+            margin: 0 !important; /* إزالة أي margin خارجي */
+            padding: 6px !important; /* التأكد من الحشوة */
+        }
+
+        .form-group input:focus,
+        .form-group textarea:focus,
+        .decision-details-row input:focus,
+        .chairperson-row input:focus,
+        .member-row input:focus,
+        .secretary-row input:focus {
+            outline: none;
+            border-color: #1B5E20;
+        }
+
+        /* تنسيق خاص للـ decision-details-row */
+        .decision-details-row {
+            width: 50%; /* العرض */
+        }
+
+        .decision-details-row input {
+            width: 100px; /* عرض حقل الإدخال */
+        }
+
+        .decision-details-row .field-error {
+            margin-right: 105px; /* محاذاة رسالة الخطأ مع الحقل */
+        }
+
+        /* تنسيق الـ div الفرعية في الصفوف (مثل name-field و national-id-field) */
+        .chairperson-row .name-field,
+        .chairperson-row .national-id-field,
+        .chairperson-row .phone-field,
+        .member-row .name-field,
+        .member-row .national-id-field,
+        .member-row .phone-field,
+        .secretary-row .name-field,
+        .secretary-row .national-id-field,
+        .secretary-row .phone-field {
+            display: flex;
+            flex-direction: column;
+            margin: 0 !important; /* إزالة أي margin خارجي */
+            padding: 0 !important; /* إزالة أي padding خارجي */
+        }
+
+        .chairperson-row .name-field input,
+        .member-row .name-field input,
+        .secretary-row .name-field input {
+            width: 200px; /* عرض حقل الاسم */
+        }
+
+        .chairperson-row .national-id-field input,
+        .member-row .national-id-field input,
+        .secretary-row .national-id-field input {
+            width: 150px; /* عرض حقل الرقم القومي */
+        }
+
+        .chairperson-row .phone-field input,
+        .member-row .phone-field input,
+        .secretary-row .phone-field input {
+            width: 120px; /* عرض حقل رقم الهاتف */
+        }
+
+        /* تنسيق الـ textarea في form-group */
+        .form-group textarea {
+            flex: 1;
+            width: 100%; /* للتأكد إنها تأخد العرض الكامل */
+        }
+
+        /* الدباجة القانونية (الكبيرة) */
+        #preamble {
+            height: 120px; /* ارتفاع أكبر */
+            rows: 5; /* عدد أسطر أكبر */
+        }
+
+        /* المادة الثانية، الثالثة، الرابعة (الصغيرة) */
+        #article_two_text,
+        #committee_tasks,
+        #article_four {
+            height: 60px; /* ارتفاع أصغر */
+            rows: 2; /* عدد أسطر أقل */
+        }
+
+        /* المادة الأولى (عرض أكبر) */
+        #article_one_text {
+            width: 100%; /* عرض أكبر */
+            max-width: 600px; /* حد أقصى للعرض */
+        }
+
+        /* صاحب الاختصاص والتوقيع الإلكتروني (عرض أصغر) */
+        #competent_authority,
+        #authority_approval {
+            width: 100%; /* عرض أصغر */
+            max-width: 300px; /* حد أقصى أصغر */
+        }
+
+        /* Preamble and Article Rows */
+        .text-row {
+            display: flex;
+            align-items: center;
+            margin-bottom: 10px; /* تقليل المسافة العمودية */
+            margin-left: 20px; /* تقليل المساحة على الشمال */
+            margin-right: 20px;
+            justify-content: flex-start;
+        }
+
+        .text-row .section-title {
+            margin: 0;
+            flex: 0 0 auto;
+            white-space: nowrap;
+        }
+
+        .text-row .form-group {
+            flex: 1;
+            margin-bottom: 0;
+        }
+
+        /* تنسيق حاوية صاحب الاختصاص والتوقيع مع المستطيلات */
+        .authority-section {
+            display: flex;
+            align-items: flex-start;
+            margin-left: 20px;
+            margin-right: 20px;
+            margin-bottom: 10px;
+            gap: 10px; /* المسافة بين الحقول والمستطيلات */
+        }
+
+        .authority-fields {
+            display: flex;
+            flex-direction: column;
+            flex: 1;
+            gap: 10px; /* المسافة بين حقلي صاحب الاختصاص والتوقيع */
+        }
+
+        /* تنسيق المستطيلات على اليمين */
+        .rectangles-container {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 5px; /* المسافة بين المستطيل الصغير والمستطيل الواقف */
+        }
+
+        /* المستطيل الصغير اللي فوق (مع الأزرار) */
+        .small-rect {
+            width: 300px; /* العرض */
+            height: 40px; /* الارتفاع */
+            background-color: #f0f0f0; /* لون خلفية خفيف */
+            border: 1px solid #6a9262; /* حدود */
+            border-radius: 4px;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            gap: 5px; /* المسافة بين الأزرار */
+            padding: 5px;
+        }
+
+        /* تنسيق الأزرار داخل المستطيل الصغير */
+        .small-rect button {
+            background-color: #1B5E20;
+            color: white;
+            border: none;
+            padding: 5px 10px; /* تصغير الأزرار */
+            border-radius: 4px;
+            cursor: pointer;
+            font-size: 11px; /* تصغير حجم الخط */
+            display: flex;
+            align-items: center;
+            gap: 5px;
+        }
+
+        .small-rect button:hover {
+            background-color: #4A4A4A;
+        }
+
+        .small-rect i {
+            font-size: 11px; /* تصغير الأيقونة */
+        }
+
+        /* المستطيل الواقف (مع كلمة PDF وأيقونة) */
+        .vertical-rect {
+            width: 300px; /* نفس عرض المستطيل الصغير */
+            height: 150px; /* ارتفاع أكبر من المستطيل الصغير */
+            background-color: #f0f0f0; /* لون خلفية خفيف */
+            border: 1px solid #6a9262; /* حدود */
+            border-radius: 4px;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            gap: 10px; /* المسافة بين الأيقونة والنص */
+        }
+
+        /* تنسيق كلمة PDF وأيقونة */
+        .vertical-rect .pdf-container {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 5px;
+        }
+
+        .vertical-rect .pdf-container i {
+            font-size: 24px; /* حجم الأيقونة */
+            color: #1B5E20; /* نفس لون العنوان */
+        }
+
+        .vertical-rect .pdf-container .pdf-label {
+            color: #1B5E20; /* نفس لون العنوان */
+            font-size: 16px; /* حجم أكبر للنص */
+            font-weight: 600;
+        }
+
+        .error-message {
+            color: red;
+            font-size: 12px;
+            display: none;
+            margin-top: 5px;
+            text-align: center;
+        }
+
+        .field-error {
+            color: red;
+            font-size: 10px;
+            margin-top: 3px;
+            display: none;
+        }
+
+        .alert {
+            padding: 10px;
+            margin: 10px 0;
+            border-radius: 4px;
+            text-align: center;
+        }
+
+        .alert-success {
+            background-color: #d4edda;
+            color: #155724;
+            border: 1px solid #c3e6cb;
+        }
+
+        .alert-error {
+            background-color: #f8d7da;
+            color: #721c24;
+            border: 1px solid #f5c6cb;
+        }
+
+        .alert-warning {
+            background-color: #fff3cd;
+            color: #856404;
+            border: 1px solid #ffeeba;
+        }
+
+        .form-buttons {
+            display: flex;
+            justify-content: center;
+            gap: 10px;
+            margin-top: 15px;
+        }
+
+        .form-buttons button {
+            background-color: #1B5E20;
+            color: #FFF;
+            padding: 6px 12px;
+            border: none;
+            font-size: 12px;
+            font-weight: 600;
+            cursor: pointer;
+            border-radius: 4px;
+            transition: background-color 0.3s ease;
+        }
+
+        .form-buttons button:hover {
+            background-color: #4A4A4A;
+        }
+
+        /* تحسين التجاوب على الموبايل */
+        @media (max-width: 576px) {
+            .form-section {
+                padding: 10px;
+            }
+
+            .form-group,
+            .decision-details-row,
+            .chairperson-row,
+            .member-row,
+            .secretary-row,
+            .text-row,
+            .authority-section {
+                flex-direction: column;
+                align-items: flex-end;
+                margin-left: 0; /* إزالة المسافة على الموبايل */
+                margin-right: 0;
+            }
+
+            .form-group label,
+            .decision-details-row label,
+            .chairperson-row label,
+            .member-row label,
+            .secretary-row label {
+                width: 100%;
+                text-align: right;
+                margin-right: 0 !important; /* إزالة المسافة على الموبايل */
+            }
+
+            .form-group input,
+            .form-group textarea,
+            .decision-details-row input,
+            .chairperson-row input,
+            .member-row input,
+            .secretary-row input {
+                width: 100%;
+            }
+
+            /* تعديل العرض على الموبايل */
+            #article_one_text,
+            #competent_authority,
+            #authority_approval {
+                max-width: 100%; /* عرض كامل على الموبايل */
+            }
+
+            .decision-details-row .field-error {
+                margin-right: 0; /* إزالة المحاذاة على الموبايل */
+            }
+
+            .chairperson-row .name-field,
+            .chairperson-row .national-id-field,
+            .chairperson-row .phone-field,
+            .member-row .name-field,
+            .member-row .national-id-field,
+            .member-row .phone-field,
+            .secretary-row .name-field,
+            .secretary-row .national-id-field,
+            .secretary-row .phone-field {
+                width: 100%;
+            }
+
+            .authority-fields {
+                width: 100%;
+            }
+
+            .rectangles-container {
+                margin-top: 10px; /* مسافة فوق المستطيلات على الموبايل */
+                align-items: flex-end; /* محاذاة المستطيلات لليمين */
+            }
+
+            .small-rect {
+                width: 100%; /* العرض الكامل على الموبايل */
+                height: auto; /* الارتفاع يتعدل تلقائيًا */
+                flex-direction: column; /* ترتيب الأزرار عموديًا */
+                gap: 5px;
+            }
+
+            .small-rect button {
+                width: 100%; /* الأزرار تأخد العرض الكامل */
+                padding: 8px;
+            }
+
+            .vertical-rect {
+                width: 100%; /* العرض الكامل على الموبايل */
+                height: 180px; /* زيادة الارتفاع على الموبايل */
+            }
+
+            .form-buttons {
+                flex-direction: column;
+                gap: 5px;
+            }
+
+            .form-buttons button {
+                width: 100%;
+                padding: 8px;
+            }
+        }
+    </style>
+{% endblock %}
+
+{% block extra_scripts %}
+    <script>
+        // دالة للتحقق من صحة الرقم القومي
+        function validateNationalId(nid) {
+            const regex = /^\d{14}$/;
+            if (!regex.test(nid)) return false;
+            const century = parseInt(nid[0]);
+            const month = parseInt(nid.substring(3, 5));
+            const day = parseInt(nid.substring(5, 7));
+            return (century === 2 || century === 3) && (month >= 1 && month <= 12) && (day >= 1 && day <= 31);
+        }
+
+        // دالة للتحقق من صحة رقم الهاتف
+        function validatePhoneNumber(phone) {
+            const regex = /^01[0-2|5][0-9]{8}$/;
+            return regex.test(phone);
+        }
+
+        // دالة للتحقق من فرادة الأرقام القومية
+        function validateUniqueNationalIds() {
+            const nationalIds = [
+                document.getElementById('chairperson_national_id').value,
+                document.getElementById('admin_member_national_id').value,
+                document.getElementById('hr_member_national_id').value,
+                document.getElementById('it_member_national_id').value,
+                document.getElementById('legal_member_national_id').value,
+                document.getElementById('other_member_1_national_id').value,
+                document.getElementById('other_member_2_national_id').value,
+                document.getElementById('secretary_national_id').value,
+                document.getElementById('secretary_member_1_national_id').value,
+                document.getElementById('secretary_member_2_national_id').value
+            ].filter(id => id.trim() !== '');
+
+            const uniqueIds = new Set(nationalIds);
+            if (nationalIds.length !== uniqueIds.size) {
+                document.querySelector('.error-message').style.display = 'block';
+                return false;
+            }
+            document.querySelector('.error-message').style.display = 'none';
+            return true;
+        }
+
+        // دالة لعرض رسائل الخطأ
+        function showFieldError(inputId, message) {
+            const errorElement = document.getElementById(`${inputId}_error`);
+            errorElement.textContent = message;
+            errorElement.style.display = 'block';
+            return false;
+        }
+
+        function clearFieldError(inputId) {
+            const errorElement = document.getElementById(`${inputId}_error`);
+            errorElement.style.display = 'none';
+        }
+
+        document.querySelectorAll('input[type="text"]').forEach(input => {
+            input.addEventListener('input', function() {
+                const inputId = this.id;
+
+                if (inputId.includes('national_id')) {
+                    const value = this.value;
+                    if (value && !validateNationalId(value)) {
+                        showFieldError(inputId, 'الرقم القومي يجب أن يكون 14 رقمًا ويتبع الصيغة الصحيحة');
+                    } else {
+                        clearFieldError(inputId);
+                    }
+                } else if (inputId.includes('phone')) {
+                    const value = this.value;
+                    if (value && !validatePhoneNumber(value)) {
+                        showFieldError(inputId, 'رقم الهاتف يجب أن يكون 11 رقمًا ويبدأ بـ 010 أو 011 أو 012 أو 015');
+                    } else {
+                        clearFieldError(inputId);
+                    }
+                } else if (inputId === 'decision_date') {
+                    const value = this.value;
+                    const regex = /^(0?[1-9]|[12][0-9]|3[01])\/(0?[1-9]|1[0-2])\/\d{4}$/;
+                    if (value && !regex.test(value)) {
+                        showFieldError(inputId, 'التاريخ يجب أن يكون بصيغة يوم/شهر/سنة (مثال: 25/12/2023)');
+                    } else {
+                        clearFieldError(inputId);
+                    }
+                }
+            });
+        });
+
+        document.querySelector('form').addEventListener('submit', function(event) {
+            let valid = true;
+
+            document.querySelectorAll('input[id*="national_id"]').forEach(input => {
+                const value = input.value;
+                if (value && !validateNationalId(value)) {
+                    showFieldError(input.id, 'الرقم القومي يجب أن يكون 14 رقمًا ويتبع الصيغة الصحيحة');
+                    valid = false;
+                }
+            });
+
+            document.querySelectorAll('input[id*="phone"]').forEach(input => {
+                const value = input.value;
+                if (value && !validatePhoneNumber(value)) {
+                    showFieldError(input.id, 'رقم الهاتف يجب أن يكون 11 رقمًا ويبدأ بـ 010 أو 011 أو 012 أو 015');
+                    valid = false;
+                }
+            });
+
+            const decisionDate = document.getElementById('decision_date').value;
+            const dateRegex = /^(0?[1-9]|[12][0-9]|3[01])\/(0?[1-9]|1[0-2])\/\d{4}$/;
+            if (decisionDate && !dateRegex.test(decisionDate)) {
+                showFieldError('decision_date', 'التاريخ يجب أن يكون بصيغة يوم/شهر/سنة (مثال: 25/12/2023)');
+                valid = false;
+            }
+
+            if (event.submitter.name === 'action' && event.submitter.value === 'create_decision') {
+                if (!validateUniqueNationalIds()) {
+                    valid = false;
+                }
+            }
+
+            if (!valid) {
+                event.preventDefault();
+            }
+        });
+
+        function printPDF(url) {
+            window.open(url, '_blank').print();
+        }
+    </script>
+{% endblock %}
+
+{% block content %}
+    <div class="form-section">
+        <!-- النموذج -->
+        <div class="form-container">
+            <form method="POST" action="{{ url_for('form_leadership_committee') }}">
+                <!-- بيانات القرار -->
+                <div class="decision-details-row">
+                    <label for="decision_number">رقم القرار:</label>
+                    <input type="text" id="decision_number" name="decision_number" required>
+                    <label for="decision_date">تاريخ القرار:</label>
+                    <input type="text" id="decision_date" name="decision_date" placeholder="يوم/شهر/سنة" required>
+                    <div id="decision_date_error" class="field-error"></div>
+                </div>
+
+                <!-- الدباجة القانونية -->
+                <div class="form-group">
+                    <label for="preamble">الدباجة القانونية:</label>
+                    <textarea id="preamble" name="preamble" rows="5" placeholder="أدخل الدباجة القانونية هنا..." required></textarea>
+                </div>
+
+                <!-- المادة الأولى: أعضاء اللجنة -->
+                <div class="form-group">
+                    <label for="article_one_text">المادة الأولى: أعضاء اللجنة:</label>
+                    <input type="text" id="article_one_text" name="article_one_text" placeholder="أدخل نص المادة الأولى هنا..." required>
+                </div>
+
+                <!-- رئيس اللجنة في سطر واحد -->
+                <div class="chairperson-row">
+                    <label>رئيس اللجنة:</label>
+                    <div class="name-field">
+                        <input type="text" id="chairperson_name" name="chairperson_name" placeholder="أدخل الاسم" required>
+                    </div>
+                    <label>الرقم القومي:</label>
+                    <div class="national-id-field">
+                        <input type="text" id="chairperson_national_id" name="chairperson_national_id" required>
+                        <div id="chairperson_national_id_error" class="field-error"></div>
+                    </div>
+                    <label>رقم الهاتف:</label>
+                    <div class="phone-field">
+                        <input type="text" id="chairperson_phone" name="chairperson_phone" required>
+                        <div id="chairperson_phone_error" class="field-error"></div>
+                    </div>
+                </div>
+
+                {% set members = [
+                    {'title': 'عضو الإدارة', 'id_prefix': 'admin_member', 'name_field': 'admin_member_name', 'national_id_field': 'admin_member_national_id', 'phone_field': 'admin_member_phone'},
+                    {'title': 'عضو الموارد البشرية', 'id_prefix': 'hr_member', 'name_field': 'hr_member_name', 'national_id_field': 'hr_member_national_id', 'phone_field': 'hr_member_phone'},
+                    {'title': 'عضو تكنولوجيا المعلومات', 'id_prefix': 'it_member', 'name_field': 'it_member_name', 'national_id_field': 'it_member_national_id', 'phone_field': 'it_member_phone'},
+                    {'title': 'عضو القانون', 'id_prefix': 'legal_member', 'name_field': 'legal_member_name', 'national_id_field': 'legal_member_national_id', 'phone_field': 'legal_member_phone'},
+                    {'title': 'عضو آخر 1', 'id_prefix': 'other_member_1', 'name_field': 'other_member_1_name', 'national_id_field': 'other_member_1_national_id', 'phone_field': 'other_member_1_phone'},
+                    {'title': 'عضو آخر 2', 'id_prefix': 'other_member_2', 'name_field': 'other_member_2_name', 'national_id_field': 'other_member_2_national_id', 'phone_field': 'other_member_2_phone'}
+                ] %}
+
+                {% for member in members %}
+                <div class="member-row">
+                    <label>{{ member.title }}:</label>
+                    <div class="name-field">
+                        <input type="text" id="{{ member.id_prefix }}_name" name="{{ member.name_field }}" placeholder="أدخل الاسم" required>
+                    </div>
+                    <label>الرقم القومي:</label>
+                    <div class="national-id-field">
+                        <input type="text" id="{{ member.id_prefix }}_national_id" name="{{ member.national_id_field }}" required>
+                        <div id="{{ member.id_prefix }}_national_id_error" class="field-error"></div>
+                    </div>
+                    <label>رقم الهاتف:</label>
+                    <div class="phone-field">
+                        <input type="text" id="{{ member.id_prefix }}_phone" name="{{ member.phone_field }}" required>
+                        <div id="{{ member.id_prefix }}_phone_error" class="field-error"></div>
+                    </div>
+                </div>
+                {% endfor %}
+
+                <!-- المادة الثانية: الأمانة الفنية -->
+                <div class="form-group">
+                    <label for="article_two_text">المادة الثانية: الأمانة الفنية:</label>
+                    <textarea id="article_two_text" name="article_two_text" rows="2" placeholder="أدخل نص المادة الثانية هنا..." required></textarea>
+                </div>
+
+                {% set secretaries = [
+                    {'title': 'أمين اللجنة', 'id_prefix': 'secretary', 'name_field': 'secretary_name', 'national_id_field': 'secretary_national_id', 'phone_field': 'secretary_phone'},
+                    {'title': 'عضو أمانة 1', 'id_prefix': 'secretary_member_1', 'name_field': 'secretary_member_1_name', 'national_id_field': 'secretary_member_1_national_id', 'phone_field': 'secretary_member_1_phone'},
+                    {'title': 'عضو أمانة 2', 'id_prefix': 'secretary_member_2', 'name_field': 'secretary_member_2_name', 'national_id_field': 'secretary_member_2_national_id', 'phone_field': 'secretary_member_2_phone'}
+                ] %}
+
+                {% for secretary in secretaries %}
+                <div class="secretary-row">
+                    <label>{{ secretary.title }}:</label>
+                    <div class="name-field">
+                        <input type="text" id="{{ secretary.id_prefix }}_name" name="{{ secretary.name_field }}" placeholder="أدخل الاسم" required>
+                    </div>
+                    <label>الرقم القومي:</label>
+                    <div class="national-id-field">
+                        <input type="text" id="{{ secretary.id_prefix }}_national_id" name="{{ secretary.national_id_field }}" required>
+                        <div id="{{ secretary.id_prefix }}_national_id_error" class="field-error"></div>
+                    </div>
+                    <label>رقم الهاتف:</label>
+                    <div class="phone-field">
+                        <input type="text" id="{{ secretary.id_prefix }}_phone" name="{{ secretary.phone_field }}" required>
+                        <div id="{{ secretary.id_prefix }}_phone_error" class="field-error"></div>
+                    </div>
+                </div>
+                {% endfor %}
+
+                <!-- المادة الثالثة: مهام اللجنة -->
+                <div class="form-group">
+                    <label for="committee_tasks">المادة الثالثة: مهام اللجنة:</label>
+                    <textarea id="committee_tasks" name="committee_tasks" rows="2" placeholder="أدخل مهام اللجنة هنا..." required></textarea>
+                </div>
+
+                <!-- المادة الرابعة -->
+                <div class="form-group">
+                    <label for="article_four">المادة الرابعة:</label>
+                    <textarea id="article_four" name="article_four" rows="2" placeholder="أدخل نص المادة الرابعة هنا..." required></textarea>
+                </div>
+
+                <!-- السلطة المختصة مع المستطيلات -->
+                <div class="authority-section">
+                    <div class="authority-fields">
+                        <div class="form-group">
+                            <label for="competent_authority">صاحب الاختصاص:</label>
+                            <input type="text" id="competent_authority" name="competent_authority" required>
+                        </div>
+                        <div class="form-group">
+                            <label for="authority_approval">اعتماد السلطة المختصة (التوقيع الإلكتروني):</label>
+                            <input type="text" id="authority_approval" name="authority_approval" placeholder="أدخل رمز التوقيع الإلكتروني" required>
+                        </div>
+                    </div>
+                    <div class="rectangles-container">
+                        <div class="small-rect">
+                            <button type="button" onclick="window.location.href='{{ url_for('view_pdf', type='committee') }}'">
+                                <i class="fas fa-eye"></i> عرض
+                            </button>
+                            <button type="button" onclick="printPDF('{{ url_for('print_pdf', type='committee') }}')">
+                                مسح ضوئي
+                            </button>
+                            <button type="button" onclick="window.location.href='{{ url_for('download_pdf', type='committee') }}'">
+                                ارفاق من جهازك
+                            </button>
+                        </div>
+                        <div class="vertical-rect">
+                            <div class="pdf-container">
+                                <i class="fas fa-file-pdf"></i>
+                                <div class="pdf-label">PDF</div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- رسالة خطأ لعدم فرادة الأرقام القومية -->
+                <div class="error-message">الأرقام القومية يجب أن تكون مختلفة وفريدة!</div>
+
+                <!-- أزرار الفورم -->
+                <div class="form-buttons">
+                    <button type="submit" name="action" value="create_decision">إنشاء قرار</button>
+                    <button type="submit" name="action" value="save_draft">حفظ كمسودة</button>
+                    <button type="submit" name="action" value="refer_to">إحالة إلى</button>
+                    <button type="submit" name="action" value="next">التالي</button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    {% with messages = get_flashed_messages(with_categories=true) %}
+        {% if messages %}
+            {% for category, message in messages %}
+                <div class="alert alert-{{ category }}">{{ message }}</div>
+            {% endfor %}
+        {% endif %}
+    {% endwith %}
+{% endblock %}

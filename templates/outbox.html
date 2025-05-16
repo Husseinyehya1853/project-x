@@ -1,0 +1,593 @@
+{% extends 'base.html' %}
+
+{% block title %}الصادر{% endblock %}
+
+{% block extra_styles %}
+    <style>
+        .inner-container {
+            background: #FFFFFF !important; /* التأكد من أن الخلفية بيضاء */
+        }
+
+        .divider {
+            border-top: 1px solid #e6f0e6;
+            margin: 15px 0;
+        }
+
+        .tabs {
+            display: flex;
+            justify-content: center;
+            gap: 40px; /* زيادة المسافة بين الكلمات الثلاثة */
+            margin: 0px 0;
+        }
+
+        .tab {
+            color: #4A4A4A;
+            font-size: 16px;
+            font-weight: 600;
+            cursor: pointer;
+            position: relative;
+            padding-bottom: 5px;
+            transition: color 0.3s ease;
+            display: flex;
+            align-items: center;
+            gap: 8px; /* المسافة بين الأيقونة والنص */
+        }
+
+        .tab.active {
+            color: #1B5E20;
+        }
+
+        .tab i {
+            color: #6a9262;
+            font-size: 16px;
+        }
+
+        .tab::after {
+            content: '';
+            position: absolute;
+            bottom: 0;
+            left: 0;
+            width: 100%;
+            height: 2px;
+            background-color: #b1e3b5dc;
+            transition: background-color 0.3s ease;
+        }
+
+        .tab.active::after {
+            background-color: #1B5E20;
+        }
+
+        .tab-content {
+            display: none;
+            background: #FFFFFF; /* جعل الخلفية بيضاء */
+            padding: 20px;
+            border-radius: 4px;
+            text-align: right;
+        }
+
+        .tab-content.active {
+            display: block;
+        }
+
+        .announcement-details {
+            text-align: right;
+            margin-bottom: 20px;
+        }
+
+        .announcement-details .announcement-header {
+            justify-content: flex-end;
+            align-items: center;
+            margin-bottom: 4px;
+        }
+
+        .announcement-details .announcement-header .new-label {
+            color: #4A4A4A;
+            font-size: 14px;
+            font-weight: 600;
+        }
+
+        .announcement-details .job-title-container {
+            display: flex;
+            align-items: center;
+            gap: 0;
+            margin-bottom: 4px;
+        }
+
+        .announcement-details .job-title-container .job-title-wrapper {
+            display: flex;
+            align-items: center;
+            gap: 4px;
+        }
+
+        .announcement-details .job-title {
+            color: #4A4A4A;
+            font-size: 13px;
+            font-weight: 600;
+        }
+
+        .announcement-details .job-title-container .desktop-icon {
+            color: #6a9262;
+            font-size: 14px;
+        }
+
+        .announcement-details .job-title-container .icons {
+            display: flex;
+            flex-direction: row;
+            gap: 2px;
+            margin-right: 2px;
+        }
+
+        .announcement-details .job-title-container .icons i {
+            color: #6a9262;
+            font-size: 12px;
+        }
+
+        .announcement-details .announcement-code {
+            justify-content: flex-end;
+            align-items: center;
+            gap: 2px;
+        }
+
+        .announcement-details .announcement-code .code {
+            color: #4A4A4A;
+            font-size: 14px;
+        }
+
+        .announcement-details .announcement-code .hashtag-icon {
+            color: #6a9262;
+            font-size: 12px;
+        }
+
+        .referral-info {
+            text-align: right;
+            margin-left: 0; /* محاذاة للشمال */
+            margin-right: auto; /* عشان الكلام يفضل على الشمال */
+        }
+
+        .referral-info h3 {
+            color: #1B5E20;
+            font-size: 16px;
+            font-weight: 600;
+            margin-bottom: 5px; /* تقليل المسافة بين معلومات الإحالة والخط اللي فوقيها */
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            cursor: pointer; /* عشان يبقى زي زر */
+        }
+
+        .referral-info h3 i {
+            color: #6a9262;
+            font-size: 14px;
+            transition: transform 0.3s ease; /* تأثير دوران السهم */
+        }
+
+        .referral-info h3 i.active {
+            transform: rotate(-90deg); /* السهم هيبص لتحت لما التفاصيل مفتوحة */
+        }
+
+        .referral-details {
+            display: none; /* الكلام هيبقى مخفي في البداية */
+            margin-right: -20px; /* عشان البيانات تلزق في جمب الصفحة على اليمين */
+        }
+
+        .referral-details.active {
+            display: block; /* الكلام هيظهر لما أضغط على السهم */
+        }
+
+        .referral-details .dotted-divider {
+            border-top: 2px dotted #e6f0e6; /* تكبير سمك الخط المنقط */
+            margin: 5px 0; /* تقليل المسافة فوق وتحت الخط */
+            width: 100%; /* الخط هيمتد لحد نص الصفحة بسبب max-width بتاع referral-info */
+        }
+
+        .referral-details p {
+            color: #4A4A4A;
+            font-size: 14px;
+            margin-bottom: 5px;
+            margin-top: 2px; /* تقليل المسافة بين الخط والبيانات */
+            text-align: right;
+        }
+
+        .action-box {
+            background: #F5F7F5; /* خلفية خفيفة للمستطيل */
+            padding: 10px;
+            margin-top: 20px;
+            margin-right: -20px; /* نفس الـ margin-right بتاع referral-details عشان يكون بنفس العرض */
+            border-radius: 4px;
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15); /* box-shadow بدرجة كبيرة */
+            display: flex;
+            justify-content: space-between; /* الكلمات هتبقى موزعة بالتساوي */
+            align-items: center;
+        }
+
+        .action-box span {
+            color: #4A4A4A;
+            font-size: 14px;
+            font-weight: 600;
+        }
+
+        .action-fields {
+            margin-top: 10px;
+            margin-right: -20px; /* نفس الـ margin-right عشان الحقول تكون محاذية لباقي المحتوى */
+            margin-bottom: 20px; /* زيادة المسافة بين الحقول والـ rectangles-container */
+            display: flex;
+            justify-content: space-between; /* الحقول هتبقى موزعة بالتساوي */
+        }
+
+        .action-fields .field {
+            flex: 1; /* كل حقل ياخد نفس المساحة */
+            display: flex;
+            flex-direction: column; /* الحقل والـ label تحت بعض */
+            align-items: flex-end; /* المحاذاة لليمين */
+            margin-left: 10px; /* مسافة صغيرة بين الحقول */
+        }
+
+        .action-fields .field:first-child {
+            margin-left: 0; /* أول حقل مايكونش ليه margin-left */
+        }
+
+        .action-fields .field select,
+        .action-fields .field input[type="date"],
+        .action-fields .field input[type="text"] {
+            width: 100%;
+            padding: 8px;
+            border: 1px solid #e6f0e6;
+            border-radius: 4px;
+            font-size: 14px;
+            color: #4A4A4A;
+            background: #FFFFFF;
+            direction: rtl; /* عشان القوائم والحقول تكون محاذية لليمين */
+        }
+
+        .rectangles-container {
+            display: flex;
+            flex-direction: column; /* ترتيب عمودي */
+            align-items: flex-start; /* محاذاة المستطيلات للشمال */
+            gap: 5px; /* المسافة بين المستطيلين */
+            margin-left: -20px; /* عشان يلزق في أقصى الشمال */
+        }
+
+        .rectangles-container .small-rect {
+            width: 300px; /* العرض */
+            height: 40px; /* الارتفاع */
+            background-color: #f0f0f0; /* لون خلفية خفيف */
+            border: 1px solid #6a9262; /* حدود */
+            border-radius: 4px;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            gap: 5px; /* المسافة بين الأزرار */
+            padding: 5px;
+        }
+
+        .rectangles-container .small-rect button {
+            background-color: #1B5E20;
+            color: white;
+            border: none;
+            padding: 5px 10px; /* تصغير الأزرار */
+            border-radius: 4px;
+            cursor: pointer;
+            font-size: 11px; /* تصغير حجم الخط */
+            display: flex;
+            align-items: center;
+            gap: 5px;
+        }
+
+        .rectangles-container .small-rect button:hover {
+            background-color: #4A4A4A;
+        }
+
+        .rectangles-container .small-rect i {
+            font-size: 11px; /* تصغير الأيقونة */
+        }
+
+        .rectangles-container .vertical-rect {
+            width: 300px; /* نفس عرض المستطيل الصغير */
+            height: 150px; /* ارتفاع أكبر */
+            background-color: #f0f0f0; /* لون خلفية خفيف */
+            border: 1px solid #6a9262; /* حدود */
+            border-radius: 4px;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            gap: 10px; /* المسافة بين الأيقونة والنص */
+        }
+
+        .rectangles-container .pdf-container {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 5px;
+        }
+
+        .rectangles-container .pdf-container i {
+            font-size: 24px; /* حجم الأيقونة */
+            color: #1B5E20; /* نفس لون العنوان */
+        }
+
+        .rectangles-container .pdf-container .pdf-label {
+            color: #1B5E20; /* نفس لون العنوان */
+            font-size: 16px; /* حجم أكبر للنص */
+            font-weight: 600;
+            margin-top: 0; /* إزالة المسافة العلوية */
+        }
+
+        /* ستايل الأزرار المنفصلة */
+        .action-buttons {
+            margin-top: 20px; /* زيادة المسافة بين الأزرار والـ rectangles-container */
+            display: flex;
+            gap: 8px; /* مسافة بين الأزرار */
+        }
+
+        .action-buttons button {
+            background: #1B5E20;
+            color: #FFFFFF;
+            border: none;
+            padding: 8px 12px;
+            border-radius: 4px;
+            font-size: 14px;
+            cursor: pointer;
+            transition: background 0.3s ease;
+            display: flex; /* عشان النص والأيقونة يترتبوا جنب بعض */
+            align-items: center;
+            gap: 5px; /* المسافة بين النص والأيقونة */
+        }
+
+        .action-buttons button:hover {
+            background: #2e7d32;
+        }
+
+        .action-buttons button i {
+            font-size: 12px; /* حجم الأيقونة */
+            color: #FFFFFF; /* نفس لون النص */
+        }
+    </style>
+{% endblock %}
+
+{% block sidebar_announcements %}
+    <!-- إعلانات الصادر -->
+    <div class="announcement" data-job-title="طلب موافقة على وظيفة" data-code="APPROVAL-2025-001" data-recipient="أحمد خالد - إدارة الموارد البشرية">
+        <div class="announcement-header">
+            <span class="new-label">إعلان جديد</span>
+        </div>
+        <div class="job-title-container">
+            <div class="job-title-wrapper">
+                <i class="fas fa-desktop desktop-icon"></i>
+                <span class="job-title">طلب موافقة على وظيفة</span>
+            </div>
+            <div class="icons">
+                <i class="fas fa-copy"></i>
+                <i class="fas fa-lock"></i>
+            </div>
+        </div>
+        <div class="announcement-code">
+            <i class="fas fa-hashtag hashtag-icon"></i>
+            <span class="code">APPROVAL-2025-001</span>
+        </div>
+    </div>
+    <div class="announcement" data-job-title="إرسال قرار تعيين" data-code="APPOINTMENT-2025-002" data-recipient="سارة محمد - الإدارة القانونية">
+        <div class="announcement-header">
+            <span class="new-label">إعلان جديد</span>
+        </div>
+        <div class="job-title-container">
+            <div class="job-title-wrapper">
+                <i class="fas fa-desktop desktop-icon"></i>
+                <span class="job-title">إرسال قرار تعيين</span>
+            </div>
+            <div class="icons">
+                <i class="fas fa-copy"></i>
+                <i class="fas fa-lock"></i>
+            </div>
+        </div>
+        <div class="announcement-code">
+            <i class="fas fa-hashtag hashtag-icon"></i>
+            <span class="code">APPOINTMENT-2025-002</span>
+        </div>
+    </div>
+{% endblock %}
+
+{% block content %}
+    <p id="default-message" class="slide-up" style="color: #4A4A4A; font-size: 14px;">يرجى اختيار إعلان من القائمة على اليمين لعرض التفاصيل.</p>
+
+    <div id="announcement-details" style="display: none;" class="announcement-details">
+        <div class="announcement-header">
+            <span class="new-label">إعلان جديد</span>
+        </div>
+        <div class="job-title-container">
+            <div class="job-title-wrapper">
+                <i class="fas fa-desktop desktop-icon"></i>
+                <span class="job-title" id="job-title"></span>
+            </div>
+        </div>
+        <div class="announcement-code">
+            <i class="fas fa-hashtag hashtag-icon"></i>
+            <span class="code" id="announcement-code"></span>
+        </div>
+    </div>
+
+    <div id="tabs-section" style="display: none;">
+        <div class="divider"></div>
+        <div class="tabs">
+            <div class="tab active" onclick="showTab('referrals')">
+                <i class="fas fa-share-square"></i>
+                إحالتي
+            </div>
+            <div class="tab" onclick="showTab('attachments')">
+                <i class="fas fa-paperclip"></i>
+                المرفقات
+            </div>
+            <div class="tab" onclick="showTab('tracking')">
+                <i class="fas fa-eye"></i>
+                تتبع
+            </div>
+        </div>
+        <div class="divider"></div>
+
+        <div id="referrals" class="tab-content active">
+            <div class="referral-info">
+                <h3 onclick="toggleReferralDetails()">
+                    <i class="fas fa-chevron-left active"></i> <!-- السهم ناحية اليسار في البداية -->
+                    معلومات الإحالة
+                </h3>
+                <div class="referral-details active">
+                    <div class="dotted-divider"></div>
+                    <p><strong>إرسال من:</strong> محمد علي - الإدارة العامة</p>
+                    <p><strong>تاريخ الإرسال:</strong> 2025/04/20</p>
+                    <p><strong>المرسل إليه:</strong> <span id="recipient-name"></span></p>
+                    <p><strong>نوع الإعلان:</strong> <span id="announcement-type"></span></p>
+                    <p><strong>الحالة:</strong> تم الإرسال</p>
+                    <p><strong>ملاحظة:</strong> يرجى متابعة الإجراءات المطلوبة في أقرب وقت.</p>
+                </div>
+                <!-- المستطيل الجديد -->
+                <div class="action-box">
+                    <span>الغاية</span>
+                    <span>الإجراء التالي</span>
+                    <span>تاريخ المتابعة</span>
+                    <span>تعليقات</span>
+                </div>
+                <!-- الحقول تحت المستطيل -->
+                <div class="action-fields">
+                    <div class="field">
+                        <select>
+                            <option value="">..........</option>
+                            <option value="review">مراجعة</option>
+                            <option value="confirmation">تأكيد</option>
+                            <option value="feedback">تعليقات</option>
+                        </select>
+                    </div>
+                    <div class="field">
+                        <select>
+                            <option value="">..........</option>
+                            <option value="resend">إعادة إرسال</option>
+                            <option value="escalate">تصعيد</option>
+                            <option value="follow-up">متابعة</option>
+                        </select>
+                    </div>
+                    <div class="field">
+                        <input type="date" id="follow-up-date" name="follow-up-date" value="2025-04-30" required>
+                    </div>
+                    <div class="field">
+                        <input type="text" placeholder="اكتب تعليق هنا">
+                    </div>
+                </div>
+
+                <div class="rectangles-container">
+                    <div class="small-rect">
+                        <button type="button" onclick="window.location.href='{{ url_for('view_pdf', type='outbox') }}'">
+                            <i class="fas fa-eye"></i> عرض
+                        </button>
+                        <button type="button" onclick="printPDF('{{ url_for('print_pdf', type='outbox') }}')">
+                            مسح ضوئي
+                        </button>
+                        <button type="button" onclick="window.location.href='{{ url_for('download_pdf', type='outbox') }}'">
+                            تحميل الملف
+                        </button>
+                    </div>
+                    <div class="vertical-rect">
+                        <div class="pdf-container">
+                            <i class="fas fa-file-pdf"></i>
+                            <div class="pdf-label">PDF</div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- الأزرار المنفصلة -->
+                <div class="action-buttons">
+                    <button type="button" onclick="alert('إعادة إرسال!')">
+                        إعادة إرسال
+                        <i class="fas fa-redo"></i>
+                    </button>
+                    <button type="button" onclick="alert('تعديل الإعلان!')">
+                        تعديل الإعلان
+                        <i class="fas fa-edit"></i>
+                    </button>
+                    <button type="button" onclick="alert('حفظ!')">
+                        حفظ
+                        <i class="fas fa-save"></i>
+                    </button>
+                </div>
+            </div>
+        </div>
+        <div id="attachments" class="tab-content">
+            <p style="color: #4A4A4A; font-size: 14px; margin-bottom: 10px;"><strong>المرفق 1:</strong> طلب الوظيفة.pdf</p>
+            <p style="color: #4A4A4A; font-size: 14px; margin-bottom: 10px;"><strong>المرفق 2:</strong> قرار التعيين.pdf</p>
+            <p style="color: #4A4A4A; font-size: 14px; margin-bottom: 10px;"><strong>المرفق 3:</strong> بيانات إضافية.pdf</p>
+            <p style="color: #4A4A4A; font-size: 14px; margin-bottom: 10px;"><strong>المرفق 4:</strong> تقرير مراجعة.pdf</p>
+        </div>
+        <div id="tracking" class="tab-content">
+            <p style="color: #4A4A4A; font-size: 14px; margin-bottom: 10px;"><strong>حالة الإعلان:</strong> تم الإرسال بنجاح</p>
+            <p style="color: #4A4A4A; font-size: 14px; margin-bottom: 10px;"><strong>تاريخ الإرسال:</strong> 2025-04-20</p>
+            <p style="color: #4A4A4A; font-size: 14px; margin-bottom: 10px;"><strong>آخر تحديث:</strong> 2025-04-21</p>
+            <p style="color: #4A4A4A; font-size: 14px; margin-bottom: 10px;"><strong>تمت المشاهدة بواسطة:</strong> <span id="recipient-viewed"></span></p>
+            <p style="color: #4A4A4A; font-size: 14px; margin-bottom: 10px;"><strong>ملاحظات:</strong> تم إرسال الإعلان وينتظر الرد من الجهة المستلمة.</p>
+        </div>
+    </div>
+{% endblock %}
+
+{% block extra_scripts %}
+    <script>
+        function showTab(tabId) {
+            // إزالة الـ active من كل الـ tabs وإخفاء كل المحتوى
+            document.querySelectorAll('.tab').forEach(tab => {
+                tab.classList.remove('active');
+            });
+            document.querySelectorAll('.tab-content').forEach(content => {
+                content.classList.remove('active');
+            });
+
+            // إضافة الـ active للـ tab المختار وإظهار المحتوى الخاص بيه
+            document.querySelector(`.tab[onclick="showTab('${tabId}')"]`).classList.add('active');
+            document.getElementById(tabId).classList.add('active');
+        }
+
+        // دالة لإظهار/إخفاء تفاصيل الإحالة
+        function toggleReferralDetails() {
+            const details = document.querySelector('.referral-details');
+            const arrow = document.querySelector('.referral-info h3 i');
+
+            // تبديل الـ display بين block و none
+            details.classList.toggle('active');
+            arrow.classList.toggle('active');
+        }
+
+        // دالة مؤقتة لطباعة PDF (يمكن استبدالها بالمنطق الفعلي لاحقًا)
+        function printPDF(url) {
+            window.open(url, '_blank');
+        }
+
+        // تعديل دالة setupAnnouncementClicks لإظهار التفاصيل والـ tabs بعد اختيار الإعلان
+        document.addEventListener('DOMContentLoaded', function() {
+            const announcements = document.querySelectorAll('.announcement');
+            const defaultMessage = document.getElementById('default-message');
+            const announcementDetails = document.getElementById('announcement-details');
+            const tabsSection = document.getElementById('tabs-section');
+
+            announcements.forEach(announcement => {
+                announcement.addEventListener('click', function() {
+                    // إزالة الـ active من كل الإعلانات
+                    announcements.forEach(a => a.classList.remove('active-announcement'));
+                    // إضافة الـ active للإعلان المختار
+                    this.classList.add('active-announcement');
+
+                    // جلب بيانات الإعلان
+                    const jobTitle = this.getAttribute('data-job-title');
+                    const code = this.getAttribute('data-code');
+                    const recipient = this.getAttribute('data-recipient');
+
+                    // تحديث تفاصيل الإعلان في المحتوى الرئيسي
+                    document.getElementById('job-title').textContent = jobTitle;
+                    document.getElementById('announcement-code').textContent = code;
+                    document.getElementById('recipient-name').textContent = recipient;
+                    document.getElementById('recipient-viewed').textContent = recipient;
+                    document.getElementById('announcement-type').textContent = jobTitle;
+
+                    // إخفاء الرسالة الافتراضية وإظهار التفاصيل والـ tabs
+                    defaultMessage.style.display = 'none';
+                    announcementDetails.style.display = 'block';
+                    tabsSection.style.display = 'block';
+                });
+            });
+        });
+    </script>
+{% endblock %}

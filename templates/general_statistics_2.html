@@ -1,0 +1,327 @@
+{% extends 'base.html' %}
+
+{% block title %}الإحصاءات العامة 2{% endblock %}
+
+{% block extra_styles %}
+    <style>
+        /* تنسيق العنوان */
+        h2 {
+            color: #1B5E20;
+            font-size: 24px;
+            font-weight: 700;
+            margin-bottom: 20px;
+            text-align: right;
+        }
+
+        /* تنسيق الفلاتر */
+        .filters-container {
+            display: flex;
+            justify-content: flex-end;
+            gap: 15px;
+            margin-bottom: 20px;
+            flex-wrap: wrap;
+        }
+
+        .filters-container select {
+            padding: 8px;
+            border: 1px solid #e6f0e6;
+            border-radius: 4px;
+            font-size: 14px;
+            color: #4A4A4A;
+            background: #FFFFFF;
+            direction: rtl;
+            width: 200px;
+        }
+
+        .filters-container button {
+            background: #1B5E20;
+            color: #FFFFFF;
+            border: none;
+            padding: 8px 12px;
+            border-radius: 4px;
+            font-size: 14px;
+            cursor: pointer;
+            transition: background 0.3s ease;
+            display: flex;
+            align-items: center;
+            gap: 5px;
+        }
+
+        .filters-container button:hover {
+            background: #2e7d32;
+        }
+
+        .filters-container button i {
+            font-size: 12px;
+        }
+
+        /* تنسيق البطاقات */
+        .stats-container {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 20px;
+            margin-bottom: 20px;
+            direction: rtl;
+        }
+
+        .stat-card {
+            background: #FFFFFF;
+            border: 1px solid #e6f0e6;
+            border-radius: 8px;
+            padding: 20px;
+            width: calc(33.33% - 14px);
+            box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+            text-align: center;
+            transition: transform 0.3s ease;
+        }
+
+        .stat-card:hover {
+            transform: translateY(-5px);
+        }
+
+        .stat-card .title {
+            color: #1B5E20;
+            font-size: 16px;
+            font-weight: 600;
+            margin-bottom: 10px;
+        }
+
+        .stat-card .value {
+            color: #4A4A4A;
+            font-size: 24px;
+            font-weight: 700;
+        }
+
+        .stat-card .description {
+            color: #4A4A4A;
+            font-size: 14px;
+            margin-top: 5px;
+        }
+
+        /* تنسيق الجدول التفصيلي */
+        .details-table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-bottom: 20px;
+            direction: rtl;
+        }
+
+        .details-table th,
+        .details-table td {
+            padding: 12px 15px;
+            text-align: right;
+            font-size: 14px;
+            color: #4A4A4A;
+        }
+
+        .details-table th {
+            background: #b1e3b5dc;
+            color: #1B5E20;
+            font-weight: 600;
+            border-bottom: 2px solid #e6f0e6;
+        }
+
+        .details-table td {
+            background: #FFFFFF;
+            border-bottom: 1px solid #e6f0e6;
+        }
+
+        .details-table tr:hover td {
+            background: #E6F0E6;
+        }
+
+        /* تنسيق الرسالة في حالة عدم وجود بيانات */
+        .no-data {
+            color: #4A4A4A;
+            font-size: 16px;
+            text-align: center;
+            margin: 20px 0;
+        }
+
+        /* زر العودة */
+        .back-btn-container {
+            text-align: center;
+            margin-top: 20px;
+        }
+
+        /* التجاوب */
+        @media (max-width: 768px) {
+            .stat-card {
+                width: calc(50% - 10px);
+            }
+        }
+
+        @media (max-width: 576px) {
+            .stat-card {
+                width: 100%;
+            }
+
+            .filters-container {
+                flex-direction: column;
+                align-items: flex-end;
+            }
+
+            .filters-container select,
+            .filters-container button {
+                width: 100%;
+            }
+        }
+    </style>
+{% endblock %}
+
+{% block content %}
+    <h2>الإحصاءات العامة 2</h2>
+
+    <!-- الفلاتر -->
+    <div class="filters-container">
+        <select id="jobTypeFilter" onchange="filterStatistics()">
+            <option value="">كل الأنواع</option>
+            <option value="leadership">وظائف قيادية</option>
+            <option value="supervisory">وظائف إشرافية</option>
+        </select>
+        <select id="statusFilter" onchange="filterStatistics()">
+            <option value="">كل الحالات</option>
+            <option value="approved">مقبول</option>
+            <option value="rejected">مرفوض</option>
+            <option value="pending">قيد الانتظار</option>
+        </select>
+        <button onclick="filterStatistics()"><i class="fas fa-filter"></i> تصفية</button>
+    </div>
+
+    <!-- البطاقات -->
+    <div class="stats-container" id="statsContainer">
+        <div class="stat-card">
+            <div class="title">إجمالي الطلبات</div>
+            <div class="value" id="totalApplications">25</div>
+            <div class="description">عدد الطلبات المقدمة</div>
+        </div>
+        <div class="stat-card">
+            <div class="title">الطلبات المقبولة</div>
+            <div class="value" id="acceptedApplications">15</div>
+            <div class="description">عدد الطلبات المقبولة</div>
+        </div>
+        <div class="stat-card">
+            <div class="title">الطلبات المرفوضة</div>
+            <div class="value" id="rejectedApplications">5</div>
+            <div class="description">عدد الطلبات المرفوضة</div>
+        </div>
+        <div class="stat-card">
+            <div class="title">الطلبات قيد الانتظار</div>
+            <div class="value" id="pendingApplications">5</div>
+            <div class="description">عدد الطلبات قيد الانتظار</div>
+        </div>
+        <div class="stat-card">
+            <div class="title">متوسط درجات التقييم الذاتي</div>
+            <div class="value" id="averageScore">18 / 25</div>
+            <div class="description">متوسط درجات المرشحين</div>
+        </div>
+        <div class="stat-card">
+            <div class="title">عدد المرشحين المدربين</div>
+            <div class="value" id="trainedCandidates">10</div>
+            <div class="description">عدد المرشحين الذين أكملوا التدريب</div>
+        </div>
+    </div>
+
+    <!-- جدول تفصيلي -->
+    <div class="section-title">تفاصيل الطلبات</div>
+    <table class="details-table" id="detailsTable">
+        <thead>
+            <tr>
+                <th>اسم المرشح</th>
+                <th>الرقم القومي</th>
+                <th>نوع الوظيفة</th>
+                <th>حالة الطلب</th>
+                <th>درجة التقييم الذاتي</th>
+                <th>حالة التدريب</th>
+            </tr>
+        </thead>
+        <tbody>
+            <!-- بيانات تجريبية -->
+            <tr>
+                <td>محمد أحمد</td>
+                <td>29701012548765</td>
+                <td>وظيفة قيادية</td>
+                <td>مقبول</td>
+                <td>15 / 25</td>
+                <td>مكتمل</td>
+            </tr>
+            <tr>
+                <td>سارة علي</td>
+                <td>29802034567890</td>
+                <td>وظيفة إشرافية</td>
+                <td>مرفوض</td>
+                <td>22 / 25</td>
+                <td>غير مكتمل</td>
+            </tr>
+            <tr>
+                <td>خالد محمود</td>
+                <td>29603056789012</td>
+                <td>وظيفة قيادية</td>
+                <td>قيد الانتظار</td>
+                <td>8 / 25</td>
+                <td>غير مكتمل</td>
+            </tr>
+        </tbody>
+    </table>
+
+    <!-- رسالة في حالة عدم وجود بيانات -->
+    <p class="no-data" id="noDataMessage" style="display: none;">لا توجد بيانات تطابق معايير التصفية.</p>
+
+{% endblock %}
+
+{% block extra_scripts %}
+    <script>
+        // بيانات تجريبية للجدول
+        const data = [
+            { name: "محمد أحمد", nationalId: "29701012548765", jobType: "وظيفة قيادية", status: "مقبول", score: "15 / 25", trainingStatus: "مكتمل" },
+            { name: "سارة علي", nationalId: "29802034567890", jobType: "وظيفة إشرافية", status: "مرفوض", score: "22 / 25", trainingStatus: "غير مكتمل" },
+            { name: "خالد محمود", nationalId: "29603056789012", jobType: "وظيفة قيادية", status: "قيد الانتظار", score: "8 / 25", trainingStatus: "غير مكتمل" }
+        ];
+
+        // دالة التصفية
+        function filterStatistics() {
+            const jobTypeFilter = document.getElementById('jobTypeFilter').value;
+            const statusFilter = document.getElementById('statusFilter').value;
+            const rows = document.querySelectorAll('#detailsTable tbody tr');
+            const noDataMessage = document.getElementById('noDataMessage');
+            let hasVisibleRows = false;
+
+            // تصفية الجدول
+            rows.forEach(row => {
+                const rowJobType = row.cells[2].textContent;
+                const rowStatus = row.cells[3].textContent;
+
+                const matchesJobType = jobTypeFilter === '' || rowJobType === jobTypeFilter;
+                const matchesStatus = statusFilter === '' || rowStatus === statusFilter;
+
+                if (matchesJobType && matchesStatus) {
+                    row.style.display = '';
+                    hasVisibleRows = true;
+                } else {
+                    row.style.display = 'none';
+                }
+            });
+
+            noDataMessage.style.display = hasVisibleRows ? 'none' : 'block';
+
+            // تحديث البطاقات بناءً على الفلاتر
+            const filteredData = data.filter(item => {
+                const matchesJobType = jobTypeFilter === '' || item.jobType === jobTypeFilter;
+                const matchesStatus = statusFilter === '' || item.status === statusFilter;
+                return matchesJobType && matchesStatus;
+            });
+
+            // تحديث القيم في البطاقات
+            document.getElementById('totalApplications').textContent = filteredData.length;
+            document.getElementById('acceptedApplications').textContent = filteredData.filter(item => item.status === 'مقبول').length;
+            document.getElementById('rejectedApplications').textContent = filteredData.filter(item => item.status === 'مرفوض').length;
+            document.getElementById('pendingApplications').textContent = filteredData.filter(item => item.status === 'قيد الانتظار').length;
+            document.getElementById('trainedCandidates').textContent = filteredData.filter(item => item.trainingStatus === 'مكتمل').length;
+
+            // حساب متوسط الدرجات
+            const scores = filteredData.map(item => parseInt(item.score.split('/')[0].trim()));
+            const averageScore = scores.length > 0 ? (scores.reduce((a, b) => a + b, 0) / scores.length).toFixed(1) : 0;
+            document.getElementById('averageScore').textContent = `${averageScore} / 25`;
+        }
+    </script>
+{% endblock %}

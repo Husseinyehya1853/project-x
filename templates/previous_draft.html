@@ -1,0 +1,383 @@
+{% extends 'base.html' %}
+
+{% block title %}
+المسودات
+{% endblock %}
+
+{% block extra_styles %}
+    <style>
+        /* تنسيق الشبكة لعرض المربعات */
+        .drafts-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 20px;
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 20px;
+            direction: rtl; /* اتجاه من اليمين للشمال */
+        }
+
+        .mini-report {
+            width: 100%;
+            min-height: 200px;
+            background: #FFF; /* خلفية بيضاء */
+            border: 1.5px solid #6a9262; /* حدود خضراء فاتحة */
+            border-radius: 4px; /* زوايا دائرية */
+            padding: 20px;
+            text-align: center;
+            transition: background 0.3s ease;
+            display: flex;
+            flex-direction: column;
+            justify-content: space-between;
+        }
+
+        .mini-report:hover {
+            background: #e6f0e6; /* خلفية خضراء فاتحة جدًا عند التحويم */
+        }
+
+        .mini-report h3 {
+            color: #1B5E20; /* أخضر داكن */
+            font-size: 16px; /* تصغير حجم الخط */
+            margin-bottom: 10px;
+            flex-grow: 0;
+            font-weight: 700;
+        }
+
+        .mini-report p {
+            color: #4A4A4A; /* رمادي داكن */
+            font-size: 12px; /* تصغير حجم الخط */
+            margin-bottom: 15px;
+            flex-grow: 1;
+        }
+
+        .mini-report-buttons {
+            display: flex;
+            justify-content: center;
+            gap: 10px;
+            flex-grow: 0;
+        }
+
+        .mini-report-buttons button {
+            background-color: #1B5E20; /* أخضر داكن */
+            color: white;
+            border: none;
+            padding: 6px 12px; /* تصغير الأزرار */
+            border-radius: 4px;
+            cursor: pointer;
+            font-size: 12px; /* تصغير حجم الخط */
+            font-weight: 600;
+            transition: background-color 0.3s ease;
+        }
+
+        .mini-report-buttons button:hover {
+            background-color: #4A4A4A; /* رمادي داكن */
+        }
+
+        .mini-report-buttons .delete-btn {
+            background-color: #dc3545; /* أحمر */
+        }
+
+        .mini-report-buttons .delete-btn:hover {
+            background-color: #b02a37; /* أحمر أغمق */
+        }
+
+        .modal {
+            display: none;
+            position: fixed;
+            z-index: 1000;
+            left: 0;
+            top: 0;
+            width: 100%;
+            height: 100%;
+            overflow: auto;
+            background-color: rgba(0, 0, 0, 0.5);
+        }
+
+        .modal-content {
+            background-color: #fff;
+            margin: 5% auto;
+            padding: 20px;
+            border: 1.5px solid #6a9262; /* حدود خضراء فاتحة */
+            border-radius: 4px;
+            width: 80%;
+            max-width: 600px;
+            text-align: right;
+            direction: rtl; /* اتجاه من اليمين للشمال */
+        }
+
+        .modal-content h3 {
+            color: #1B5E20; /* أخضر داكن */
+            font-size: 16px;
+            font-weight: 700;
+            margin-bottom: 15px;
+        }
+
+        .modal-content p {
+            margin: 8px 0;
+            color: #4A4A4A; /* رمادي داكن */
+            font-size: 12px;
+        }
+
+        .modal-content p strong {
+            color: #1B5E20; /* أخضر داكن للنصوص البارزة */
+            margin-left: 5px;
+        }
+
+        .close {
+            color: #4A4A4A; /* رمادي داكن */
+            float: left;
+            font-size: 24px;
+            font-weight: bold;
+        }
+
+        .close:hover,
+        .close:focus {
+            color: #1B5E20; /* أخضر داكن */
+            text-decoration: none;
+            cursor: pointer;
+        }
+
+        .alert {
+            padding: 10px;
+            margin: 10px 0;
+            border-radius: 4px;
+            text-align: center;
+            font-size: 12px;
+        }
+
+        .alert-success {
+            background-color: #d4edda;
+            color: #155724;
+            border: 1px solid #c3e6cb;
+        }
+
+        .alert-error {
+            background-color: #f8d7da;
+            color: #721c24;
+            border: 1px solid #f5c6cb;
+        }
+
+        .alert-warning {
+            background-color: #fff3cd;
+            color: #856404;
+            border: 1px solid #ffeeba;
+        }
+
+        @media (max-width: 600px) {
+            .drafts-grid {
+                grid-template-columns: 1fr;
+                padding: 10px;
+            }
+
+            .mini-report {
+                min-height: 180px;
+            }
+
+            .mini-report h3 {
+                font-size: 14px;
+            }
+
+            .mini-report p {
+                font-size: 11px;
+            }
+
+            .mini-report-buttons button {
+                padding: 5px 10px;
+                font-size: 11px;
+            }
+
+            .modal-content {
+                width: 90%;
+                padding: 15px;
+            }
+
+            .modal-content h3 {
+                font-size: 14px;
+            }
+
+            .modal-content p {
+                font-size: 11px;
+            }
+        }
+    </style>
+{% endblock %}
+
+{% block extra_scripts %}
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+    <script>
+        // دالة لفتح النافذة المنبثقة وعرض التفاصيل بناءً على نوع المسودة
+        function openModal(draftDetails, draftIndex) {
+            const modal = document.getElementById('draftModal');
+            const modalContent = document.getElementById('modalContent');
+            let content = '';
+
+            if (draftDetails.type === 'committee') {
+                // تفاصيل مسودة تشكيل لجنة وظائف قيادية
+                content = `
+                    <h3>تفاصيل مسودة تشكيل لجنة وظائف قيادية</h3>
+                    <p><strong>رقم القرار:</strong> ${draftDetails.decision_number || 'غير محدد'}</p>
+                    <p><strong>تاريخ القرار:</strong> ${draftDetails.decision_date || 'غير محدد'}</p>
+                    <p><strong>المحافظة:</strong> ${draftDetails.governorate || 'غير محدد'}</p>
+                    <p><strong>رئيس اللجنة:</strong> ${draftDetails.chairperson_name || 'غير محدد'}</p>
+                    <p><strong>عضو الإدارة:</strong> ${draftDetails.admin_member_name || 'غير محدد'}</p>
+                    <p><strong>عضو الموارد البشرية:</strong> ${draftDetails.hr_member_name || 'غير محدد'}</p>
+                    <p><strong>عضو تكنولوجيا المعلومات:</strong> ${draftDetails.it_member_name || 'غير محدد'}</p>
+                    <p><strong>عضو القانون:</strong> ${draftDetails.legal_member_name || 'غير محدد'}</p>
+                    <p><strong>عضو آخر 1:</strong> ${draftDetails.other_member_1_name || 'غير محدد'}</p>
+                    <p><strong>عضو آخر 2:</strong> ${draftDetails.other_member_2_name || 'غير محدد'}</p>
+                    <p><strong>أمين اللجنة:</strong> ${draftDetails.secretary_name || 'غير محدد'}</p>
+                    <p><strong>عضو أمانة 1:</strong> ${draftDetails.secretary_member_1_name || 'غير محدد'}</p>
+                    <p><strong>عضو أمانة 2:</strong> ${draftDetails.secretary_member_2_name || 'غير محدد'}</p>
+                `;
+            } else if (draftDetails.type === 'appointment') {
+                // تفاصيل مسودة إصدار قرار تعيين
+                content = `
+                    <h3>تفاصيل مسودة إصدار قرار تعيين</h3>
+                    <p><strong>رقم الإعلان:</strong> ${draftDetails.announcement_number || 'غير محدد'}</p>
+                    <p><strong>كود المرشح:</strong> ${draftDetails.candidate_code || 'غير محدد'}</p>
+                    <p><strong>رقم القرار:</strong> ${draftDetails.decision_number || 'غير محدد'}</p>
+                    <p><strong>تاريخ القرار:</strong> ${draftDetails.decision_date || 'غير محدد'}</p>
+                    <p><strong>المحافظة:</strong> ${draftDetails.governorate || 'غير محدد'}</p>
+                    <p><strong>المادة الأولى:</strong> ${draftDetails.article_one_text || 'غير محدد'}</p>
+                    <p><strong>المادة الثانية:</strong> ${draftDetails.article_two_text || 'غير محدد'}</p>
+                    <p><strong>المادة الثالثة:</strong> ${draftDetails.article_three_text || 'غير محدد'}</p>
+                    <p><strong>صاحب الاختصاص:</strong> ${draftDetails.competent_authority || 'غير محدد'}</p>
+                    <p><strong>التوقيع الإلكتروني:</strong> ${draftDetails.authority_approval || 'غير محدد'}</p>
+                `;
+            } else {
+                content = `<h3>خطأ</h3><p>نوع المسودة غير معروف!</p>`;
+            }
+
+            modalContent.innerHTML = content;
+            modal.style.display = 'block';
+        }
+
+        // دالة لإغلاق النافذة المنبثقة
+        function closeModal() {
+            const modal = document.getElementById('draftModal');
+            modal.style.display = 'none';
+        }
+
+        // إغلاق النافذة المنبثقة عند النقر خارجها
+        window.onclick = function(event) {
+            const modal = document.getElementById('draftModal');
+            if (event.target == modal) {
+                modal.style.display = 'none';
+            }
+        }
+
+        // دالة لتعديل المسودة بناءً على نوعها
+        function editDraft(decisionNumber, draftType) {
+            if (draftType === 'committee') {
+                window.location.href = `/form_leadership_committee?decision_number=${decisionNumber}`;
+            } else if (draftType === 'appointment') {
+                window.location.href = `/issue_appointment_decision?decision_number=${decisionNumber}`;
+            }
+        }
+
+        // دالة لتأكيد الحذف باستخدام SweetAlert2
+        function confirmDelete(decisionNumber, draftType) {
+            Swal.fire({
+                title: 'هل أنت متأكد؟',
+                text: `هل أنت متأكد من حذف هذه المسودة؟`,
+                icon: 'warning',
+                showCancelButton: true,
+                confirmButtonColor: '#1B5E20', /* أخضر داكن */
+                cancelButtonColor: '#dc3545',
+                confirmButtonText: 'نعم، احذف!',
+                cancelButtonText: 'إلغاء'
+            }).then((result) => {
+                if (result.isConfirmed) {
+                    // إرسال طلب الحذف إلى الخادم باستخدام رقم القرار ونوع المسودة
+                    fetch(`/delete_draft/${decisionNumber}/${draftType}`, {
+                        method: 'POST',
+                        headers: {
+                            'Content-Type': 'application/json',
+                        },
+                    })
+                    .then(response => response.json())
+                    .then(data => {
+                        if (data.success) {
+                            Swal.fire({
+                                title: 'تم الحذف!',
+                                text: 'تم حذف المسودة بنجاح.',
+                                icon: 'success',
+                                confirmButtonColor: '#1B5E20', /* أخضر داكن */
+                                confirmButtonText: 'موافق'
+                            }).then(() => {
+                                location.reload(); // إعادة تحميل الصفحة لتحديث القائمة
+                            });
+                        } else {
+                            Swal.fire({
+                                title: 'خطأ!',
+                                text: 'حدث خطأ أثناء الحذف: ' + data.message,
+                                icon: 'error',
+                                confirmButtonColor: '#1B5E20', /* أخضر داكن */
+                                confirmButtonText: 'موافق'
+                            });
+                        }
+                    })
+                    .catch(error => {
+                        console.error('Error:', error);
+                        Swal.fire({
+                            title: 'خطأ!',
+                            text: 'حدث خطأ أثناء الحذف، حاول مرة أخرى.',
+                            icon: 'error',
+                            confirmButtonColor: '#1B5E20', /* أخضر داكن */
+                            confirmButtonText: 'موافق'
+                        });
+                    });
+                }
+            });
+        }
+    </script>
+{% endblock %}
+
+{% block content %}
+    <h2 style="color: #1B5E20; text-align: center; font-size: 18px; font-weight: 700; margin: 20px 0 10px; direction: rtl;">المسودات</h2>
+    <p style="color: #4A4A4A; text-align: center; font-size: 14px; margin-bottom: 20px; direction: rtl;" class="slide-up">هنا يمكنك رؤية تفاصيل المسودات التي قمت بحفظها.</p>
+
+    {% if drafts %}
+        <div class="drafts-grid">
+            {% for draft in drafts %}
+                <div class="mini-report">
+                    <h3>قرار محافظ {{ draft.governorate | default('غير محدد') }} - رقم القرار {{ draft.decision_number | default('غير محدد') }} - تاريخ {{ draft.decision_date | default('غير محدد') }}</h3>
+                    <p>
+                        {% if draft.type == 'committee' %}
+                            بشأن تشكيل لجنة الوظائف القيادية
+                        {% elif draft.type == 'appointment' %}
+                            بشأن إصدار قرار تعيين
+                        {% else %}
+                            بشأن قرار غير معروف
+                        {% endif %}
+                    </p>
+                    <div class="mini-report-buttons">
+                        <button onclick='openModal({{ draft | tojson }}, {{ loop.index0 }})'>عرض التفاصيل</button>
+                        <button onclick='editDraft("{{ draft.decision_number }}", "{{ draft.type }}")'>تعديل</button>
+                        <button class="delete-btn" onclick='confirmDelete("{{ draft.decision_number }}", "{{ draft.type }}")'>حذف</button>
+                    </div>
+                </div>
+            {% endfor %}
+        </div>
+    {% else %}
+        <div class="mini-report" style="margin: 0 auto; max-width: 400px;">
+            <h3>لا توجد مسودات محفوظة حتى الآن</h3>
+        </div>
+    {% endif %}
+
+    <!-- النافذة المنبثقة (Modal) -->
+    <div id="draftModal" class="modal">
+        <div class="modal-content">
+            <span class="close" onclick="closeModal()">×</span>
+            <div id="modalContent"></div>
+        </div>
+    </div>
+
+    {% with messages = get_flashed_messages(with_categories=true) %}
+        {% if messages %}
+            {% for category, message in messages %}
+                <div class="alert alert-{{ category }}">{{ message }}</div>
+            {% endfor %}
+        {% endif %}
+    {% endwith %}
+{% endblock %}

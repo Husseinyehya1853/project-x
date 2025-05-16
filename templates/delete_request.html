@@ -1,0 +1,261 @@
+{% extends 'base.html' %}
+
+{% block title %}حذف الطلب{% endblock %}
+
+{% block extra_styles %}
+    <style>
+        /* تنسيق العنوان */
+        h2 {
+            color: #1B5E20;
+            font-size: 24px;
+            font-weight: 700;
+            margin-bottom: 20px;
+            text-align: right;
+        }
+
+        /* تنسيق الفلاتر */
+        .filters-container {
+            display: flex;
+            justify-content: flex-end;
+            gap: 15px;
+            margin-bottom: 20px;
+            flex-wrap: wrap;
+        }
+
+        .filters-container input,
+        .filters-container select {
+regarding the request type dropdown.
+            padding: 8px;
+            border: 1px solid #e6f0e6;
+            border-radius: 4px;
+            font-size: 14px;
+            color: #4A4A4A;
+            background: #FFFFFF;
+            direction: rtl;
+            width: 200px;
+        }
+
+        .filters-container button {
+            background: #1B5E20;
+            color: #FFFFFF;
+            border: none;
+            padding: 8px 12px;
+            border-radius: 4px;
+            font-size: 14px;
+            cursor: pointer;
+            transition: background 0.3s ease;
+            display: flex;
+            align-items: center;
+            gap: 5px;
+        }
+
+        .filters-container button:hover {
+            background: #2e7d32;
+        }
+
+        .filters-container button i {
+            font-size: 12px;
+        }
+
+        /* تنسيق الجدول */
+        .requests-table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-bottom: 20px;
+            direction: rtl;
+        }
+
+        .requests-table th,
+        .requests-table td {
+            padding: 12px 15px;
+            text-align: right;
+            font-size: 14px;
+            color: #4A4A4A;
+        }
+
+        .requests-table th {
+            background: #b1e3b5dc;
+            color: #1B5E20;
+            font-weight: 600;
+            border-bottom: 2px solid #e6f0e6;
+        }
+
+        .requests-table td {
+            background: #FFFFFF;
+            border-bottom: 1px solid #e6f0e6;
+        }
+
+        .requests-table tr:hover td {
+            background: #E6F0E6;
+        }
+
+        /* تنسيق زر الحذف */
+        .delete-btn {
+            background: #721c24;
+            color: #FFFFFF;
+            border: none;
+            padding: 8px 12px;
+            border-radius: 4px;
+            font-size: 14px;
+            cursor: pointer;
+            transition: background 0.3s ease;
+            display: flex;
+            align-items: center;
+            gap: 5px;
+        }
+
+        .delete-btn:hover {
+            background: #9b2d35;
+        }
+
+        .delete-btn i {
+            font-size: 12px;
+        }
+
+        /* تنسيق الرسالة في حالة عدم وجود طلبات */
+        .no-requests {
+            color: #4A4A4A;
+            font-size: 16px;
+            text-align: center;
+            margin: 20px 0;
+        }
+
+        /* زر العودة */
+        .back-btn-container {
+            text-align: center;
+            margin-top: 20px;
+        }
+    </style>
+{% endblock %}
+
+{% block content %}
+    <h2>حذف الطلب</h2>
+
+    <!-- الفلاتر -->
+    <div class="filters-container">
+        <input type="text" id="requestId" placeholder="ابحث برقم الطلب..." onkeyup="filterRequests()">
+        <select id="requestTypeFilter" onchange="filterRequests()">
+            <option value="">كل الأنواع</option>
+            <option value="leadership_job">طلب وظيفة قيادية</option>
+            <option value="supervisory_job">طلب وظيفة إشرافية</option>
+            <option value="training">طلب تدريب</option>
+            <option value="other">طلب آخر</option>
+        </select>
+        <input type="date" id="submissionDate" onchange="filterRequests()">
+        <button onclick="filterRequests()"><i class="fas fa-filter"></i> تصفية</button>
+    </div>
+
+    <!-- جدول الطلبات -->
+    <table class="requests-table" id="requestsTable">
+        <thead>
+            <tr>
+                <th>رقم الطلب</th>
+                <th>نوع الطلب</th>
+                <th>تاريخ التقديم</th>
+                <th>الجهة المقدم إليها</th>
+                <th>الإجراء</th>
+            </tr>
+        </thead>
+        <tbody>
+            <!-- بيانات تجريبية -->
+            <tr>
+                <td>REQ001</td>
+                <td>طلب وظيفة قيادية</td>
+                <td>2025-04-20</td>
+                <td>إدارة الموارد البشرية</td>
+                <td>
+                    <button class="delete-btn" onclick="confirmDelete('REQ001')"><i class="fas fa-trash"></i> حذف</button>
+                </td>
+            </tr>
+            <tr>
+                <td>REQ002</td>
+                <td>طلب تدريب</td>
+                <td>2025-04-22</td>
+                <td>قسم التدريب والتطوير</td>
+                <td>
+                    <button class="delete-btn" onclick="confirmDelete('REQ002')"><i class="fas fa-trash"></i> حذف</button>
+                </td>
+            </tr>
+            <tr>
+                <td>REQ003</td>
+                <td>طلب وظيفة إشرافية</td>
+                <td>2025-04-25</td>
+                <td>إدارة العمليات</td>
+                <td>
+                    <button class="delete-btn" onclick="confirmDelete('REQ003')"><i class="fas fa-trash"></i> حذف</button>
+                </td>
+            </tr>
+        </tbody>
+    </table>
+
+    <!-- رسالة في حالة عدم وجود طلبات -->
+    <p class="no-requests" id="noRequestsMessage" style="display: none;">لا توجد طلبات تطابق معايير التصفية.</p>
+
+{% endblock %}
+
+{% block extra_scripts %}
+    <script>
+        // دالة لتأكيد الحذف
+        function confirmDelete(requestId) {
+            Swal.fire({
+                title: 'تأكيد الحذف',
+                text: `هل أنت متأكد من حذف الطلب رقم ${requestId}؟`,
+                icon: 'warning',
+                showCancelButton: true,
+                confirmButtonColor: '#721c24',
+                cancelButtonColor: '#4A4A4A',
+                confirmButtonText: 'نعم، احذف',
+                cancelButtonText: 'إلغاء'
+            }).then((result) => {
+                if (result.isConfirmed) {
+                    // محاكاة عملية الحذف (يمكن استبدالها بطلب فعلي للسيرفر)
+                    Swal.fire({
+                        title: 'تم الحذف',
+                        text: `تم حذف الطلب رقم ${requestId} بنجاح.`,
+                        icon: 'success',
+                        confirmButtonText: 'موافق',
+                        confirmButtonColor: '#1B5E20'
+                    }).then(() => {
+                        // إزالة الصف من الجدول
+                        const row = document.querySelector(`td:contains("${requestId}")`).parentElement;
+                        row.remove();
+                        // التحقق من وجود طلبات بعد الحذف
+                        const rows = document.querySelectorAll('#requestsTable tbody tr');
+                        if (rows.length === 0) {
+                            document.getElementById('noRequestsMessage').style.display = 'block';
+                        }
+                    });
+                }
+            });
+        }
+
+        // دالة التصفية
+        function filterRequests() {
+            const requestId = document.getElementById('requestId').value.toLowerCase();
+            const requestTypeFilter = document.getElementById('requestTypeFilter').value;
+            const submissionDate = document.getElementById('submissionDate').value;
+            const rows = document.querySelectorAll('#requestsTable tbody tr');
+            const noRequestsMessage = document.getElementById('noRequestsMessage');
+            let hasVisibleRows = false;
+
+            rows.forEach(row => {
+                const rowRequestId = row.cells[0].textContent.toLowerCase();
+                const rowRequestType = row.cells[1].textContent;
+                const rowSubmissionDate = row.cells[2].textContent;
+
+                const matchesRequestId = requestId === '' || rowRequestId.includes(requestId);
+                const matchesRequestType = requestTypeFilter === '' || rowRequestType === requestTypeFilter;
+                const matchesDate = submissionDate === '' || rowSubmissionDate === submissionDate;
+
+                if (matchesRequestId && matchesRequestType && matchesDate) {
+                    row.style.display = '';
+                    hasVisibleRows = true;
+                } else {
+                    row.style.display = 'none';
+                }
+            });
+
+            noRequestsMessage.style.display = hasVisibleRows ? 'none' : 'block';
+        }
+    </script>
+{% endblock %}

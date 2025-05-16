@@ -1,0 +1,291 @@
+{% extends 'base.html' %}
+
+{% block title %}نتائج التدريب للمرشحين{% endblock %}
+
+{% block extra_styles %}
+    <style>
+        /* تنسيق العنوان */
+        h2 {
+            color: #1B5E20;
+            font-size: 24px;
+            font-weight: 700;
+            margin-bottom: 20px;
+            text-align: right;
+        }
+
+        /* تنسيق الفلاتر */
+        .filters-container {
+            display: flex;
+            justify-content: flex-end;
+            gap: 15px;
+            margin-bottom: 20px;
+            flex-wrap: wrap;
+        }
+
+        .filters-container input,
+        .filters-container select {
+            padding: 8px;
+            border: 1px solid #e6f0e6;
+            border-radius: 4px;
+            font-size: 14px;
+            color: #4A4A4A;
+            background: #FFFFFF;
+            direction: rtl;
+            width: 200px;
+        }
+
+        .filters-container button {
+            background: #1B5E20;
+            color: #FFFFFF;
+            border: none;
+            padding: 8px 12px;
+            border-radius: 4px;
+            font-size: 14px;
+            cursor: pointer;
+            transition: background 0.3s ease;
+            display: flex;
+            align-items: center;
+            gap: 5px;
+        }
+
+        .filters-container button:hover {
+            background: #2e7d32;
+        }
+
+        .filters-container button i {
+            font-size: 12px;
+        }
+
+        /* تنسيق الجدول */
+        .results-table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-bottom: 20px;
+            direction: rtl;
+        }
+
+        .results-table th,
+        .results-table td {
+            padding: 12px 15px;
+            text-align: right;
+            font-size: 14px;
+            color: #4A4A4A;
+        }
+
+        .results-table th {
+            background: #b1e3b5dc;
+            color: #1B5E20;
+            font-weight: 600;
+            border-bottom: 2px solid #e6f0e6;
+        }
+
+        .results-table td {
+            background: #FFFFFF;
+            border-bottom: 1px solid #e6f0e6;
+        }
+
+        .results-table tr:hover td {
+            background: #E6F0E6;
+        }
+
+        /* تنسيق الحالة */
+        .status {
+            padding: 5px 10px;
+            border-radius: 4px;
+            font-size: 12px;
+            font-weight: 600;
+        }
+
+        .status.passed {
+            background: #b1e3b5dc;
+            color: #1B5E20;
+        }
+
+        .status.failed {
+            background: #f8d7da;
+            color: #721c24;
+        }
+
+        /* تنسيق الأزرار */
+        .action-buttons {
+            display: flex;
+            gap: 8px;
+            justify-content: flex-end;
+        }
+
+        .action-buttons button {
+            background: #1B5E20;
+            color: #FFFFFF;
+            border: none;
+            padding: 8px 12px;
+            border-radius: 4px;
+            font-size: 14px;
+            cursor: pointer;
+            transition: background 0.3s ease;
+            display: flex;
+            align-items: center;
+            gap: 5px;
+        }
+
+        .action-buttons button:hover {
+            background: #2e7d32;
+        }
+
+        .action-buttons button i {
+            font-size: 12px;
+        }
+
+        /* تنسيق الرسالة في حالة عدم وجود نتائج */
+        .no-results {
+            color: #4A4A4A;
+            font-size: 16px;
+            text-align: center;
+            margin: 20px 0;
+        }
+
+        /* زر العودة */
+        .back-btn-container {
+            text-align: center;
+            margin-top: 20px;
+        }
+    </style>
+{% endblock %}
+
+{% block content %}
+    <h2>نتائج التدريب للمرشحين</h2>
+
+    <!-- الفلاتر -->
+    <div class="filters-container">
+        <input type="text" id="candidateName" placeholder="ابحث باسم المرشح..." onkeyup="filterResults()">
+        <select id="trainingProgram" onchange="filterResults()">
+            <option value="">كل البرامج التدريبية</option>
+            <option value="leadership">برنامج القيادة</option>
+            <option value="supervisory">برنامج الإشراف</option>
+        </select>
+        <select id="statusFilter" onchange="filterResults()">
+            <option value="">كل الحالات</option>
+            <option value="passed">ناجح</option>
+            <option value="failed">راسب</option>
+        </select>
+        <button onclick="filterResults()"><i class="fas fa-filter"></i> تصفية</button>
+    </div>
+
+    <!-- جدول النتائج -->
+    <table class="results-table" id="resultsTable">
+        <thead>
+            <tr>
+                <th>اسم المرشح</th>
+                <th>الرقم القومي</th>
+                <th>البرنامج التدريبي</th>
+                <th>الدرجة</th>
+                <th>الحالة</th>
+                <th>تاريخ الاختبار</th>
+                <th>الإجراءات</th>
+            </tr>
+        </thead>
+        <tbody>
+            <!-- بيانات تجريبية -->
+            <tr>
+                <td>محمد أحمد</td>
+                <td>29701012548765</td>
+                <td>برنامج القيادة</td>
+                <td>85</td>
+                <td><span class="status passed">ناجح</span></td>
+                <td>2025-04-20</td>
+                <td>
+                    <div class="action-buttons">
+                        <button onclick="viewDetails('محمد أحمد')"><i class="fas fa-eye"></i> عرض التفاصيل</button>
+                        <button onclick="downloadResult('محمد أحمد')"><i class="fas fa-download"></i> تحميل النتيجة</button>
+                    </div>
+                </td>
+            </tr>
+            <tr>
+                <td>سارة علي</td>
+                <td>29802034567890</td>
+                <td>برنامج الإشراف</td>
+                <td>65</td>
+                <td><span class="status failed">راسب</span></td>
+                <td>2025-04-22</td>
+                <td>
+                    <div class="action-buttons">
+                        <button onclick="viewDetails('سارة علي')"><i class="fas fa-eye"></i> عرض التفاصيل</button>
+                        <button onclick="downloadResult('سارة علي')"><i class="fas fa-download"></i> تحميل النتيجة</button>
+                    </div>
+                </td>
+            </tr>
+            <tr>
+                <td>خالد محمود</td>
+                <td>29603056789012</td>
+                <td>برنامج القيادة</td>
+                <td>92</td>
+                <td><span class="status passed">ناجح</span></td>
+                <td>2025-04-23</td>
+                <td>
+                    <div class="action-buttons">
+                        <button onclick="viewDetails('خالد محمود')"><i class="fas fa-eye"></i> عرض التفاصيل</button>
+                        <button onclick="downloadResult('خالد محمود')"><i class="fas fa-download"></i> تحميل النتيجة</button>
+                    </div>
+                </td>
+            </tr>
+        </tbody>
+    </table>
+
+    <!-- رسالة في حالة عدم وجود نتائج -->
+    <p class="no-results" id="noResultsMessage" style="display: none;">لا توجد نتائج تطابق معايير التصفية.</p>
+
+{% endblock %}
+
+{% block extra_scripts %}
+    <script>
+        // دالة لعرض التفاصيل (مؤقتة)
+        function viewDetails(candidateName) {
+            Swal.fire({
+                title: 'تفاصيل نتيجة التدريب',
+                html: `اسم المرشح: ${candidateName}<br>البرنامج التدريبي: ${document.querySelector(`td:contains("${candidateName}")`).nextElementSibling.nextElementSibling.textContent}<br>الدرجة: ${document.querySelector(`td:contains("${candidateName}")`).nextElementSibling.nextElementSibling.nextElementSibling.textContent}<br>تفاصيل إضافية: سيتم عرض المزيد من التفاصيل هنا.`,
+                icon: 'info',
+                confirmButtonText: 'موافق',
+                confirmButtonColor: '#1B5E20'
+            });
+        }
+
+        // دالة لتحميل النتيجة (مؤقتة)
+        function downloadResult(candidateName) {
+            Swal.fire({
+                title: 'تحميل النتيجة',
+                text: `جاري تحميل نتيجة ${candidateName}...`,
+                icon: 'success',
+                confirmButtonText: 'موافق',
+                confirmButtonColor: '#1B5E20'
+            });
+        }
+
+        // دالة التصفية
+        function filterResults() {
+            const candidateName = document.getElementById('candidateName').value.toLowerCase();
+            const trainingProgram = document.getElementById('trainingProgram').value;
+            const statusFilter = document.getElementById('statusFilter').value;
+            const rows = document.querySelectorAll('#resultsTable tbody tr');
+            const noResultsMessage = document.getElementById('noResultsMessage');
+            let hasVisibleRows = false;
+
+            rows.forEach(row => {
+                const rowCandidateName = row.cells[0].textContent.toLowerCase();
+                const rowProgram = row.cells[2].textContent;
+                const rowStatus = row.cells[4].querySelector('.status').classList.contains('passed') ? 'passed' : 'failed';
+
+                const matchesName = candidateName === '' || rowCandidateName.includes(candidateName);
+                const matchesProgram = trainingProgram === '' || rowProgram === trainingProgram;
+                const matchesStatus = statusFilter === '' || rowStatus === statusFilter;
+
+                if (matchesName && matchesProgram && matchesStatus) {
+                    row.style.display = '';
+                    hasVisibleRows = true;
+                } else {
+                    row.style.display = 'none';
+                }
+            });
+
+            noResultsMessage.style.display = hasVisibleRows ? 'none' : 'block';
+        }
+    </script>
+{% endblock %}

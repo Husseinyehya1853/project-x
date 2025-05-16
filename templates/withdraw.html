@@ -1,0 +1,330 @@
+{% extends 'base.html' %}
+
+{% block title %}سحب{% endblock %}
+
+{% block extra_styles %}
+    <style>
+        /* تنسيق العنوان */
+        h2 {
+            color: #1B5E20;
+            font-size: 24px;
+            font-weight: 700;
+            margin-bottom: 20px;
+            text-align: right;
+        }
+
+        /* تنسيق نموذج البحث */
+        .search-form {
+            background: #f5f5f5;
+            padding: 20px;
+            border-radius: 8px;
+            margin-bottom: 20px;
+            direction: rtl;
+        }
+
+        .search-form .form-row {
+            display: flex;
+            gap: 15px;
+            margin-bottom: 15px;
+            flex-wrap: wrap;
+        }
+
+        .search-form label {
+            color: #4A4A4A;
+            font-size: 14px;
+            font-weight: 600;
+            margin-left: 10px;
+            display: inline-block;
+            width: 100px;
+            text-align: left;
+        }
+
+        .search-form input,
+        .search-form select {
+            padding: 8px;
+            border: 1px solid #e6f0e6;
+            border-radius: 4px;
+            font-size: 14px;
+            color: #4A4A4A;
+            background: #FFFFFF;
+            direction: rtl;
+            width: 200px;
+        }
+
+        .search-form button {
+            background: #1B5E20;
+            color: #FFFFFF;
+            border: none;
+            padding: 8px 15px;
+            border-radius: 4px;
+            font-size: 14px;
+            cursor: pointer;
+            transition: background 0.3s ease;
+            display: flex;
+            align-items: center;
+            gap: 5px;
+        }
+
+        .search-form button:hover {
+            background: #2e7d32;
+        }
+
+        .search-form button i {
+            font-size: 12px;
+        }
+
+        /* تنسيق الجدول */
+        .withdrawals-table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-bottom: 20px;
+            direction: rtl;
+        }
+
+        .withdrawals-table th,
+        .withdrawals-table td {
+            padding: 12px 15px;
+            text-align: right;
+            font-size: 14px;
+            color: #4A4A4A;
+        }
+
+        .withdrawals-table th {
+            background: #b1e3b5dc;
+            color: #1B5E20;
+            font-weight: 600;
+            border-bottom: 2px solid #e6f0e6;
+        }
+
+        .withdrawals-table td {
+            background: #FFFFFF;
+            border-bottom: 1px solid #e6f0e6;
+        }
+
+        .withdrawals-table tr:hover td {
+            background: #E6F0E6;
+        }
+
+        /* تنسيق الحالة */
+        .status {
+            padding: 5px 10px;
+            border-radius: 4px;
+            font-size: 12px;
+            font-weight: 600;
+        }
+
+        .status.pending {
+            background: #f5f5f5;
+            color: #4A4A4A;
+        }
+
+        .status.withdrawn {
+            background: #d32f2f;
+            color: #FFFFFF;
+        }
+
+        /* تنسيق زر السحب */
+        .action-buttons {
+            display: flex;
+            gap: 8px;
+            justify-content: flex-end;
+        }
+
+        .action-buttons button {
+            background: #d32f2f;
+            color: #FFFFFF;
+            border: none;
+            padding: 8px 12px;
+            border-radius: 4px;
+            font-size: 14px;
+            cursor: pointer;
+            transition: background 0.3s ease;
+            display: flex;
+            align-items: center;
+            gap: 5px;
+        }
+
+        .action-buttons button:hover {
+            background: #b71c1c;
+        }
+
+        .action-buttons button:disabled {
+            background: #cccccc;
+            cursor: not-allowed;
+        }
+
+        .action-buttons button i {
+            font-size: 12px;
+        }
+
+        /* تنسيق الرسالة في حالة عدم وجود طلبات */
+        .no-requests {
+            color: #4A4A4A;
+            font-size: 16px;
+            text-align: center;
+            margin: 20px 0;
+        }
+
+        /* زر العودة */
+        .back-btn-container {
+            text-align: center;
+            margin-top: 20px;
+        }
+    </style>
+{% endblock %}
+
+{% block content %}
+    <h2>سحب</h2>
+
+    <!-- نموذج البحث -->
+    <div class="search-form">
+        <div class="form-row">
+            <label>اسم الطلب</label>
+            <input type="text" id="requestName" placeholder="أدخل اسم الطلب">
+        </div>
+        <div class="form-row">
+            <label>كود الطلب</label>
+            <input type="text" id="requestCode" placeholder="أدخل كود الطلب">
+        </div>
+        <div class="form-row">
+            <label>التاريخ من</label>
+            <input type="date" id="startDate">
+        </div>
+        <div class="form-row">
+            <label>التاريخ إلى</label>
+            <input type="date" id="endDate">
+        </div>
+        <div class="form-row">
+            <label>الحالة</label>
+            <select id="status">
+                <option value="">كل الحالات</option>
+                <option value="pending">قيد الانتظار</option>
+                <option value="withdrawn">مسحوب</option>
+            </select>
+        </div>
+        <div class="form-row">
+            <button onclick="searchRequests()"><i class="fas fa-search"></i> بحث</button>
+        </div>
+    </div>
+
+    <!-- جدول الطلبات -->
+    <table class="withdrawals-table" id="withdrawalsTable">
+        <thead>
+            <tr>
+                <th>اسم الطلب</th>
+                <th>كود الطلب</th>
+                <th>تاريخ التقديم</th>
+                <th>الحالة</th>
+                <th>الإجراءات</th>
+            </tr>
+        </thead>
+        <tbody>
+            <!-- بيانات تجريبية -->
+            <tr>
+                <td>طلب تعيين مدير إدارة</td>
+                <td>REQ-2025-001</td>
+                <td>2025-04-10</td>
+                <td><span class="status pending">قيد الانتظار</span></td>
+                <td>
+                    <div class="action-buttons">
+                        <button onclick="withdrawRequest('REQ-2025-001', this)"><i class="fas fa-undo"></i> سحب</button>
+                    </div>
+                </td>
+            </tr>
+            <tr>
+                <td>طلب تعيين رئيس قسم</td>
+                <td>REQ-2025-002</td>
+                <td>2025-04-15</td>
+                <td><span class="status pending">قيد الانتظار</span></td>
+                <td>
+                    <div class="action-buttons">
+                        <button onclick="withdrawRequest('REQ-2025-002', this)"><i class="fas fa-undo"></i> سحب</button>
+                    </div>
+                </td>
+            </tr>
+            <tr>
+                <td>طلب تعيين مستشار</td>
+                <td>REQ-2025-003</td>
+                <td>2025-04-20</td>
+                <td><span class="status withdrawn">مسحوب</span></td>
+                <td>
+                    <div class="action-buttons">
+                        <button disabled><i class="fas fa-undo"></i> سحب</button>
+                    </div>
+                </td>
+            </tr>
+        </tbody>
+    </table>
+
+    <!-- رسالة في حالة عدم وجود طلبات -->
+    <p class="no-requests" id="noRequestsMessage" style="display: none;">لا توجد طلبات تطابق معايير البحث.</p>
+
+{% endblock %}
+
+{% block extra_scripts %}
+    <script>
+        // دالة لسحب الطلب (مؤقتة)
+        function withdrawRequest(requestCode, button) {
+            Swal.fire({
+                title: 'هل أنت متأكد؟',
+                text: `سيتم سحب الطلب رقم ${requestCode}.`,
+                icon: 'warning',
+                showCancelButton: true,
+                confirmButtonText: 'نعم، سحب',
+                cancelButtonText: 'لا',
+                confirmButtonColor: '#1B5E20',
+                cancelButtonColor: '#d32f2f'
+            }).then((result) => {
+                if (result.isConfirmed) {
+                    // تحديث الحالة في الجدول
+                    const statusCell = button.closest('tr').querySelector('.status');
+                    statusCell.textContent = 'مسحوب';
+                    statusCell.classList.remove('pending');
+                    statusCell.classList.add('withdrawn');
+                    button.disabled = true;
+
+                    Swal.fire({
+                        title: 'تم!',
+                        text: `تم سحب الطلب رقم ${requestCode} بنجاح.`,
+                        icon: 'success',
+                        confirmButtonText: 'موافق',
+                        confirmButtonColor: '#1B5E20'
+                    });
+                }
+            });
+        }
+
+        // دالة البحث
+        function searchRequests() {
+            const requestName = document.getElementById('requestName').value.toLowerCase();
+            const requestCode = document.getElementById('requestCode').value.toLowerCase();
+            const startDate = document.getElementById('startDate').value;
+            const endDate = document.getElementById('endDate').value;
+            const status = document.getElementById('status').value;
+            const rows = document.querySelectorAll('#withdrawalsTable tbody tr');
+            const noRequestsMessage = document.getElementById('noRequestsMessage');
+            let hasVisibleRows = false;
+
+            rows.forEach(row => {
+                const rowRequestName = row.cells[0].textContent.toLowerCase();
+                const rowRequestCode = row.cells[1].textContent.toLowerCase();
+                const rowDate = row.cells[2].textContent;
+                const rowStatus = row.cells[3].querySelector('.status').classList.contains('pending') ? 'pending' : 'withdrawn';
+
+                const matchesRequestName = requestName === '' || rowRequestName.includes(requestName);
+                const matchesRequestCode = requestCode === '' || rowRequestCode.includes(requestCode);
+                const matchesDate = (!startDate || rowDate >= startDate) && (!endDate || rowDate <= endDate);
+                const matchesStatus = status === '' || (status === 'pending' && rowStatus === 'pending') || (status === 'withdrawn' && rowStatus === 'withdrawn');
+
+                if (matchesRequestName && matchesRequestCode && matchesDate && matchesStatus) {
+                    row.style.display = '';
+                    hasVisibleRows = true;
+                } else {
+                    row.style.display = 'none';
+                }
+            });
+
+            noRequestsMessage.style.display = hasVisibleRows ? 'none' : 'block';
+        }
+    </script>
+{% endblock %}

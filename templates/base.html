@@ -1,0 +1,1408 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>{% block title %}{% endblock %} - نظام الإدارة المركزية</title>
+    <link href="https://fonts.googleapis.com/css2?family=Cairo:wght@400;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+    <style>
+        html, body { 
+            overflow: hidden; 
+            height: 100%; 
+            margin: 0; 
+            padding: 0; 
+        }
+        
+        /* أنماط صفحات الأخطاء */
+        .error-container {
+            text-align: center;
+            padding: 50px 20px;
+            max-width: 600px;
+            margin: 0 auto;
+            background-color: #ffffff;
+            border-radius: 8px;
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+        }
+        
+        .error-code {
+            font-size: 120px;
+            font-weight: 700;
+            color: #6a9262;
+            line-height: 1;
+            margin-bottom: 20px;
+        }
+        
+        .error-title {
+            font-size: 32px;
+            font-weight: 700;
+            color: #333;
+            margin-bottom: 15px;
+        }
+        
+        .error-message {
+            font-size: 18px;
+            color: #666;
+            margin-bottom: 30px;
+        }
+        
+        .error-actions {
+            margin-top: 30px;
+        }
+        
+        .error-actions .btn {
+            background-color: #6a9262;
+            color: #fff;
+            border: none;
+            padding: 10px 20px;
+            border-radius: 4px;
+            font-size: 16px;
+            text-decoration: none;
+            transition: background-color 0.3s;
+        }
+        
+        .error-actions .btn:hover {
+            background-color: #5a7b52;
+        }
+        
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Cairo', sans-serif;
+        }
+
+        body {
+            background: #FFFFFF;
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+            direction: rtl;
+        }
+
+        html::-webkit-scrollbar {
+            width: 6px;
+        }
+
+        html::-webkit-scrollbar-track {
+            background: #FFFFFF;
+            border-radius: 3px;
+        }
+
+        html::-webkit-scrollbar-thumb {
+            background: #6a9262;
+            border-radius: 3px;
+            border: 1px solid #FFFFFF;
+        }
+
+        html::-webkit-scrollbar-thumb:hover {
+            background: #5A8B6E;
+        }
+
+        .sidebar::-webkit-scrollbar {
+            width: 6px;
+        }
+
+        .sidebar::-webkit-scrollbar-track {
+            background: #FFFFFF;
+            border-radius: 3px;
+        }
+
+        .sidebar::-webkit-scrollbar-thumb {
+            background: #6a9262;
+            border-radius: 3px;
+            border: 1px solid #FFFFFF;
+        }
+
+        .sidebar::-webkit-scrollbar-thumb:hover {
+            background: #5A8B6E;
+        }
+
+        .announcements-inner::-webkit-scrollbar {
+            width: 6px;
+        }
+
+        .announcements-inner::-webkit-scrollbar-track {
+            background: #FFFFFF;
+            border-radius: 3px;
+        }
+
+        .announcements-inner::-webkit-scrollbar-thumb {
+            background: #6a9262;
+            border-radius: 3px;
+            border: 1px solid #FFFFFF;
+        }
+
+        .announcements-inner::-webkit-scrollbar-thumb:hover {
+            background: #5A8B6E;
+        }
+
+        .header {
+            background: #6a9262;
+            border-right: 2px solid #FFFFFF;
+            padding: 10px 15px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: calc(100% - 200px);
+            z-index: 1000;
+            height: 88px;
+        }
+
+        .header .header-title {
+            color: #FFFFFF;
+            font-size: 20px;
+            font-weight: 700;
+        }
+
+        .header .header-title a {
+            text-decoration: none;
+            color: #FFFFFF;
+        }
+
+        .header .header-title a:hover {
+            color: #1B5E20;
+        }
+
+        .header .user-info {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .header .user-info span {
+            color: #FFFFFF;
+            font-size: 17px;
+            font-weight: 600;
+        }
+
+        .header .user-info .governor-info {
+            display: flex;
+            flex-direction: column;
+            align-items: flex-end;
+        }
+
+        .header .user-info .governor-info .governor-title {
+            color: #FFFFFF;
+            font-size: 20px;
+            font-weight: 600;
+        }
+
+        .header .user-info .governor-info .governor-subtitle {
+            color: #FFFFFF;
+            font-size: 12px;
+        }
+
+        .header .profile-icon {
+            color: #FFFFFF;
+            font-size: 37px;
+            margin-left: 15px;
+            text-decoration: none;
+            transition: color 0.3s ease, transform 0.1s ease;
+        }
+
+        .header .profile-icon:hover,
+        .header .profile-icon:active {
+            color: #CCCCCC;
+            transform: scale(1.1);
+        }
+
+        .hamburger {
+            display: none;
+            color: #FFFFFF;
+            font-size: 24px;
+            cursor: pointer;
+            transition: color 0.3s ease, transform 0.3s ease;
+        }
+
+        .hamburger:hover,
+        .hamburger:active {
+            color: #CCCCCC;
+            transform: rotate(90deg);
+        }
+
+        .announcements-hamburger {
+            display: none;
+            color: #FFFFFF;
+            font-size: 24px;
+            cursor: pointer;
+            transition: color 0.3s ease, transform 0.3s ease;
+        }
+
+        .announcements-hamburger:hover,
+        .announcements-hamburger:active {
+            color: #CCCCCC;
+            transform: rotate(90deg);
+        }
+
+        .header-spacer {
+            background: #FFFFFF;
+            position: fixed;
+            top: 88px;
+            left: 0;
+            width: calc(100% - 200px);
+            height: 40px;
+            z-index: 1000;
+            box-shadow: 0 6px 12px rgba(0, 0, 0, 0.3);
+            display: flex;
+            align-items: center;
+            padding-right: 15px;
+        }
+
+        .header-spacer .active-link {
+            color: #6a9262;
+            font-size: 16px;
+            font-weight: 600;
+        }
+
+        .logo-header {
+            background: #6a9262;
+            width: 200px;
+            position: fixed;
+            top: 0;
+            right: 0;
+            padding: 15px;
+            border-bottom: 2px solid #FFFFFF;
+            z-index: 1001;
+            height: 165px;
+        }
+
+        .logo-header .logo {
+            display: flex;
+            justify-content: center;
+            margin-top: -15px;
+            margin-bottom: 5px;
+        }
+
+        .logo-header .logo-img {
+            width: 90px;
+            height: 90px;
+            object-fit: contain;
+            animation: pulse 2s infinite ease-in-out;
+            border-radius: 50%;
+        }
+
+        @keyframes pulse {
+            0% {
+                transform: scale(1);
+                box-shadow: 0 0 0 0 rgba(255, 255, 255, 0.5);
+            }
+            50% {
+                transform: scale(1.03);
+                box-shadow: 0 0 0 10px rgba(255, 255, 255, 0);
+            }
+            100% {
+                transform: scale(1);
+                box-shadow: 0 0 0 0 rgba(255, 255, 255, 0);
+            }
+        }
+
+        .logo-header .logo-title {
+            color: #FFFFFF;
+            font-size: 16px;
+            font-weight: 700;
+            text-align: center;
+            margin-bottom: 15px;
+            line-height: 1.2;
+        }
+
+        .sidebar {
+            background: #FFFFFF;
+            width: 200px;
+            position: fixed;
+            top: 167px;
+            right: 0;
+            bottom: 0;
+            padding: 15px 15px 0 15px;
+            box-shadow: -2px 0 8px rgba(0, 0, 0, 0.1);
+            border-left: 2px solid #FFFFFF;
+            z-index: 999;
+            overflow-y: auto;
+            transition: transform 0.3s ease;
+        }
+
+        .sidebar .links-section {
+            background: #FFFFFF;
+            padding: 10px;
+            border-radius: 8px;
+        }
+
+        .sidebar ul {
+            list-style: none;
+        }
+
+        .sidebar ul li {
+            margin-bottom: 8px;
+        }
+
+        .sidebar ul li a {
+            color: #6a9262;
+            font-size: 14px;
+            text-decoration: none;
+            display: flex;
+            align-items: center;
+            padding: 5px;
+            transition: background-color 0.3s ease, color 0.3s ease;
+            border-bottom: #4a4a4a53 solid 1px;
+        }
+
+        .sidebar ul li a i {
+            margin-left: 10px;
+            font-size: 18px;
+            color: #6a9262;
+        }
+
+        .sidebar ul li a:hover,
+        .sidebar ul li a:active {
+            background-color: #b1e3b5dc;
+        }
+
+        .sidebar ul li a.active {
+            background-color: #b1e3b5dc;
+        }
+
+        .sidebar .collapsible {
+            cursor: pointer;
+            color: #6a9262;
+            font-size: 14px;
+            padding: 10px;
+            border-radius: 8px;
+            display: flex;
+            align-items: center;
+            transition: background-color 0.3s ease;
+        }
+
+        .sidebar .collapsible i {
+            margin-left: 10px;
+            font-size: 18px;
+            color: #6a9262;
+        }
+
+        .sidebar .collapsible:hover,
+        .sidebar .collapsible:active {
+            background-color: #b1e3b5dc;
+        }
+
+        .sidebar .collapsible-content {
+            display: none;
+            padding-right: 15px;
+        }
+
+        .sidebar .collapsible-content a {
+            font-size: 14px;
+            padding: 8px 10px;
+            color: #6a9262;
+        }
+
+        .sidebar .collapsible-content a i {
+            color: #6a9262;
+        }
+
+        .sidebar .collapsible-content a:hover,
+        .sidebar .collapsible-content a:active {
+            background-color: #6a9262;
+        }
+
+        .sidebar-announcements {
+            background: #b1e3b5dc;
+            width: 250px;
+            position: fixed;
+            top: 128px;
+            right: 200px;
+            bottom: 0;
+            padding: 15px;
+            z-index: 998;
+            transition: transform 0.3s ease;
+        }
+
+        .sidebar-announcements .announcements-inner {
+            background: #FFFFFF;
+            padding: 10px;
+            height: 100%;
+            min-height: calc(100vh - 148px);
+            overflow-y: auto;
+        }
+
+        .sidebar-announcements .announcements-header {
+            display: flex;
+            align-items: center;
+            justify-content: flex-start;
+            gap: 8px;
+            margin-bottom: 15px;
+        }
+
+        .sidebar-announcements h3 {
+            color: #6a9262;
+            font-size: 18px;
+            font-weight: 700;
+            text-align: right;
+        }
+
+        .sidebar-announcements .announcements-header i {
+            color: #6a9262;
+            font-size: 18px;
+        }
+
+        .announcement {
+            background: #FFFFFF;
+            border: 1px solid #e6f0e6;
+            border-radius: 4px;
+            padding: 10px;
+            margin-bottom: 10px;
+            text-align: right;
+            transition: background 0.3s ease;
+            cursor: pointer;
+        }
+
+        .announcement:hover {
+            background: #E6F0E6;
+        }
+
+        .announcement.active-announcement {
+            background: #b1e3b5dc;
+        }
+
+        .announcement .announcement-header {
+            justify-content: flex-end;
+            align-items: center;
+            margin-bottom: 8px;
+        }
+
+        .announcement .announcement-header .new-label {
+            color: #1B5E20;
+            font-size: 14px;
+            font-weight: 600;
+        }
+
+        .announcement .job-title-container {
+            display: flex;
+            align-items: center;
+            gap: 0;
+            margin-bottom: 5px;
+        }
+
+        .announcement .job-title-container .job-title-wrapper {
+            display: flex;
+            align-items: center;
+            gap: 4px;
+        }
+
+        .announcement .job-title {
+            color: #4A4A4A;
+            font-size: 13px;
+            font-weight: 600;
+        }
+
+        .announcement .job-title-container .desktop-icon {
+            color: #6a9262;
+            font-size: 14px;
+        }
+
+        .announcement .job-title-container .icons {
+            display: flex;
+            flex-direction: column;
+            gap: 4px;
+            margin-right: 2px;
+        }
+
+        .announcement .job-title-container .icons i {
+            color: #6a9262;
+            font-size: 12px;
+        }
+
+        .announcement .announcement-code {
+            justify-content: flex-end;
+            align-items: center;
+            gap: 2px;
+        }
+
+        .announcement .announcement-code .code {
+            color: #4A4A4A;
+            font-size: 12px;
+        }
+
+        .announcement .announcement-code .hashtag-icon {
+            color: #6a9262;
+            font-size: 12px;
+        }
+
+        .main-content {
+            margin-top: 128px;
+            margin-right: 200px;
+            padding: 0;
+            flex: 1;
+            min-height: calc(100vh - 128px);
+            display: flex;
+            flex-direction: column;
+        }
+
+        .main-content.with-announcements {
+            margin-right: 450px;
+        }
+
+        .container {
+            width: 100%;
+            height: 100%;
+            overflow: hidden;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+            background: #b1e3b5dc;
+            padding: 10px;
+            flex: 1;
+        }
+
+        .inner-container {
+            background: #FFFFFF;
+            padding: 10px;
+            height: 100%;
+            min-height: calc(100vh - 148px);
+            overflow-y: auto;
+        }
+
+        .btn {
+            background-color: #6a9262;
+            color: #FFFFFF;
+            padding: 8px 20px;
+            border: none;
+            font-size: 16px;
+            font-weight: 600;
+            cursor: pointer;
+            border-radius: 8px;
+            text-decoration: none;
+            transition: background-color 0.3s ease, transform 0.1s ease;
+        }
+
+        .btn:hover,
+        .btn:active {
+            background-color: #4A4A4A;
+            transform: scale(1.05);
+        }
+
+        .back-btn {
+            background-color: #4A4A4A;
+            color: #FFFFFF;
+            padding: 8px 20px;
+            border: none;
+            font-size: 16px;
+            font-weight: 600;
+            cursor: pointer;
+            border-radius: 8px;
+            text-decoration: none;
+            transition: background-color 0.3s ease, transform 0.1s ease;
+        }
+
+        .back-btn:hover,
+        .back-btn:active {
+            background-color: #6a9262;
+            transform: scale(1.05);
+        }
+
+        h2 {
+            color: #6a9262;
+            font-size: 24px;
+            margin-bottom: 10px;
+            font-weight: 700;
+            text-align: center;
+        }
+
+        p {
+            color: #4A4A4A;
+            font-size: 16px;
+            margin-bottom: 5px;
+            line-height: 1.5;
+            text-align: center;
+        }
+
+        .typing-text {
+            overflow: hidden;
+            white-space: nowrap;
+            border-left: 2px solid #6a9262;
+            animation: typing 2s steps(40, end) forwards, blink 0.5s step-end infinite;
+            display: inline-block;
+            width: 100%;
+            opacity: 0;
+            animation-fill-mode: forwards;
+        }
+
+        @keyframes typing {
+            0% {
+                width: 0;
+                opacity: 1;
+            }
+            100% {
+                width: 100%;
+                opacity: 1;
+            }
+        }
+
+        @keyframes blink {
+            50% {
+                border-color: transparent;
+            }
+        }
+
+        .slide-up {
+            opacity: 0;
+            transform: translateY(20px);
+            animation: slideUp 0.5s ease-in forwards 0.5s;
+        }
+
+        @keyframes slideUp {
+            0% {
+                opacity: 0;
+                transform: translateY(20px);
+            }
+            100% {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        @media (max-width: 768px) {
+            .header {
+                width: 100%;
+                height: 100px;
+                padding: 10px 15px;
+                display: flex;
+                flex-direction: row; /* ترتيب العناصر أفقيًا */
+                justify-content: space-between; /* توزيع العناصر */
+                align-items: center; /* محاذاة العناصر في المنتصف عموديًا */
+            }
+
+            .header .header-title {
+                font-size: 20px;
+                text-align: right;
+                flex: 1; /* يأخذ أكبر مساحة ممكنة */
+                margin-left: 10px; /* مسافة بين العنوان وباقي العناصر */
+            }
+
+            .header .user-info {
+                display: flex;
+                align-items: center;
+                justify-content: flex-end;
+                gap: 15px;
+                flex-shrink: 0; /* منع الـ user-info من التقلص */
+            }
+
+            .header .user-info span {
+                font-size: 16px;
+            }
+
+            .header .user-info .governor-info {
+                display: flex;
+                flex-direction: column;
+                align-items: flex-end;
+            }
+
+            .header .user-info .governor-info .governor-title {
+                font-size: 16px;
+            }
+
+            .header .user-info .governor-info .governor-subtitle {
+                font-size: 12px;
+            }
+
+            .header .profile-icon {
+                font-size: 32px;
+            }
+
+            .hamburger {
+                display: block !important;
+                font-size: 28px;
+            }
+
+            .announcements-hamburger {
+                display: block !important;
+                font-size: 28px;
+                margin-right: 10px;
+            }
+
+            .header-spacer {
+                width: 100%;
+                top: 100px;
+                height: 35px;
+            }
+
+            .header-spacer .active-link {
+                font-size: 14px;
+            }
+
+            .logo-header {
+                width: 100%;
+                height: 110px;
+                border-left: none;
+                border-top: 2px solid #FFFFFF;
+                top: 100px;
+            }
+
+            .logo-header .logo-img {
+                width: 70px;
+                height: 70px;
+            }
+
+            .logo-header .logo-title {
+                font-size: 14px;
+                margin-bottom: 10px;
+            }
+
+            .sidebar {
+                width: 100%;
+                top: 210px;
+                transform: translateX(100%);
+                border-left: none;
+                border-top: 2px solid #FFFFFF;
+            }
+
+            .sidebar.active {
+                transform: translateX(0);
+            }
+
+            .sidebar-announcements {
+                width: 100%;
+                right: 0;
+                top: 210px;
+                transform: translateX(100%);
+            }
+
+            .sidebar-announcements.active {
+                transform: translateX(0);
+            }
+
+            .sidebar-announcements .announcements-inner {
+                min-height: calc(100vh - 230px);
+                padding: 8px;
+            }
+
+            .main-content {
+                margin-right: 0;
+                margin-top: 210px;
+                min-height: calc(100vh - 210px);
+            }
+
+            .main-content.with-announcements {
+                margin-right: 0;
+            }
+
+            .container {
+                padding: 8px;
+                border-radius: 8px;
+            }
+
+            .inner-container {
+                padding: 8px;
+                min-height: calc(100vh - 230px);
+            }
+
+            .typing-text {
+                font-size: 14px;
+                white-space: normal;
+                overflow-x: hidden;
+                width: 100%;
+                display: inline-block;
+                line-height: 1.5;
+            }
+        }
+
+        @media (max-width: 576px) {
+            .header {
+                padding: 10px 12px;
+                width: 100%;
+                height: 90px;
+                display: flex;
+                flex-direction: row; /* ترتيب العناصر أفقيًا */
+                justify-content: space-between;
+                align-items: center;
+            }
+
+            .header .header-title {
+                font-size: 18px;
+                text-align: right;
+                flex: 1;
+                margin-left: 8px;
+            }
+
+            .header .user-info {
+                display: flex;
+                align-items: center;
+                justify-content: flex-end;
+                gap: 12px;
+                flex-shrink: 0;
+            }
+
+            .header .user-info span {
+                font-size: 14px;
+            }
+
+            .header .user-info .governor-info .governor-title {
+                font-size: 14px;
+            }
+
+            .header .user-info .governor-info .governor-subtitle {
+                font-size: 10px;
+            }
+
+            .header .profile-icon {
+                font-size: 28px;
+                margin-left: 10px;
+            }
+
+            .hamburger {
+                display: block !important;
+                font-size: 24px;
+            }
+
+            .announcements-hamburger {
+                display: block !important;
+                font-size: 24px;
+                margin-right: 8px;
+            }
+
+            .header-spacer {
+                top: 90px;
+                width: 100%;
+                height: 30px;
+                padding-right: 10px;
+            }
+
+            .header-spacer .active-link {
+                font-size: 12px;
+            }
+
+            .logo-header {
+                width: 100%;
+                border-left: none;
+                border-top: 2px solid #FFFFFF;
+                height: 90px;
+                top: 90px;
+            }
+
+            .logo-header .logo-img {
+                width: 60px;
+                height: 60px;
+            }
+
+            .logo-header .logo-title {
+                font-size: 12px;
+                margin-bottom: 8px;
+            }
+
+            .sidebar {
+                width: 100%;
+                position: fixed;
+                top: 180px;
+                bottom: 0;
+                border-left: none;
+                border-top: 2px solid #FFFFFF;
+                transform: translateX(100%);
+                z-index: 998;
+                padding: 10px;
+            }
+
+            .sidebar.active {
+                transform: translateX(0);
+            }
+
+            .sidebar .links-section {
+                padding: 8px;
+            }
+
+            .sidebar ul li {
+                margin-bottom: 6px;
+            }
+
+            .sidebar ul li a {
+                font-size: 12px;
+                padding: 6px;
+            }
+
+            .sidebar ul li a i {
+                font-size: 16px;
+                margin-left: 8px;
+            }
+
+            .sidebar .collapsible {
+                font-size: 12px;
+                padding: 6px;
+            }
+
+            .sidebar .collapsible i {
+                font-size: 16px;
+                margin-left: 8px;
+            }
+
+            .sidebar-announcements {
+                width: 100%;
+                right: 0;
+                top: 180px;
+                bottom: 0;
+                border-left: none;
+                border-top: 2px solid #FFFFFF;
+                transform: translateX(100%);
+                z-index: 997;
+                padding: 10px;
+            }
+
+            .sidebar-announcements.active {
+                transform: translateX(0);
+            }
+
+            .sidebar-announcements .announcements-inner {
+                min-height: calc(100vh - 200px);
+                padding: 6px;
+            }
+
+            .sidebar-announcements h3 {
+                font-size: 14px;
+                margin-bottom: 8px;
+            }
+
+            .sidebar-announcements .announcements-header i {
+                font-size: 16px;
+            }
+
+            .announcement {
+                padding: 6px;
+                margin-bottom: 8px;
+            }
+
+            .announcement .announcement-header .new-label {
+                font-size: 11px;
+            }
+
+            .announcement .job-title-container {
+                flex-direction: column;
+                align-items: flex-end;
+                gap: 4px;
+            }
+
+            .announcement .job-title-wrapper {
+                gap: 3px;
+            }
+
+            .announcement .job-title {
+                font-size: 11px;
+            }
+
+            .announcement .job-title-container .desktop-icon {
+                font-size: 12px;
+            }
+
+            .announcement .job-title-container .icons {
+                flex-direction: row;
+                gap: 6px;
+                margin-right: 0;
+            }
+
+            .announcement .job-title-container .icons i {
+                font-size: 10px;
+            }
+
+            .announcement .announcement-code .code {
+                font-size: 10px;
+            }
+
+            .announcement .announcement-code .hashtag-icon {
+                font-size: 10px;
+            }
+
+            .main-content {
+                margin-right: 0;
+                margin-top: 180px;
+                padding: 0;
+                min-height: calc(100vh - 180px);
+            }
+
+            .main-content.with-announcements {
+                margin-right: 0;
+            }
+
+            .container {
+                padding: 5px;
+                border-radius: 5px;
+            }
+
+            .inner-container {
+                padding: 5px;
+                min-height: calc(100vh - 200px);
+            }
+
+            h2 {
+                font-size: 18px;
+                margin-bottom: 8px;
+            }
+
+            p {
+                font-size: 12px;
+                margin-bottom: 3px;
+            }
+
+            .btn, .back-btn {
+                padding: 6px 12px;
+                font-size: 12px;
+            }
+
+            .typing-text {
+                font-size: 12px;
+                white-space: normal;
+                overflow-x: hidden;
+                width: 100%;
+                display: inline-block;
+                line-height: 1.5;
+            }
+        }
+    </style>
+    {% block extra_styles %}{% endblock %}
+</head>
+<body>
+    <div class="header">
+        <div class="header-title"><a href="{{ url_for('dashboard') }}" class="header-title">النظام الإلكتروني للوظائف القيادية والإشرافية</a></div>
+        <div class="user-info">
+            {% if session.full_name %}
+                {% if '"governor"' in session.roles %}
+                    <div class="governor-info">
+                        <span class="governor-title">السلطة المختصة</span>
+                        <span class="governor-subtitle">معالي محافظ - {{ session.governorate }}</span>
+                    </div>
+                {% else %}
+                    <span>{{ session.full_name }}</span>
+                {% endif %}
+                <a href="{{ url_for('profile') }}" class="profile-icon" title="الملف الشخصي">
+                    <i class="fas fa-user-circle"></i>
+                </a>
+            {% endif %}
+            {% if request.endpoint == 'inbox' or request.endpoint == 'outbox' %}
+                <i class="fas fa-bullhorn announcements-hamburger" onclick="toggleAnnouncements()"></i>
+            {% endif %}
+            <i class="fas fa-bars hamburger" onclick="toggleSidebar()"></i>
+        </div>
+    </div>
+
+    <div class="header-spacer">
+        <span class="active-link" id="activeLink"></span>
+    </div>
+
+    <div class="logo-header">
+        <div class="logo">
+            <img src="{{ url_for('static', filename='images/logo3.jpg') }}" alt="شعار السايدبار" class="logo-img">
+        </div>
+        <div class="logo-title">المنصة الرقمية للوظائف القيادية والاشرافية</div>
+    </div>
+
+    <div class="sidebar">
+        <div class="links-section">
+            <ul>
+                {% if '"governor"' in session.roles %}
+                    <li><a href="{{ url_for('inbox') }}"><i class="fas fa-inbox"></i> الوارد</a></li>
+                    <li><a href="{{ url_for('outbox') }}"><i class="fas fa-paper-plane"></i> الصادر</a></li>
+                    <li><a href="{{ url_for('job_results') }}"><i class="fas fa-briefcase"></i> نتائج وظيفية</a></li>
+                    <li><a href="{{ url_for('reports') }}"><i class="fas fa-chart-bar"></i> تقارير</a></li>
+                    <li><a href="{{ url_for('search') }}"><i class="fas fa-search"></i> بحث</a></li>
+                    <li><a href="{{ url_for('delegations') }}"><i class="fas fa-user-check"></i> التفويضات</a></li>
+                    <li><a href="{{ url_for('withdraw') }}"><i class="fas fa-undo"></i> سحب</a></li>
+                    <li><a href="{{ url_for('previous_draft') }}"><i class="fas fa-file-alt"></i> مسودة سابقة</a></li>
+                    <li><a href="{{ url_for('jobs_in_progress') }}"><i class="fas fa-tasks"></i> وظائف تحت الإجراء</a></li>
+                    <li><a href="{{ url_for('completed_jobs') }}"><i class="fas fa-check-circle"></i> وظائف منجزة</a></li>
+                    <li><a href="{{ url_for('form_leadership_committee') }}"><i class="fas fa-users"></i> تشكيل لجنة وظائف قيادية</a></li>
+                    <li><a href="{{ url_for('form_supervisory_committee') }}"><i class="fas fa-users-cog"></i> تشكيل لجنة وظائف إشرافية</a></li>
+                    <li><a href="{{ url_for('issue_appointment_decision') }}"><i class="fas fa-file-signature"></i> إصدار قرار تعيين</a></li>
+                    <li><a href="{{ url_for('register_new_job') }}"><i class="fas fa-briefcase-medical"></i> تسجيل وظيفة جديدة</a></li>
+                    <li><a href="{{ url_for('decisions') }}"><i class="fas fa-gavel"></i> قرارات</a></li>
+                {% elif '"general_admin"' in session.roles %}
+                    <li><a href="{{ url_for('inbox') }}"><i class="fas fa-inbox"></i> الوارد</a></li>
+                    <li><a href="{{ url_for('outbox') }}"><i class="fas fa-paper-plane"></i> الصادر</a></li>
+                    <li><a href="{{ url_for('job_results') }}"><i class="fas fa-briefcase"></i> نتائج وظيفية</a></li>
+                    <li><a href="{{ url_for('reports') }}"><i class="fas fa-chart-bar"></i> تقارير</a></li>
+                    <li><a href="{{ url_for('search') }}"><i class="fas fa-search"></i> بحث</a></li>
+                    <li><a href="{{ url_for('delegations') }}"><i class="fas fa-user-check"></i> التفويضات</a></li>
+                    <li><a href="{{ url_for('withdraw') }}"><i class="fas fa-undo"></i> سحب</a></li>
+                    <li><a href="{{ url_for('jobs_in_progress') }}"><i class="fas fa-tasks"></i> وظائف تحت الإجراء</a></li>
+                    <li><a href="{{ url_for('completed_jobs') }}"><i class="fas fa-check-circle"></i> وظائف منجزة</a></li>
+                    <li><a href="{{ url_for('form_leadership_committee') }}"><i class="fas fa-users"></i> تشكيل لجنة وظائف قيادية</a></li>
+                    <li><a href="{{ url_for('form_supervisory_committee') }}"><i class="fas fa-users-cog"></i> تشكيل لجنة وظائف إشرافية</a></li>
+                    <li><a href="{{ url_for('issue_appointment_decision') }}"><i class="fas fa-file-signature"></i> إصدار قرار تعيين</a></li>
+                    <li><a href="{{ url_for('register_new_job') }}"><i class="fas fa-briefcase-medical"></i> تسجيل وظيفة جديدة</a></li>
+                    <li><a href="{{ url_for('decisions') }}"><i class="fas fa-gavel"></i> قرارات</a></li>
+                    <li><a href="{{ url_for('pending_users') }}"><i class="fas fa-user-plus"></i> المستخدمون المنتظرون</a></li>
+                {% else %}
+                    <li><a href="{{ url_for('inbox') }}"><i class="fas fa-inbox"></i> الوارد</a></li>
+                    <li><a href="{{ url_for('outbox') }}"><i class="fas fa-paper-plane"></i> الصادر</a></li>
+                    <li><a href="{{ url_for('job_results') }}"><i class="fas fa-briefcase"></i> نتائج وظيفية</a></li>
+                    <li><a href="{{ url_for('reports') }}"><i class="fas fa-chart-bar"></i> تقارير</a></li>
+                    <li><a href="{{ url_for('search') }}"><i class="fas fa-search"></i> بحث</a></li>
+                    <li><a href="{{ url_for('delegations') }}"><i class="fas fa-user-check"></i> التفويضات</a></li>
+                    <li><a href="{{ url_for('withdraw') }}"><i class="fas fa-undo"></i> سحب</a></li>
+                    <li><a href="{{ url_for('jobs_in_progress') }}"><i class="fas fa-tasks"></i> وظائف تحت الإجراء</a></li>
+                    <li><a href="{{ url_for('completed_jobs') }}"><i class="fas fa-check-circle"></i> وظائف منجزة</a></li>
+                    <li><a href="{{ url_for('form_leadership_committee') }}"><i class="fas fa-users"></i> تشكيل لجنة وظائف قيادية</a></li>
+                    <li><a href="{{ url_for('form_supervisory_committee') }}"><i class="fas fa-users-cog"></i> تشكيل لجنة وظائف إشرافية</a></li>
+                    <li><a href="{{ url_for('issue_appointment_decision') }}"><i class="fas fa-file-signature"></i> إصدار قرار تعيين</a></li>
+                    <li><a href="{{ url_for('register_new_job') }}"><i class="fas fa-briefcase-medical"></i> تسجيل وظيفة جديدة</a></li>
+                    <li><a href="{{ url_for('decisions') }}"><i class="fas fa-gavel"></i> قرارات</a></li>
+                    <li><a href="{{ url_for('general_statistics_1') }}"><i class="fas fa-chart-pie"></i> الإحصائيات العامة 1</a></li>
+                    <li><a href="{{ url_for('previous_draft') }}"><i class="fas fa-file-alt"></i> مسودة سابقة</a></li>
+                    <li><a href="{{ url_for('training_results') }}"><i class="fas fa-graduation-cap"></i> نتائج التدريب للمرشحين</a></li>
+                    <li><a href="{{ url_for('update_job_description') }}"><i class="fas fa-edit"></i> تحديث بطاقة وصف</a></li>
+                    <li><a href="{{ url_for('approved_job_descriptions') }}"><i class="fas fa-address-card"></i> بطاقات الوصف المعتمدة</a></li>
+                    <li><a href="{{ url_for('new_request') }}"><i class="fas fa-plus-circle"></i> طلب جديد</a></li>
+                    <li><a href="{{ url_for('delete_request') }}"><i class="fas fa-trash-alt"></i> حذف الطلب</a></li>
+                    <li><a href="{{ url_for('edit_self_evaluation') }}"><i class="fas fa-star-half-alt"></i> تعديل التقييم الذاتي</a></li>
+                    <li><a href="{{ url_for('follow_request') }}"><i class="fas fa-eye"></i> متابعة طلب</a></li>
+                    <li><a href="{{ url_for('interview_schedule') }}"><i class="fas fa-calendar-alt"></i> موعد مقابلة</a></li>
+                    <li><a href="{{ url_for('training_schedule') }}"><i class="fas fa-chalkboard-teacher"></i> موعد تدريب</a></li>
+                    <li><a href="{{ url_for('self_evaluation_grades_1') }}"><i class="fas fa-star"></i> درجات التقييم الذاتي 1</a></li>
+                    <li><a href="{{ url_for('appointment_decision') }}"><i class="fas fa-file-contract"></i> قرار التعيين</a></li>
+                    <li><a href="{{ url_for('general_statistics_2') }}"><i class="fas fa-chart-line"></i> الإحصاءات العامة 2</a></li>
+                    <li><a href="{{ url_for('edit_evaluation') }}"><i class="fas fa-pen-alt"></i> تعديل التقييم</a></li>
+                    <li><a href="{{ url_for('evaluation') }}"><i class="fas fa-clipboard-check"></i> التقييم</a></li>
+                    <li><a href="{{ url_for('schedule_remote_interview') }}"><i class="fas fa-video"></i> تحديد موعد مقابلة عن بعد</a></li>
+                    <li><a href="{{ url_for('self_evaluation_grades_2') }}"><i class="fas fa-star"></i> درجات التقييم الذاتي 2</a></li>
+                    <li><a href="{{ url_for('send_training_results') }}"><i class="fas fa-share-square"></i> إرسال نتائج تدريبية</a></li>
+                    <li><a href="{{ url_for('add_training_programs') }}"><i class="fas fa-book"></i> إدراج برامج تدريبية</a></li>
+                {% endif %}
+                {% block sidebar_items %}{% endblock %}
+                {% if session.user_id %}
+                    <li><a href="{{ url_for('logout') }}"><i class="fas fa-sign-out-alt"></i> تسجيل الخروج</a></li>
+                {% endif %}
+            </ul>
+        </div>
+    </div>
+
+    {% if request.endpoint == 'inbox' or request.endpoint == 'outbox' %}
+        <div class="sidebar-announcements">
+            <div class="announcements-inner">
+                <div class="announcements-header">
+                    <h3>{{ 'الوارد' if request.endpoint == 'inbox' else 'الصادر' }}</h3>
+                    <i class="fas {{ 'fa-inbox' if request.endpoint == 'inbox' else 'fa-paper-plane' }}"></i>
+                </div>
+                {% block sidebar_announcements %}
+                    <!-- بيانات تجريبية للإعلانات -->
+                    <div class="announcement" data-code="HR-2025-001">
+                        <div class="announcement-header">
+                            <span class="new-label">إعلان جديد</span>
+                        </div>
+                        <div class="job-title-container">
+                            <div class="job-title-wrapper">
+                                <i class="fas fa-desktop desktop-icon"></i>
+                                <span class="job-title">مدير إدارة الموارد البشرية</span>
+                            </div>
+                            <div class="icons">
+                                <i class="fas fa-copy"></i>
+                                <i class="fas fa-lock"></i>
+                            </div>
+                        </div>
+                        <div class="announcement-code">
+                            <i class="fas fa-hashtag hashtag-icon"></i>
+                            <span class="code">HR-2025-001</span>
+                        </div>
+                    </div>
+                    <div class="announcement" data-code="IT-2025-002">
+                        <div class="announcement-header">
+                            <span class="new-label">إعلان جديد</span>
+                        </div>
+                        <div class="job-title-container">
+                            <div class="job-title-wrapper">
+                                <i class="fas fa-desktop desktop-icon"></i>
+                                <span class="job-title">رئيس قسم تكنولوجيا المعلومات</span>
+                            </div>
+                            <div class="icons">
+                                <i class="fas fa-copy"></i>
+                                <i class="fas fa-lock"></i>
+                            </div>
+                        </div>
+                        <div class="announcement-code">
+                            <i class="fas fa-hashtag hashtag-icon"></i>
+                            <span class="code">IT-2025-002</span>
+                        </div>
+                    </div>
+                    <div class="announcement" data-code="LEGAL-2025-003">
+                        <div class="announcement-header">
+                            <span class="new-label">إعلان جديد</span>
+                        </div>
+                        <div class="job-title-container">
+                            <div class="job-title-wrapper">
+                                <i class="fas fa-desktop desktop-icon"></i>
+                                <span class="job-title">مستشار قانوني أول</span>
+                            </div>
+                            <div class="icons">
+                                <i class="fas fa-copy"></i>
+                                <i class="fas fa-lock"></i>
+                            </div>
+                        </div>
+                        <div class="announcement-code">
+                            <i class="fas fa-hashtag hashtag-icon"></i>
+                            <span class="code">LEGAL-2025-003</span>
+                        </div>
+                    </div>
+                {% endblock %}
+            </div>
+        </div>
+    {% endif %}
+
+    <div class="main-content {% if request.endpoint == 'inbox' or request.endpoint == 'outbox' %}with-announcements{% endif %}">
+        <div class="container">
+            <div class="{% if request.endpoint != 'dashboard' %}inner-container{% endif %}" id="mainContent">
+                {% block content %}{% endblock %}
+            </div>
+        </div>
+    </div>
+
+    {% with messages = get_flashed_messages(with_categories=true) %}
+        {% if messages %}
+            {% for category, message in messages %}
+                {% if category == 'success' %}
+                    <script>
+                        Swal.fire({
+                            title: 'نجاح!',
+                            text: '{{ message }}',
+                            icon: 'success',
+                            confirmButtonText: 'موافق',
+                            confirmButtonColor: '#5A8B6E'
+                        });
+                    </script>
+                {% elif category == 'error' %}
+                    <script>
+                        Swal.fire({
+                            title: 'خطأ!',
+                            text: '{{ message }}',
+                            icon: 'error',
+                            confirmButtonText: 'موافق',
+                            confirmButtonColor: '#5A8B6E'
+                        });
+                    </script>
+                {% elif category == 'warning' %}
+                    <script>
+                        Swal.fire({
+                            title: 'انتظار!',
+                            text: '{{ message }}',
+                            icon: 'warning',
+                            confirmButtonText: 'موافق',
+                            confirmButtonColor: '#5A8B6E'
+                        });
+                    </script>
+                {% endif %}
+            {% endfor %}
+        {% endif %}
+    {% endwith %}
+
+    <script>
+        function toggleSidebar() {
+            const sidebar = document.querySelector('.sidebar');
+            sidebar.classList.toggle('active');
+        }
+
+        function toggleAnnouncements() {
+            const sidebarAnnouncements = document.querySelector('.sidebar-announcements');
+            sidebarAnnouncements.classList.toggle('active');
+        }
+
+        function toggleCollapsible(element) {
+            const content = element.nextElementSibling;
+            const icon = element.querySelector('.fa-chevron-down');
+            if (content.style.display === "block") {
+                content.style.display = "none";
+                icon.style.transform = "rotate(0deg)";
+            } else {
+                content.style.display = "block";
+                icon.style.transform = "rotate(180deg)";
+            }
+        }
+
+        const linkNames = {
+            'inbox': 'الوارد',
+            'outbox': 'الصادر',
+            'job_results': 'نتائج وظيفية',
+            'reports': 'تقارير',
+            'search': 'بحث',
+            'delegations': 'التفويضات',
+            'withdraw': 'سحب',
+            'previous_draft': 'مسودة سابقة',
+            'jobs_in_progress': 'وظائف تحت الإجراء',
+            'completed_jobs': 'وظائف منجزة',
+            'form_leadership_committee': 'تشكيل لجنة وظائف قيادية',
+            'form_supervisory_committee': 'تشكيل لجنة وظائف إشرافية',
+            'issue_appointment_decision': 'إصدار قرار تعيين',
+            'decisions': 'قرارات',
+            'pending_users': 'المستخدمون المنتظرون',
+            'general_statistics_1': 'الإحصائيات العامة 1',
+            'training_results': 'نتائج التدريب للمرشحين',
+            'update_job_description': 'تحديث بطاقة وصف',
+            'approved_job_descriptions': 'بطاقات الوصف المعتمدة',
+            'new_request': 'طلب جديد',
+            'delete_request': 'حذف الطلب',
+            'edit_self_evaluation': 'تعديل التقييم الذاتي',
+            'follow_request': 'متابعة طلب',
+            'interview_schedule': 'موعد مقابلة',
+            'training_schedule': 'موعد تدريب',
+            'self_evaluation_grades_1': 'درجات التقييم الذاتي 1',
+            'appointment_decision': 'قرار التعيين',
+            'general_statistics_2': 'الإحصاءات العامة 2',
+            'edit_evaluation': 'تعديل التقييم',
+            'evaluation': 'التقييم',
+            'schedule_remote_interview': 'تحديد موعد مقابلة عن بعد',
+            'self_evaluation_grades_2': 'درجات التقييم الذاتي 2',
+            'send_training_results': 'إرسال نتائج تدريبية',
+            'add_training_programs': 'إدراج برامج تدريبية',
+            'register_new_job': 'تسجيل وظيفة جديدة',
+            'logout': 'تسجيل الخروج',
+            'dashboard': 'لوحة التحكم'
+        };
+
+        function displayActiveLink() {
+            const currentPath = window.location.pathname;
+            const activeLinkElement = document.getElementById('activeLink');
+            const sidebarLinks = document.querySelectorAll('.sidebar ul li a');
+            let endpoint = currentPath.split('/').pop() || 'inbox';
+
+            if (endpoint.includes('.')) {
+                endpoint = endpoint.split('.')[0];
+            }
+
+            if (linkNames[endpoint]) {
+                activeLinkElement.textContent = linkNames[endpoint];
+            } else {
+                activeLinkElement.textContent = '';
+            }
+
+            sidebarLinks.forEach(link => {
+                const linkEndpoint = link.getAttribute('href').split('/').pop() || 'inbox';
+                if (linkEndpoint === endpoint) {
+                    link.classList.add('active');
+                } else {
+                    link.classList.remove('active');
+                }
+            });
+
+            sidebarLinks.forEach(link => {
+                link.addEventListener('click', function() {
+                    sidebarLinks.forEach(l => l.classList.remove('active'));
+                    this.classList.add('active');
+                });
+            });
+        }
+
+        function setupAnnouncementClicks() {
+            const announcements = document.querySelectorAll('.announcement');
+            announcements.forEach(announcement => {
+                announcement.addEventListener('click', function() {
+                    announcements.forEach(a => a.classList.remove('active-announcement'));
+                    this.classList.add('active-announcement');
+
+                    const code = this.getAttribute('data-code');
+                    window.location.href = "{{ url_for('appointment_decision') }}?code=" + encodeURIComponent(code);
+                });
+            });
+        }
+
+        window.onload = function() {
+            displayActiveLink();
+            setupAnnouncementClicks();
+        };
+    </script>
+
+    {% block extra_scripts %}{% endblock %}
+</body>
+</html>

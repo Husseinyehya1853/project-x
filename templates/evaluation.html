@@ -1,0 +1,285 @@
+{% extends 'base.html' %}
+
+{% block title %}التقييم{% endblock %}
+
+{% block extra_styles %}
+    <style>
+        /* تنسيق العنوان */
+        h2 {
+            color: #1B5E20;
+            font-size: 24px;
+            font-weight: 700;
+            margin-bottom: 20px;
+            text-align: right;
+        }
+
+        /* تنسيق الفلاتر */
+        .filters-container {
+            display: flex;
+            justify-content: flex-end;
+            gap: 15px;
+            margin-bottom: 20px;
+            flex-wrap: wrap;
+        }
+
+        .filters-container input,
+        .filters-container select {
+            padding: 8px;
+            border: 1px solid #e6f0e6;
+            border-radius: 4px;
+            font-size: 14px;
+            color: #4A4A4A;
+            background: #FFFFFF;
+            direction: rtl;
+            width: 200px;
+        }
+
+        .filters-container button {
+            background: #1B5E20;
+            color: #FFFFFF;
+            border: none;
+            padding: 8px 12px;
+            border-radius: 4px;
+            font-size: 14px;
+            cursor: pointer;
+            transition: background 0.3s ease;
+            display: flex;
+            align-items: center;
+            gap: 5px;
+        }
+
+        .filters-container button:hover {
+            background: #2e7d32;
+        }
+
+        .filters-container button i {
+            font-size: 12px;
+        }
+
+        /* تنسيق الجدول */
+        .assessments-table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-bottom: 20px;
+            direction: rtl;
+        }
+
+        .assessments-table th,
+        .assessments-table td {
+            padding: 12px 15px;
+            text-align: right;
+            font-size: 14px;
+            color: #4A4A4A;
+        }
+
+        .assessments-table th {
+            background: #b1e3b5dc;
+            color: #1B5E20;
+            font-weight: 600;
+            border-bottom: 2px solid #e6f0e6;
+        }
+
+        .assessments-table td {
+            background: #FFFFFF;
+            border-bottom: 1px solid #e6f0e6;
+        }
+
+        .assessments-table tr:hover td {
+            background: #E6F0E6;
+        }
+
+        /* تنسيق الدرجة */
+        .score {
+            font-weight: 600;
+            color: #1B5E20;
+        }
+
+        /* تنسيق الأزرار */
+        .action-buttons {
+            display: flex;
+            gap: 8px;
+            justify-content: flex-end;
+        }
+
+        .action-buttons button {
+            border: none;
+            padding: 8px 12px;
+            border-radius: 4px;
+            font-size: 14px;
+            cursor: pointer;
+            transition: background 0.3s ease;
+            display: flex;
+            align-items: center;
+            gap: 5px;
+        }
+
+        .action-buttons .details-btn {
+            background: #1B5E20;
+            color: #FFFFFF;
+        }
+
+        .action-buttons .details-btn:hover {
+            background: #2e7d32;
+        }
+
+        .action-buttons .edit-btn {
+            background: #4A4A4A;
+            color: #FFFFFF;
+        }
+
+        .action-buttons .edit-btn:hover {
+            background: #6a6a6a;
+        }
+
+        .action-buttons button i {
+            font-size: 12px;
+        }
+
+        /* تنسيق الرسالة في حالة عدم وجود تقييمات */
+        .no-assessments {
+            color: #4A4A4A;
+            font-size: 16px;
+            text-align: center;
+            margin: 20px 0;
+        }
+
+        /* زر العودة */
+        .back-btn-container {
+            text-align: center;
+            margin-top: 20px;
+        }
+    </style>
+{% endblock %}
+
+{% block content %}
+    <h2>التقييم</h2>
+
+    <!-- الفلاتر -->
+    <div class="filters-container">
+        <input type="text" id="candidateName" placeholder="ابحث باسم المرشح..." onkeyup="filterAssessments()">
+        <input type="date" id="assessmentDate" onchange="filterAssessments()">
+        <select id="scoreFilter" onchange="filterAssessments()">
+            <option value="">كل الدرجات</option>
+            <option value="high">20-25 (ممتاز)</option>
+            <option value="medium">10-19 (متوسط)</option>
+            <option value="low">0-9 (ضعيف)</option>
+        </select>
+        <button onclick="filterAssessments()"><i class="fas fa-filter"></i> تصفية</button>
+    </div>
+
+    <!-- جدول التقييمات -->
+    <table class="assessments-table" id="assessmentsTable">
+        <thead>
+            <tr>
+                <th>اسم المرشح</th>
+                <th>الرقم القومي</th>
+                <th>تاريخ التقييم</th>
+                <th>الدرجة الكلية</th>
+                <th>الإجراءات</th>
+            </tr>
+        </thead>
+        <tbody>
+            <!-- بيانات تجريبية -->
+            <tr>
+                <td>محمد أحمد</td>
+                <td>29701012548765</td>
+                <td>2025-04-29</td>
+                <td><span class="score">16 / 25</span></td>
+                <td>
+                    <div class="action-buttons">
+                        <button class="details-btn" onclick="viewDetails('محمد أحمد')"><i class="fas fa-eye"></i> عرض التفاصيل</button>
+                        <button class="edit-btn" onclick="editAssessment('محمد أحمد')"><i class="fas fa-edit"></i> تعديل</button>
+                    </div>
+                </td>
+            </tr>
+            <tr>
+                <td>سارة علي</td>
+                <td>29802034567890</td>
+                <td>2025-04-28</td>
+                <td><span class="score">21 / 25</span></td>
+                <td>
+                    <div class="action-buttons">
+                        <button class="details-btn" onclick="viewDetails('سارة علي')"><i class="fas fa-eye"></i> عرض التفاصيل</button>
+                        <button class="edit-btn" onclick="editAssessment('سارة علي')"><i class="fas fa-edit"></i> تعديل</button>
+                    </div>
+                </td>
+            </tr>
+            <tr>
+                <td>خالد محمود</td>
+                <td>29603056789012</td>
+                <td>2025-04-27</td>
+                <td><span class="score">9 / 25</span></td>
+                <td>
+                    <div class="action-buttons">
+                        <button class="details-btn" onclick="viewDetails('خالد محمود')"><i class="fas fa-eye"></i> عرض التفاصيل</button>
+                        <button class="edit-btn" onclick="editAssessment('خالد محمود')"><i class="fas fa-edit"></i> تعديل</button>
+                    </div>
+                </td>
+            </tr>
+        </tbody>
+    </table>
+
+    <!-- رسالة في حالة عدم وجود تقييمات -->
+    <p class="no-assessments" id="noAssessmentsMessage" style="display: none;">لا توجد تقييمات تطابق معايير التصفية.</p>
+
+{% endblock %}
+
+{% block extra_scripts %}
+    <script>
+        // دالة لعرض التفاصيل (مؤقتة)
+        function viewDetails(candidateName) {
+            Swal.fire({
+                title: 'تفاصيل التقييم',
+                html: `اسم المرشح: ${candidateName}<br>الرقم القومي: ${document.querySelector(`td:contains("${candidateName}")`).nextElementSibling.textContent}<br>تاريخ التقييم: ${document.querySelector(`td:contains("${candidateName}")`).nextElementSibling.nextElementSibling.textContent}<br>الدرجة الكلية: ${document.querySelector(`td:contains("${candidateName}")`).nextElementSibling.nextElementSibling.nextElementSibling.textContent}`,
+                icon: 'info',
+                confirmButtonText: 'موافق',
+                confirmButtonColor: '#1B5E20'
+            });
+        }
+
+        // دالة لتعديل التقييم (مؤقتة)
+        function editAssessment(candidateName) {
+            window.location.href = "{{ url_for('edit_evaluation') }}";
+        }
+
+        // دالة التصفية
+        function filterAssessments() {
+            const candidateName = document.getElementById('candidateName').value.toLowerCase();
+            const assessmentDate = document.getElementById('assessmentDate').value;
+            const scoreFilter = document.getElementById('scoreFilter').value;
+            const rows = document.querySelectorAll('#assessmentsTable tbody tr');
+            const noAssessmentsMessage = document.getElementById('noAssessmentsMessage');
+            let hasVisibleRows = false;
+
+            rows.forEach(row => {
+                const rowCandidateName = row.cells[0].textContent.toLowerCase();
+                const rowAssessmentDate = row.cells[2].textContent;
+                const rowScoreText = row.cells[3].textContent; // "16 / 25"
+                const rowScore = parseInt(rowScoreText.split('/')[0].trim());
+
+                const matchesCandidateName = candidateName === '' || rowCandidateName.includes(candidateName);
+                const matchesDate = assessmentDate === '' || rowAssessmentDate === assessmentDate;
+                let matchesScore = true;
+
+                if (scoreFilter) {
+                    if (scoreFilter === 'high' && (rowScore < 20 || rowScore > 25)) {
+                        matchesScore = false;
+                    } else if (scoreFilter === 'medium' && (rowScore < 10 || rowScore > 19)) {
+                        matchesScore = false;
+                    } else if (scoreFilter === 'low' && (rowScore < 0 || rowScore > 9)) {
+                        matchesScore = false;
+                    }
+                }
+
+                if (matchesCandidateName && matchesDate && matchesScore) {
+                    row.style.display = '';
+                    hasVisibleRows = true;
+                } else {
+                    row.style.display = 'none';
+                }
+            });
+
+            noAssessmentsMessage.style.display = hasVisibleRows ? 'none' : 'block';
+        }
+    </script>
+{% endblock %}

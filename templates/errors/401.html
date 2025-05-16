@@ -1,0 +1,16 @@
+{% extends "base.html" %}
+
+{% block title %}غير مصرح{% endblock %}
+
+{% block content %}
+<div class="error-container">
+    <div class="error-code">401</div>
+    <div class="error-title">غير مصرح</div>
+    <div class="error-message">عذراً، يجب عليك تسجيل الدخول للوصول إلى هذه الصفحة.</div>
+    <div class="error-actions">
+        <a href="{{ url_for('index') }}" class="btn btn-primary">
+            <i class="fas fa-home"></i> العودة للصفحة الرئيسية
+        </a>
+    </div>
+</div>
+{% endblock %}

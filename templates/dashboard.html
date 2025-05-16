@@ -1,0 +1,246 @@
+{% extends 'base.html' %}
+
+{% block title %}لوحة التحكم{% endblock %}
+
+{% block content %}
+    <div class="dashboard-wrapper">
+        <!-- شبكة الأقسام -->
+        <div class="dashboard-grid">
+            <!-- قسم الموارد البشرية بالوزارات والجهات والهيئات الحكومية -->
+            <a href="{{ url_for('register_new_job') }}" class="grid-item">
+                <i class="fas fa-users"></i>
+                <h3>الموارد البشرية بالوزارات والجهات والهيئات الحكومية</h3>
+            </a>
+
+            <!-- قسم أمانة القيادات والوظائف الإشرافية بالجهات الإدارية للدولة -->
+            <a href="#" class="grid-item">
+                <i class="fas fa-user-tie"></i>
+                <h3>أمانة القيادات والوظائف الإشرافية بالجهات الإدارية للدولة</h3>
+            </a>
+
+            <!-- قسم الترتيب والتنظيم وموازنة الوظائف بالجهاز المركزي للتنظيم والإدارة -->
+            <a href="#" class="grid-item">
+                <i class="fas fa-sitemap"></i>
+                <h3>الترتيب والتنظيم وموازنة الوظائف بالجهاز المركزي للتنظيم والإدارة</h3>
+            </a>
+
+            <!-- قسم التقدم لشغل وظيفة قيادية - إشرافية -->
+            <a href="{{ url_for('new_request') }}" class="grid-item">
+                <i class="fas fa-briefcase"></i>
+                <h3>التقدم لشغل وظيفة قيادية - إشرافية</h3>
+            </a>
+
+            <!-- قسم التقدم للتجديد للوظائف القيادية - الإشرافية -->
+            <a href="#" class="grid-item">
+                <i class="fas fa-sync-alt"></i>
+                <h3>التقدم للتجديد للوظائف القيادية - الإشرافية</h3>
+            </a>
+
+            <!-- قسم السلطة المختصة بالجهاز الإداري للدولة -->
+            <a href="#" class="grid-item">
+                <i class="fas fa-gavel"></i>
+                <h3>السلطة المختصة بالجهاز الإداري للدولة</h3>
+            </a>
+
+            <!-- قسم بوابة الوظائف الحكومية -->
+            <a href="#" class="grid-item">
+                <i class="fas fa-globe"></i>
+                <h3>بوابة الوظائف الحكومية</h3>
+            </a>
+
+            <!-- قسم مركز إعداد القادة للجهاز الحكومي - الإدارة العامة للتدريب الإداري -->
+            <a href="#" class="grid-item">
+                <i class="fas fa-chalkboard-teacher"></i>
+                <h3>مركز إعداد القادة للجهاز الحكومي - الإدارة العامة للتدريب الإداري</h3>
+            </a>
+
+            <!-- قسم مديرية التنظيم والإدارة بالمحافظات -->
+            <a href="#" class="grid-item">
+                <i class="fas fa-city"></i>
+                <h3>مديرية التنظيم والإدارة بالمحافظات</h3>
+            </a>
+
+            <!-- قسم الإدارة العامة للتنظيم والإدارة بالوزارات والهيئات بالجهاز الإداري للدولة -->
+            <a href="#" class="grid-item">
+                <i class="fas fa-landmark"></i>
+                <h3>الإدارة العامة للتنظيم والإدارة بالوزارات والهيئات بالجهاز الإداري للدولة</h3>
+            </a>
+        </div>
+    </div>
+
+    <!-- أنماط إضافية للـ Grid -->
+    <style>
+        .dashboard-wrapper {
+            text-align: center;
+            min-height: calc(100vh - 128px); /* Match the min-height of .main-content */
+            padding: 20px;
+            box-sizing: border-box;
+        }
+
+        .dashboard-grid {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 20px;
+            margin-top: 20px;
+            width: 100%;
+            justify-items: center; /* Center items in the grid */
+        }
+
+        .grid-item {
+            background: #FFFFFF;
+            border: 2px solid #6a9262;
+            border-radius: 8px;
+            padding: 20px;
+            text-decoration: none;
+            position: relative;
+            overflow: hidden;
+            display: flex;
+            align-items: center;
+            gap: 15px;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+            opacity: 0;
+            animation: fadeInWithGlow 0.8s ease-out forwards;
+            animation-delay: calc(0.1s * var(--delay));
+            transition: transform 0.3s ease, box-shadow 0.3s ease, background 0.3s ease;
+            width: 300px; /* Fixed width for consistency */
+            height: 100px; /* Fixed height for consistency */
+        }
+
+        /* تعيين تأخير لكل قسم */
+        .grid-item:nth-child(1) { --delay: 1; }
+        .grid-item:nth-child(2) { --delay: 2; }
+        .grid-item:nth-child(3) { --delay: 3; }
+        .grid-item:nth-child(4) { --delay: 4; }
+        .grid-item:nth-child(5) { --delay: 5; }
+        .grid-item:nth-child(6) { --delay: 6; }
+        .grid-item:nth-child(7) { --delay: 7; }
+        .grid-item:nth-child(8) { --delay: 8; }
+        .grid-item:nth-child(9) { --delay: 9; }
+        .grid-item:nth-child(10) { --delay: 10; }
+
+        /* أنيميشن الظهور مع تأثير ضوء أخضر */
+        @keyframes fadeInWithGlow {
+            0% {
+                opacity: 0;
+                transform: scale(0.95);
+                box-shadow: 0 0 0 rgba(106, 146, 98, 0);
+            }
+            50% {
+                box-shadow: 0 0 20px rgba(106, 146, 98, 0.5);
+            }
+            100% {
+                opacity: 1;
+                transform: scale(1);
+                box-shadow: 0 0 0 rgba(106, 146, 98, 0);
+            }
+        }
+
+        .grid-item i {
+            font-size: 40px;
+            color: #6a9262;
+            flex-shrink: 0; /* Prevent icon from shrinking */
+        }
+
+        .grid-item h3 {
+            color: #4A4A4A;
+            font-size: 14px; /* Reduced font size to fit text */
+            font-weight: 600;
+            margin: 0;
+            flex: 1;
+            text-align: right;
+            overflow-wrap: break-word; /* Wrap long text */
+            line-height: 1.4; /* Adjust line height for better fit */
+        }
+        /* تأثير الـ Hover على الكمبيوتر */
+        .grid-item:hover {
+            transform: translateY(-10px);
+            box-shadow: 0 6px 12px rgba(0, 0, 0, 0.15);
+            background: #b1e3b5dc;
+        }
+
+        /* تكبير الأيقونة عند الـ Hover */
+        .grid-item:hover i {
+            transform: scale(1.2);
+            transition: transform 0.3s ease;
+        }
+
+        /* تأثير ضوء أخضر عند الـ Hover */
+        .grid-item::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: -100%;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(90deg, transparent, rgba(106, 146, 98, 0.3), transparent);
+            transition: left 0.5s ease;
+        }
+
+        .grid-item:hover::before {
+            left: 100%;
+        }
+
+        .grid-item:hover::before {
+            left: 100%;
+        }
+
+        /* دعم الموبايلات */
+        @media (hover: none) and (pointer: coarse) {
+            .grid-item:active {
+                transform: translateY(-10px);
+                box-shadow: 0 6px 12px rgba(0, 0, 0, 0.15);
+                background: #b1e3b5dc;
+            }
+
+            .grid-item:active i {
+                transform: scale(1.2);
+                transition: transform 0.3s ease;
+            }
+
+            .grid-item:active::before {
+                left: 100%;
+                transition: left 0.5s ease;
+            }
+        }
+
+        /* تصغير النصوص على الشاشات الصغيرة */
+        @media (max-width: 768px) {
+            .dashboard-grid {
+                grid-template-columns: repeat(2, 1fr);
+                gap: 15px;
+            }
+            .grid-item {
+                width: 250px; /* Adjust width for smaller screens */
+                height: 90px;
+                padding: 15px;
+            }
+            .grid-item h3 {
+                font-size: 12px; /* Further reduce font size */
+                line-height: 1.3;
+            }
+            .grid-item i {
+                font-size: 35px;
+            }
+        }
+
+        @media (max-width: 576px) {
+            .dashboard-grid {
+                grid-template-columns: 1fr;
+                gap: 10px;
+            }
+            .grid-item {
+                width: 100%; /* Full width for single column */
+                max-width: 300px; /* Cap the width */
+                height: 80px;
+                padding: 10px;
+            }
+            .grid-item h3 {
+                font-size: 11px; /* Further reduce font size */
+                line-height: 1.2;
+            }
+            .grid-item i {
+                font-size: 30px;
+            }
+        }
+    </style>
+{% endblock %}

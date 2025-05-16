@@ -1,0 +1,291 @@
+{% extends 'base.html' %}
+
+{% block title %}درجات التقييم الذاتي 1{% endblock %}
+
+{% block extra_styles %}
+    <style>
+        /* تنسيق العنوان */
+        h2 {
+            color: #1B5E20;
+            font-size: 24px;
+            font-weight: 700;
+            margin-bottom: 20px;
+            text-align: right;
+        }
+
+        /* تنسيق الفلاتر */
+        .filters-container {
+            display: flex;
+            justify-content: flex-end;
+            gap: 15px;
+            margin-bottom: 20px;
+            flex-wrap: wrap;
+        }
+
+        .filters-container input,
+        .filters-container select {
+            padding: 8px;
+            border: 1px solid #e6f0e6;
+            border-radius: 4px;
+            font-size: 14px;
+            color: #4A4A4A;
+            background: #FFFFFF;
+            direction: rtl;
+            width: 200px;
+        }
+
+        .filters-container button {
+            background: #1B5E20;
+            color: #FFFFFF;
+            border: none;
+            padding: 8px 12px;
+            border-radius: 4px;
+            font-size: 14px;
+            cursor: pointer;
+            transition: background 0.3s ease;
+            display: flex;
+            align-items: center;
+            gap: 5px;
+        }
+
+        .filters-container button:hover {
+            background: #2e7d32;
+        }
+
+        .filters-container button i {
+            font-size: 12px;
+        }
+
+        /* تنسيق الجدول */
+        .scores-table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-bottom: 20px;
+            direction: rtl;
+        }
+
+        .scores-table th,
+        .scores-table td {
+            padding: 12px 15px;
+            text-align: right;
+            font-size: 14px;
+            color: #4A4A4A;
+        }
+
+        .scores-table th {
+            background: #b1e3b5dc;
+            color: #1B5E20;
+            font-weight: 600;
+            border-bottom: 2px solid #e6f0e6;
+        }
+
+        .scores-table td {
+            background: #FFFFFF;
+            border-bottom: 1px solid #e6f0e6;
+        }
+
+        .scores-table tr:hover td {
+            background: #E6F0E6;
+        }
+
+        /* تنسيق الدرجة */
+        .score {
+            font-weight: 600;
+            color: #1B5E20;
+        }
+
+        /* تنسيق الأزرار */
+        .action-buttons {
+            display: flex;
+            gap: 8px;
+            justify-content: flex-end;
+        }
+
+        .action-buttons button {
+            border: none;
+            padding: 8px 12px;
+            border-radius: 4px;
+            font-size: 14px;
+            cursor: pointer;
+            transition: background 0.3s ease;
+            display: flex;
+            align-items: center;
+            gap: 5px;
+        }
+
+        .action-buttons .details-btn {
+            background: #1B5E20;
+            color: #FFFFFF;
+        }
+
+        .action-buttons .details-btn:hover {
+            background: #2e7d32;
+        }
+
+        .action-buttons .edit-btn {
+            background: #4A4A4A;
+            color: #FFFFFF;
+        }
+
+        .action-buttons .edit-btn:hover {
+            background: #6a6a6a;
+        }
+
+        .action-buttons button i {
+            font-size: 12px;
+        }
+
+        /* تنسيق الرسالة في حالة عدم وجود درجات */
+        .no-scores {
+            color: #4A4A4A;
+            font-size: 16px;
+            text-align: center;
+            margin: 20px 0;
+        }
+
+        /* زر العودة */
+        .back-btn-container {
+            text-align: center;
+            margin-top: 20px;
+        }
+    </style>
+{% endblock %}
+
+{% block content %}
+    <h2>درجات التقييم الذاتي 1</h2>
+
+    <!-- الفلاتر -->
+    <div class="filters-container">
+        <input type="text" id="employeeName" placeholder="ابحث باسم الموظف..." onkeyup="filterScores()">
+        <input type="date" id="assessmentDate" onchange="filterScores()">
+        <select id="scoreFilter" onchange="filterScores()">
+            <option value="">كل الدرجات</option>
+            <option value="high">20-25 (ممتاز)</option>
+            <option value="medium">10-19 (متوسط)</option>
+            <option value="low">0-9 (ضعيف)</option>
+        </select>
+        <button onclick="filterScores()"><i class="fas fa-filter"></i> تصفية</button>
+    </div>
+
+    <!-- جدول الدرجات -->
+    <table class="scores-table" id="scoresTable">
+        <thead>
+            <tr>
+                <th>اسم الموظف</th>
+                <th>الرقم القومي</th>
+                <th>تاريخ التقييم</th>
+                <th>الدرجة الكلية</th>
+                <th>الإجراءات</th>
+            </tr>
+        </thead>
+        <tbody>
+            <!-- بيانات تجريبية -->
+            <tr>
+                <td>محمد أحمد</td>
+                <td>29701012548765</td>
+                <td>2025-04-29</td>
+                <td><span class="score">15 / 25</span></td>
+                <td>
+                    <div class="action-buttons">
+                        <button class="details-btn" onclick="viewDetails('محمد أحمد')"><i class="fas fa-eye"></i> عرض التفاصيل</button>
+                        <button class="edit-btn" onclick="editAssessment('محمد أحمد')"><i class="fas fa-edit"></i> تعديل</button>
+                    </div>
+                </td>
+            </tr>
+            <tr>
+                <td>سارة علي</td>
+                <td>29802034567890</td>
+                <td>2025-04-28</td>
+                <td><span class="score">22 / 25</span></td>
+                <td>
+                    <div class="action-buttons">
+                        <button class="details-btn" onclick="viewDetails('سارة علي')"><i class="fas fa-eye"></i> عرض التفاصيل</button>
+                        <button class="edit-btn" onclick="editAssessment('سارة علي')"><i class="fas fa-edit"></i> تعديل</button>
+                    </div>
+                </td>
+            </tr>
+            <tr>
+                <td>خالد محمود</td>
+                <td>29603056789012</td>
+                <td>2025-04-27</td>
+                <td><span class="score">8 / 25</span></td>
+                <td>
+                    <div class="action-buttons">
+                        <button class="details-btn" onclick="viewDetails('خالد محمود')"><i class="fas fa-eye"></i> عرض التفاصيل</button>
+                        <button class="edit-btn" onclick="editAssessment('خالد محمود')"><i class="fas fa-edit"></i> تعديل</button>
+                    </div>
+                </td>
+            </tr>
+        </tbody>
+    </table>
+
+    <!-- رسالة في حالة عدم وجود درجات -->
+    <p class="no-scores" id="noScoresMessage" style="display: none;">لا توجد درجات تقييم تطابق معايير التصفية.</p>
+
+{% endblock %}
+
+{% block extra_scripts %}
+    <script>
+        // دالة لعرض التفاصيل (مؤقتة)
+        function viewDetails(employeeName) {
+            Swal.fire({
+                title: 'تفاصيل التقييم الذاتي',
+                html: `اسم الموظف: ${employeeName}<br>الرقم القومي: ${document.querySelector(`td:contains("${employeeName}")`).nextElementSibling.textContent}<br>تاريخ التقييم: ${document.querySelector(`td:contains("${employeeName}")`).nextElementSibling.nextElementSibling.textContent}<br>الدرجة الكلية: ${document.querySelector(`td:contains("${employeeName}")`).nextElementSibling.nextElementSibling.nextElementSibling.textContent}`,
+                icon: 'info',
+                confirmButtonText: 'موافق',
+                confirmButtonColor: '#1B5E20'
+            });
+        }
+
+        // دالة لتعديل التقييم (مؤقتة)
+        function editAssessment(employeeName) {
+            Swal.fire({
+                title: 'تعديل التقييم الذاتي',
+                html: `جاري توجيهك لتعديل التقييم الذاتي لـ ${employeeName}...`,
+                icon: 'info',
+                confirmButtonText: 'موافق',
+                confirmButtonColor: '#1B5E20'
+            });
+        }
+
+        // دالة التصفية
+        function filterScores() {
+            const employeeName = document.getElementById('employeeName').value.toLowerCase();
+            const assessmentDate = document.getElementById('assessmentDate').value;
+            const scoreFilter = document.getElementById('scoreFilter').value;
+            const rows = document.querySelectorAll('#scoresTable tbody tr');
+            const noScoresMessage = document.getElementById('noScoresMessage');
+            let hasVisibleRows = false;
+
+            rows.forEach(row => {
+                const rowEmployeeName = row.cells[0].textContent.toLowerCase();
+                const rowAssessmentDate = row.cells[2].textContent;
+                const rowScoreText = row.cells[3].textContent; // "15 / 25"
+                const rowScore = parseInt(rowScoreText.split('/')[0].trim());
+
+                const matchesEmployeeName = employeeName === '' || rowEmployeeName.includes(employeeName);
+                const matchesDate = assessmentDate === '' || rowAssessmentDate === assessmentDate;
+                let matchesScore = true;
+
+                if (scoreFilter) {
+                    if (scoreFilter === 'high' && (rowScore < 20 || rowScore > 25)) {
+                        matchesScore = false;
+                    } else if (scoreFilter === 'medium' && (rowScore < 10 || rowScore > 19)) {
+                        matchesScore = false;
+                    } else if (scoreFilter === 'low' && (rowScore < 0 || rowScore > 9)) {
+                        matchesScore = false;
+                    }
+                }
+
+                if (matchesEmployeeName && matchesDate && matchesScore) {
+                    row.style.display = '';
+                    hasVisibleRows = true;
+                } else {
+                    row.style.display = 'none';
+                }
+            });
+
+            noScoresMessage.style.display = hasVisibleRows ? 'none' : 'block';
+        }
+    </script>
+{% endblock %}

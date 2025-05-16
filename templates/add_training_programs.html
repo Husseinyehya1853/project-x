@@ -1,0 +1,360 @@
+{% extends 'base.html' %}
+
+{% block title %}إدراج برامج تدريبية{% endblock %}
+
+{% block extra_styles %}
+    <style>
+        /* تنسيق العنوان */
+        h2 {
+            color: #1B5E20;
+            font-size: 24px;
+            font-weight: 700;
+            margin-bottom: 20px;
+            text-align: right;
+        }
+
+        /* تنسيق النموذج */
+        .form-section {
+            margin-right: 0;
+            margin-left: auto;
+            direction: rtl;
+            display: flex;
+            flex-direction: column;
+        }
+
+        .form-group {
+            display: flex;
+            align-items: center;
+            margin-bottom: 20px;
+            margin-left: 20px;
+            margin-right: 20px;
+            justify-content: flex-start;
+        }
+
+        .form-group label {
+            color: #4A4A4A;
+            font-size: 14px;
+            font-weight: 600;
+            width: 200px;
+            text-align: right;
+            margin-right: 15px;
+        }
+
+        .form-group input,
+        .form-group textarea,
+        .form-group select {
+            padding: 10px;
+            font-size: 14px;
+            border: 1.5px solid #6a9262;
+            border-radius: 4px;
+            background-color: #FFF;
+            color: #4A4A4A;
+            transition: border-color 0.3s ease, box-shadow 0.3s ease;
+            flex: 1;
+        }
+
+        .form-group input:focus,
+        .form-group textarea:focus,
+        .form-group select:focus {
+            outline: none;
+            border-color: #1B5E20;
+            box-shadow: 0 0 5px rgba(27, 94, 32, 0.3);
+        }
+
+        /* تنسيق textarea */
+        .form-group textarea {
+            height: 100px;
+            resize: vertical;
+        }
+
+        /* تنسيق القسم الفرعي */
+        .section-title {
+            color: #1B5E20;
+            font-size: 18px;
+            font-weight: 600;
+            margin: 20px 0 10px;
+            text-align: right;
+            border-bottom: 1px solid #e6f0e6;
+            padding-bottom: 5px;
+        }
+
+        /* تنسيق الأزرار */
+        .form-buttons {
+            display: flex;
+            justify-content: center;
+            gap: 15px;
+            margin-top: 30px;
+        }
+
+        .form-buttons button {
+            background-color: #1B5E20;
+            color: #FFF;
+            padding: 10px 20px;
+            border: none;
+            font-size: 14px;
+            font-weight: 600;
+            cursor: pointer;
+            border-radius: 4px;
+            transition: background-color 0.3s ease, transform 0.1s ease;
+        }
+
+        .form-buttons button:hover {
+            background-color: #2e7d32;
+            transform: translateY(-2px);
+        }
+
+        .form-buttons .cancel-btn {
+            background-color: #4A4A4A;
+        }
+
+        .form-buttons .cancel-btn:hover {
+            background-color: #6a6a6a;
+        }
+
+        /* تنسيق رسائل الخطأ */
+        .field-error {
+            color: red;
+            font-size: 12px;
+            margin-top: 5px;
+            display: none;
+            margin-right: 215px;
+        }
+
+        /* تنسيق رسائل التنبيه */
+        .alert {
+            padding: 10px;
+            margin: 10px 0;
+            border-radius: 4px;
+            text-align: center;
+        }
+
+        .alert-success {
+            background-color: #d4edda;
+            color: #155724;
+            border: 1px solid #c3e6cb;
+        }
+
+        .alert-error {
+            background-color: #f8d7da;
+            color: #721c24;
+            border: 1px solid #f5c6cb;
+        }
+
+        /* زر العودة */
+        .back-btn-container {
+            text-align: center;
+            margin-top: 20px;
+        }
+
+        /* تحسين التجاوب على الموبايل */
+        @media (max-width: 576px) {
+            .form-section {
+                padding: 10px;
+            }
+
+            .form-group {
+                flex-direction: column;
+                align-items: flex-end;
+                margin-left: 0;
+                margin-right: 0;
+            }
+
+            .form-group label {
+                width: 100%;
+                text-align: right;
+                margin-right: 0;
+                margin-bottom: 5px;
+            }
+
+            .form-group input,
+            .form-group textarea,
+            .form-group select {
+                width: 100%;
+            }
+
+            .field-error {
+                margin-right: 0;
+            }
+
+            .form-buttons {
+                flex-direction: column;
+                gap: 10px;
+            }
+
+            .form-buttons button {
+                width: 100%;
+                padding: 12px;
+            }
+        }
+    </style>
+{% endblock %}
+
+{% block content %}
+    <h2>إدراج برامج تدريبية</h2>
+
+    <!-- النموذج -->
+    <div class="form-section">
+        <div class="form-container">
+            <form method="POST" action="{{ url_for('add_training_programs') }}">
+                <!-- تفاصيل البرنامج التدريبي -->
+                <div class="section-title">تفاصيل البرنامج التدريبي</div>
+
+                <!-- اسم البرنامج -->
+                <div class="form-group">
+                    <label for="program_name">اسم البرنامج:</label>
+                    <input type="text" id="program_name" name="program_name" placeholder="مثال: تدريب القيادة الفعّالة" required>
+                    <div id="program_name_error" class="field-error"></div>
+                </div>
+
+                <!-- نوع الوظيفة -->
+                <div class="form-group">
+                    <label for="job_type">نوع الوظيفة المستهدفة:</label>
+                    <select id="job_type" name="job_type" required>
+                        <option value="">اختر نوع الوظيفة...</option>
+                        <option value="leadership">وظيفة قيادية</option>
+                        <option value="supervisory">وظيفة إشرافية</option>
+                    </select>
+                    <div id="job_type_error" class="field-error"></div>
+                </div>
+
+                <!-- تاريخ البداية -->
+                <div class="form-group">
+                    <label for="start_date">تاريخ البداية:</label>
+                    <input type="date" id="start_date" name="start_date" required>
+                    <div id="start_date_error" class="field-error"></div>
+                </div>
+
+                <!-- تاريخ النهاية -->
+                <div class="form-group">
+                    <label for="end_date">تاريخ النهاية:</label>
+                    <input type="date" id="end_date" name="end_date" required>
+                    <div id="end_date_error" class="field-error"></div>
+                </div>
+
+                <!-- اسم المدرب -->
+                <div class="form-group">
+                    <label for="trainer_name">اسم المدرب:</label>
+                    <input type="text" id="trainer_name" name="trainer_name" placeholder="مثال: د. أحمد علي" required>
+                    <div id="trainer_name_error" class="field-error"></div>
+                </div>
+
+                <!-- طريقة التنفيذ -->
+                <div class="form-group">
+                    <label for="delivery_method">طريقة التنفيذ:</label>
+                    <select id="delivery_method" name="delivery_method" required>
+                        <option value="">اختر طريقة التنفيذ...</option>
+                        <option value="in_person">حضوري</option>
+                        <option value="remote">عن بعد</option>
+                        <option value="hybrid">هجين</option>
+                    </select>
+                    <div id="delivery_method_error" class="field-error"></div>
+                </div>
+
+                <!-- وصف البرنامج -->
+                <div class="section-title">وصف البرنامج</div>
+
+                <div class="form-group">
+                    <label for="description">وصف البرنامج:</label>
+                    <textarea id="description" name="description" placeholder="أدخل وصفًا للبرنامج التدريبي (مثال: يهدف البرنامج إلى تطوير مهارات القيادة وحل المشكلات لدى المرشحين...)"></textarea>
+                    <div id="description_error" class="field-error"></div>
+                </div>
+
+                <!-- أزرار النموذج -->
+                <div class="form-buttons">
+                    <button type="submit">إدراج البرنامج</button>
+                    <button type="button" class="cancel-btn" onclick="window.location.href='{{ url_for('dashboard') }}'">إلغاء</button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    {% with messages = get_flashed_messages(with_categories=true) %}
+        {% if messages %}
+            {% for category, message in messages %}
+                <div class="alert alert-{{ category }}">{{ message }}</div>
+            {% endfor %}
+        {% endif %}
+    {% endwith %}
+
+{% endblock %}
+
+{% block extra_scripts %}
+    <script>
+        document.querySelector('form').addEventListener('submit', function (event) {
+            let valid = true;
+
+            // التحقق من اسم البرنامج
+            const programName = document.getElementById('program_name').value;
+            if (!programName || programName.trim() === '') {
+                document.getElementById('program_name_error').textContent = 'اسم البرنامج مطلوب';
+                document.getElementById('program_name_error').style.display = 'block';
+                valid = false;
+            } else {
+                document.getElementById('program_name_error').style.display = 'none';
+            }
+
+            // التحقق من نوع الوظيفة
+            const jobType = document.getElementById('job_type').value;
+            if (!jobType) {
+                document.getElementById('job_type_error').textContent = 'نوع الوظيفة مطلوب';
+                document.getElementById('job_type_error').style.display = 'block';
+                valid = false;
+            } else {
+                document.getElementById('job_type_error').style.display = 'none';
+            }
+
+            // التحقق من تاريخ البداية
+            const startDate = document.getElementById('start_date').value;
+            const today = new Date().toISOString().split('T')[0];
+            if (!startDate) {
+                document.getElementById('start_date_error').textContent = 'تاريخ البداية مطلوب';
+                document.getElementById('start_date_error').style.display = 'block';
+                valid = false;
+            } else if (startDate < today) {
+                document.getElementById('start_date_error').textContent = 'تاريخ البداية يجب أن يكون في المستقبل';
+                document.getElementById('start_date_error').style.display = 'block';
+                valid = false;
+            } else {
+                document.getElementById('start_date_error').style.display = 'none';
+            }
+
+            // التحقق من تاريخ النهاية
+            const endDate = document.getElementById('end_date').value;
+            if (!endDate) {
+                document.getElementById('end_date_error').textContent = 'تاريخ النهاية مطلوب';
+                document.getElementById('end_date_error').style.display = 'block';
+                valid = false;
+            } else if (endDate < startDate) {
+                document.getElementById('end_date_error').textContent = 'تاريخ النهاية يجب أن يكون بعد تاريخ البداية';
+                document.getElementById('end_date_error').style.display = 'block';
+                valid = false;
+            } else {
+                document.getElementById('end_date_error').style.display = 'none';
+            }
+
+            // التحقق من اسم المدرب
+            const trainerName = document.getElementById('trainer_name').value;
+            if (!trainerName || trainerName.trim() === '') {
+                document.getElementById('trainer_name_error').textContent = 'اسم المدرب مطلوب';
+                document.getElementById('trainer_name_error').style.display = 'block';
+                valid = false;
+            } else {
+                document.getElementById('trainer_name_error').style.display = 'none';
+            }
+
+            // التحقق من طريقة التنفيذ
+            const deliveryMethod = document.getElementById('delivery_method').value;
+            if (!deliveryMethod) {
+                document.getElementById('delivery_method_error').textContent = 'طريقة التنفيذ مطلوبة';
+                document.getElementById('delivery_method_error').style.display = 'block';
+                valid = false;
+            } else {
+                document.getElementById('delivery_method_error').style.display = 'none';
+            }
+
+            if (!valid) {
+                event.preventDefault();
+            }
+        });
+    </script>
+{% endblock %}

@@ -1,0 +1,130 @@
+{% extends "base.html" %}
+
+{% block title %}تسجيل وظيفة جديدة{% endblock %}
+
+{% block content %}
+<div style="text-align: right; padding: 20px;">
+    <!-- قسم المربعات في الأعلى -->
+    <div style="display: flex; justify-content: space-between; margin-bottom: 20px;">
+        <div id="step-1" style="background-color: #b1e3b5dc; color: #FFFFFF; padding: 10px 20px; border-radius: 8px; font-size: 16px; font-weight: 600; width: 30%; text-align: center;">
+            1-البيانات
+        </div>
+        <div id="step-2" style="background-color: #6a9262; color: #FFFFFF; padding: 10px 20px; border-radius: 8px; font-size: 16px; font-weight: 600; width: 30%; text-align: center;">
+            2-مرفقات
+        </div>
+        <div id="step-3" style="background-color: #6a9262; color: #FFFFFF; padding: 10px 20px; border-radius: 8px; font-size: 16px; font-weight: 600; width: 30%; text-align: center;">
+            3-تحويل
+        </div>
+    </div>
+
+    <!-- كلمة "تسجيل وظيفة" تحت المربع الأول -->
+    <div style="text-align: right; margin-bottom: 20px;">
+        <span style="color: #4A4A4A; font-size: 18px; font-weight: 600;">تسجيل وظيفة</span>
+    </div>
+
+    <!-- قسم البيانات (الخطوة الأولى) -->
+    <div id="data-section" style="display: block;">
+        <form id="job-form" method="POST" action="{{ url_for('register_new_job') }}">
+            <div style="margin-bottom: 15px;">
+                <label for="job_title" style="color: #4A4A4A; font-size: 16px; display: block; margin-bottom: 5px;">اسم الوظيفة</label>
+                <input type="text" id="job_title" name="job_title" required style="width: 100%; padding: 8px; border: 1px solid #ccc; border-radius: 4px; font-size: 14px;" placeholder="أدخل اسم الوظيفة">
+            </div>
+
+            <div style="margin-bottom: 15px;">
+                <label for="job_code" style="color: #4A4A4A; font-size: 16px; display: block; margin-bottom: 5px;">كود الوظيفة</label>
+                <input type="text" id="job_code" name="job_code" required style="width: 100%; padding: 8px; border: 1px solid #ccc; border-radius: 4px; font-size: 14px;" placeholder="أدخل كود الوظيفة (مثال: HR-2025-001)">
+            </div>
+
+            <div style="margin-bottom: 15px;">
+                <label for="job_description" style="color: #4A4A4A; font-size: 16px; display: block; margin-bottom: 5px;">وصف الوظيفة</label>
+                <textarea id="job_description" name="job_description" required style="width: 100%; padding: 8px; border: 1px solid #ccc; border-radius: 4px; font-size: 14px; resize: vertical; height: 100px;" placeholder="أدخل وصف الوظيفة"></textarea>
+            </div>
+
+            <div style="margin-bottom: 15px;">
+                <label for="deadline" style="color: #4A4A4A; font-size: 16px; display: block; margin-bottom: 5px;">التاريخ النهائي للتقديم</label>
+                <input type="date" id="deadline" name="deadline" required style="width: 100%; padding: 8px; border: 1px solid #ccc; border-radius: 4px; font-size: 14px;">
+            </div>
+
+            <div style="text-align: center;">
+                <button type="button" class="btn" onclick="goToNextStep()">التالي</button>
+                <a href="{{ url_for('dashboard') }}" class="back-btn" style="margin-right: 10px;">العودة</a>
+            </div>
+        </form>
+    </div>
+
+    <!-- قسم المرفقات (الخطوة الثانية) -->
+    <div id="attachments-section" style="display: none;">
+        <div style="margin-bottom: 15px;">
+            <label for="attachment_file" style="color: #4A4A4A; font-size: 16px; display: block; margin-bottom: 5px;">رفع ملف (PDF فقط)</label>
+            <input type="file" id="attachment_file" name="attachment_file" accept=".pdf" style="width: 100%; padding: 8px; border: 1px solid #ccc; border-radius: 4px; font-size: 14px;">
+        </div>
+
+        <div style="text-align: center;">
+            <button type="button" class="btn" onclick="goToPreviousStep()">السابق</button>
+            <button type="button" class="btn" onclick="goToNextStep()">التالي</button>
+            <a href="{{ url_for('dashboard') }}" class="back-btn" style="margin-right: 10px;">العودة</a>
+        </div>
+    </div>
+
+    <!-- قسم التحويل (الخطوة الثالثة) -->
+    <div id="transfer-section" style="display: none;">
+        <div style="margin-bottom: 15px;">
+            <label for="transfer_to" style="color: #4A4A4A; font-size: 16px; display: block; margin-bottom: 5px;">تحويل إلى</label>
+            <select id="transfer_to" name="transfer_to" style="width: 100%; padding: 8px; border: 1px solid #ccc; border-radius: 4px; font-size: 14px;">
+                <option value="">اختر الجهة</option>
+                <option value="hr">إدارة الموارد البشرية</option>
+                <option value="it">قسم تكنولوجيا المعلومات</option>
+                <option value="legal">الإدارة القانونية</option>
+            </select>
+        </div>
+
+        <div style="text-align: center;">
+            <button type="button" class="btn" onclick="goToPreviousStep()">السابق</button>
+            <button type="submit" form="job-form" class="btn">إرسال</button>
+            <a href="{{ url_for('dashboard') }}" class="back-btn" style="margin-right: 10px;">العودة</a>
+        </div>
+    </div>
+</div>
+
+<script>
+    let currentStep = 1;
+
+    function goToNextStep() {
+        if (currentStep < 3) {
+            currentStep++;
+            updateSteps();
+        }
+    }
+
+    function goToPreviousStep() {
+        if (currentStep > 1) {
+            currentStep--;
+            updateSteps();
+        }
+    }
+
+    function updateSteps() {
+        // إخفاء كل الأقسام
+        document.getElementById('data-section').style.display = 'none';
+        document.getElementById('attachments-section').style.display = 'none';
+        document.getElementById('transfer-section').style.display = 'none';
+
+        // تغيير ألوان المربعات
+        document.getElementById('step-1').style.backgroundColor = currentStep >= 1 ? '#b1e3b5dc' : '#6a9262';
+        document.getElementById('step-2').style.backgroundColor = currentStep >= 2 ? '#b1e3b5dc' : '#6a9262';
+        document.getElementById('step-3').style.backgroundColor = currentStep >= 3 ? '#b1e3b5dc' : '#6a9262';
+
+        // إظهار القسم الحالي
+        if (currentStep === 1) {
+            document.getElementById('data-section').style.display = 'block';
+        } else if (currentStep === 2) {
+            document.getElementById('attachments-section').style.display = 'block';
+        } else if (currentStep === 3) {
+            document.getElementById('transfer-section').style.display = 'block';
+        }
+    }
+
+    // تهيئة الخطوة الأولى عند تحميل الصفحة
+    updateSteps();
+</script>
+{% endblock %}

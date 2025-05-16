@@ -1,0 +1,305 @@
+{% extends 'base.html' %}
+
+{% block title %}بحث{% endblock %}
+
+{% block extra_styles %}
+    <style>
+        /* تنسيق العنوان */
+        h2 {
+            color: #1B5E20;
+            font-size: 24px;
+            font-weight: 700;
+            margin-bottom: 20px;
+            text-align: right;
+        }
+
+        /* تنسيق نموذج البحث */
+        .search-form {
+            background: #f5f5f5;
+            padding: 20px;
+            border-radius: 8px;
+            margin-bottom: 20px;
+            direction: rtl;
+        }
+
+        .search-form .form-row {
+            display: flex;
+            gap: 15px;
+            margin-bottom: 15px;
+            flex-wrap: wrap;
+        }
+
+        .search-form label {
+            color: #4A4A4A;
+            font-size: 14px;
+            font-weight: 600;
+            margin-left: 10px;
+            display: inline-block;
+            width: 100px;
+            text-align: left;
+        }
+
+        .search-form input,
+        .search-form select {
+            padding: 8px;
+            border: 1px solid #e6f0e6;
+            border-radius: 4px;
+            font-size: 14px;
+            color: #4A4A4A;
+            background: #FFFFFF;
+            direction: rtl;
+            width: 200px;
+        }
+
+        .search-form button {
+            background: #1B5E20;
+            color: #FFFFFF;
+            border: none;
+            padding: 8px 15px;
+            border-radius: 4px;
+            font-size: 14px;
+            cursor: pointer;
+            transition: background 0.3s ease;
+            display: flex;
+            align-items: center;
+            gap: 5px;
+        }
+
+        .search-form button:hover {
+            background: #2e7d32;
+        }
+
+        .search-form button i {
+            font-size: 12px;
+        }
+
+        /* تنسيق الجدول */
+        .search-results-table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-bottom: 20px;
+            direction: rtl;
+        }
+
+        .search-results-table th,
+        .search-results-table td {
+            padding: 12px 15px;
+            text-align: right;
+            font-size: 14px;
+            color: #4A4A4A;
+        }
+
+        .search-results-table th {
+            background: #b1e3b5dc;
+            color: #1B5E20;
+            font-weight: 600;
+            border-bottom: 2px solid #e6f0e6;
+        }
+
+        .search-results-table td {
+            background: #FFFFFF;
+            border-bottom: 1px solid #e6f0e6;
+        }
+
+        .search-results-table tr:hover td {
+            background: #E6F0E6;
+        }
+
+        /* تنسيق الحالة */
+        .status {
+            padding: 5px 10px;
+            border-radius: 4px;
+            font-size: 12px;
+            font-weight: 600;
+        }
+
+        .status.completed {
+            background: #b1e3b5dc;
+            color: #1B5E20;
+        }
+
+        .status.pending {
+            background: #f5f5f5;
+            color: #4A4A4A;
+        }
+
+        /* تنسيق الأزرار */
+        .action-buttons {
+            display: flex;
+            gap: 8px;
+            justify-content: flex-end;
+        }
+
+        .action-buttons button {
+            background: #1B5E20;
+            color: #FFFFFF;
+            border: none;
+            padding: 8px 12px;
+            border-radius: 4px;
+            font-size: 14px;
+            cursor: pointer;
+            transition: background 0.3s ease;
+            display: flex;
+            align-items: center;
+            gap: 5px;
+        }
+
+        .action-buttons button:hover {
+            background: #2e7d32;
+        }
+
+        .action-buttons button i {
+            font-size: 12px;
+        }
+
+        /* تنسيق الرسالة في حالة عدم وجود نتائج */
+        .no-results {
+            color: #4A4A4A;
+            font-size: 16px;
+            text-align: center;
+            margin: 20px 0;
+        }
+
+        /* زر العودة */
+        .back-btn-container {
+            text-align: center;
+            margin-top: 20px;
+        }
+    </style>
+{% endblock %}
+
+{% block content %}
+    <h2>بحث</h2>
+
+    <!-- نموذج البحث -->
+    <div class="search-form">
+        <div class="form-row">
+            <label>اسم الوظيفة</label>
+            <input type="text" id="jobName" placeholder="أدخل اسم الوظيفة">
+        </div>
+        <div class="form-row">
+            <label>كود الوظيفة</label>
+            <input type="text" id="jobCode" placeholder="أدخل كود الوظيفة">
+        </div>
+        <div class="form-row">
+            <label>التاريخ من</label>
+            <input type="date" id="startDate">
+        </div>
+        <div class="form-row">
+            <label>التاريخ إلى</label>
+            <input type="date" id="endDate">
+        </div>
+        <div class="form-row">
+            <label>الحالة</label>
+            <select id="status">
+                <option value="">كل الحالات</option>
+                <option value="completed">مكتمل</option>
+                <option value="pending">معلق</option>
+            </select>
+        </div>
+        <div class="form-row">
+            <button onclick="search()"><i class="fas fa-search"></i> بحث</button>
+        </div>
+    </div>
+
+    <!-- جدول النتائج -->
+    <table class="search-results-table" id="searchResultsTable">
+        <thead>
+            <tr>
+                <th>اسم الوظيفة</th>
+                <th>كود الوظيفة</th>
+                <th>التاريخ</th>
+                <th>الحالة</th>
+                <th>الإجراءات</th>
+            </tr>
+        </thead>
+        <tbody>
+            <!-- بيانات تجريبية -->
+            <tr>
+                <td>مدير إدارة الموارد البشرية</td>
+                <td>HR-2025-001</td>
+                <td>2025-04-15</td>
+                <td><span class="status completed">مكتمل</span></td>
+                <td>
+                    <div class="action-buttons">
+                        <button onclick="viewDetails('HR-2025-001')"><i class="fas fa-eye"></i> عرض التفاصيل</button>
+                    </div>
+                </td>
+            </tr>
+            <tr>
+                <td>رئيس قسم تكنولوجيا المعلومات</td>
+                <td>IT-2025-002</td>
+                <td>2025-04-20</td>
+                <td><span class="status completed">مكتمل</span></td>
+                <td>
+                    <div class="action-buttons">
+                        <button onclick="viewDetails('IT-2025-002')"><i class="fas fa-eye"></i> عرض التفاصيل</button>
+                    </div>
+                </td>
+            </tr>
+            <tr>
+                <td>مستشار قانوني أول</td>
+                <td>LEGAL-2025-003</td>
+                <td>2025-04-25</td>
+                <td><span class="status pending">معلق</span></td>
+                <td>
+                    <div class="action-buttons">
+                        <button onclick="viewDetails('LEGAL-2025-003')"><i class="fas fa-eye"></i> عرض التفاصيل</button>
+                    </div>
+                </td>
+            </tr>
+        </tbody>
+    </table>
+
+    <!-- رسالة في حالة عدم وجود نتائج -->
+    <p class="no-results" id="noResultsMessage" style="display: none;">لا توجد نتائج تطابق معايير البحث.</p>
+
+{% endblock %}
+
+{% block extra_scripts %}
+    <script>
+        // دالة لعرض التفاصيل (مؤقتة)
+        function viewDetails(jobCode) {
+            Swal.fire({
+                title: 'تفاصيل الوظيفة',
+                html: `كود الوظيفة: ${jobCode}<br>الحالة: ${document.querySelector(`td:contains("${jobCode}")`).nextElementSibling.nextElementSibling.querySelector('.status').textContent}<br>تفاصيل إضافية: سيتم عرض المزيد من التفاصيل هنا.`,
+                icon: 'info',
+                confirmButtonText: 'موافق',
+                confirmButtonColor: '#1B5E20'
+            });
+        }
+
+        // دالة البحث
+        function search() {
+            const jobName = document.getElementById('jobName').value.toLowerCase();
+            const jobCode = document.getElementById('jobCode').value.toLowerCase();
+            const startDate = document.getElementById('startDate').value;
+            const endDate = document.getElementById('endDate').value;
+            const status = document.getElementById('status').value;
+            const rows = document.querySelectorAll('#searchResultsTable tbody tr');
+            const noResultsMessage = document.getElementById('noResultsMessage');
+            let hasVisibleRows = false;
+
+            rows.forEach(row => {
+                const rowJobName = row.cells[0].textContent.toLowerCase();
+                const rowJobCode = row.cells[1].textContent.toLowerCase();
+                const rowDate = row.cells[2].textContent;
+                const rowStatus = row.cells[3].querySelector('.status').classList.contains('completed') ? 'completed' : 'pending';
+
+                const matchesJobName = jobName === '' || rowJobName.includes(jobName);
+                const matchesJobCode = jobCode === '' || rowJobCode.includes(jobCode);
+                const matchesDate = (!startDate || rowDate >= startDate) && (!endDate || rowDate <= endDate);
+                const matchesStatus = status === '' || (status === 'completed' && rowStatus === 'completed') || (status === 'pending' && rowStatus === 'pending');
+
+                if (matchesJobName && matchesJobCode && matchesDate && matchesStatus) {
+                    row.style.display = '';
+                    hasVisibleRows = true;
+                } else {
+                    row.style.display = 'none';
+                }
+            });
+
+            noResultsMessage.style.display = hasVisibleRows ? 'none' : 'block';
+        }
+    </script>
+{% endblock %}

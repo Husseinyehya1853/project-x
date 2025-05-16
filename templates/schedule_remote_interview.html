@@ -1,0 +1,379 @@
+{% extends 'base.html' %}
+
+{% block title %}تحديد موعد مقابلة عن بعد{% endblock %}
+
+{% block extra_styles %}
+    <style>
+        /* تنسيق العنوان */
+        h2 {
+            color: #1B5E20;
+            font-size: 24px;
+            font-weight: 700;
+            margin-bottom: 20px;
+            text-align: right;
+        }
+
+        /* تنسيق النموذج */
+        .form-section {
+            margin-right: 0;
+            margin-left: auto;
+            direction: rtl;
+            display: flex;
+            flex-direction: column;
+        }
+
+        .form-group {
+            display: flex;
+            align-items: center;
+            margin-bottom: 20px;
+            margin-left: 20px;
+            margin-right: 20px;
+            justify-content: flex-start;
+        }
+
+        .form-group label {
+            color: #4A4A4A;
+            font-size: 14px;
+            font-weight: 600;
+            width: 200px;
+            text-align: right;
+            margin-right: 15px;
+        }
+
+        .form-group input,
+        .form-group textarea,
+        .form-group select {
+            padding: 10px;
+            font-size: 14px;
+            border: 1.5px solid #6a9262;
+            border-radius: 4px;
+            background-color: #FFF;
+            color: #4A4A4A;
+            transition: border-color 0.3s ease, box-shadow 0.3s ease;
+            flex: 1;
+        }
+
+        .form-group input:focus,
+        .form-group textarea:focus,
+        .form-group select:focus {
+            outline: none;
+            border-color: #1B5E20;
+            box-shadow: 0 0 5px rgba(27, 94, 32, 0.3);
+        }
+
+        /* تنسيق textarea */
+        .form-group textarea {
+            height: 100px;
+            resize: vertical;
+        }
+
+        /* تنسيق القسم الفرعي */
+        .section-title {
+            color: #1B5E20;
+            font-size: 18px;
+            font-weight: 600;
+            margin: 20px 0 10px;
+            text-align: right;
+            border-bottom: 1px solid #e6f0e6;
+            padding-bottom: 5px;
+        }
+
+        /* تنسيق الأزرار */
+        .form-buttons {
+            display: flex;
+            justify-content: center;
+            gap: 15px;
+            margin-top: 30px;
+        }
+
+        .form-buttons button {
+            background-color: #1B5E20;
+            color: #FFF;
+            padding: 10px 20px;
+            border: none;
+            font-size: 14px;
+            font-weight: 600;
+            cursor: pointer;
+            border-radius: 4px;
+            transition: background-color 0.3s ease, transform 0.1s ease;
+        }
+
+        .form-buttons button:hover {
+            background-color: #2e7d32;
+            transform: translateY(-2px);
+        }
+
+        .form-buttons .cancel-btn {
+            background-color: #4A4A4A;
+        }
+
+        .form-buttons .cancel-btn:hover {
+            background-color: #6a6a6a;
+        }
+
+        /* تنسيق رسائل الخطأ */
+        .field-error {
+            color: red;
+            font-size: 12px;
+            margin-top: 5px;
+            display: none;
+            margin-right: 215px;
+        }
+
+        /* تنسيق رسائل التنبيه */
+        .alert {
+            padding: 10px;
+            margin: 10px 0;
+            border-radius: 4px;
+            text-align: center;
+        }
+
+        .alert-success {
+            background-color: #d4edda;
+            color: #155724;
+            border: 1px solid #c3e6cb;
+        }
+
+        .alert-error {
+            background-color: #f8d7da;
+            color: #721c24;
+            border: 1px solid #f5c6cb;
+        }
+
+        /* زر العودة */
+        .back-btn-container {
+            text-align: center;
+            margin-top: 20px;
+        }
+
+        /* تحسين التجاوب على الموبايل */
+        @media (max-width: 576px) {
+            .form-section {
+                padding: 10px;
+            }
+
+            .form-group {
+                flex-direction: column;
+                align-items: flex-end;
+                margin-left: 0;
+                margin-right: 0;
+            }
+
+            .form-group label {
+                width: 100%;
+                text-align: right;
+                margin-right: 0;
+                margin-bottom: 5px;
+            }
+
+            .form-group input,
+            .form-group textarea,
+            .form-group select {
+                width: 100%;
+            }
+
+            .field-error {
+                margin-right: 0;
+            }
+
+            .form-buttons {
+                flex-direction: column;
+                gap: 10px;
+            }
+
+            .form-buttons button {
+                width: 100%;
+                padding: 12px;
+            }
+        }
+    </style>
+{% endblock %}
+
+{% block content %}
+    <h2>تحديد موعد مقابلة عن بعد</h2>
+
+    <!-- النموذج -->
+    <div class="form-section">
+        <div class="form-container">
+            <form method="POST" action="{{ url_for('schedule_remote_interview') }}">
+                <!-- معلومات المرشح -->
+                <div class="section-title">معلومات المرشح</div>
+
+                <!-- اسم المرشح -->
+                <div class="form-group">
+                    <label for="candidate_name">اسم المرشح:</label>
+                    <input type="text" id="candidate_name" name="candidate_name" value="محمد أحمد" required>
+                    <div id="candidate_name_error" class="field-error"></div>
+                </div>
+
+                <!-- الرقم القومي -->
+                <div class="form-group">
+                    <label for="national_id">الرقم القومي:</label>
+                    <input type="text" id="national_id" name="national_id" value="29701012548765" required>
+                    <div id="national_id_error" class="field-error"></div>
+                </div>
+
+                <!-- نوع الوظيفة -->
+                <div class="form-group">
+                    <label for="job_type">نوع الوظيفة:</label>
+                    <select id="job_type" name="job_type" required>
+                        <option value="">اختر نوع الوظيفة...</option>
+                        <option value="leadership" selected>وظيفة قيادية</option>
+                        <option value="supervisory">وظيفة إشرافية</option>
+                    </select>
+                    <div id="job_type_error" class="field-error"></div>
+                </div>
+
+                <!-- تفاصيل المقابلة -->
+                <div class="section-title">تفاصيل المقابلة</div>
+
+                <!-- تاريخ المقابلة -->
+                <div class="form-group">
+                    <label for="interview_date">تاريخ المقابلة:</label>
+                    <input type="date" id="interview_date" name="interview_date" required>
+                    <div id="interview_date_error" class="field-error"></div>
+                </div>
+
+                <!-- وقت المقابلة -->
+                <div class="form-group">
+                    <label for="interview_time">وقت المقابلة:</label>
+                    <input type="time" id="interview_time" name="interview_time" required>
+                    <div id="interview_time_error" class="field-error"></div>
+                </div>
+
+                <!-- رابط المقابلة -->
+                <div class="form-group">
+                    <label for="interview_link">رابط المقابلة:</label>
+                    <input type="url" id="interview_link" name="interview_link" placeholder="https://example.com/interview" required>
+                    <div id="interview_link_error" class="field-error"></div>
+                </div>
+
+                <!-- منصة المقابلة -->
+                <div class="form-group">
+                    <label for="platform">منصة المقابلة:</label>
+                    <select id="platform" name="platform" required>
+                        <option value="">اختر المنصة...</option>
+                        <option value="zoom">Zoom</option>
+                        <option value="google_meet">Google Meet</option>
+                        <option value="microsoft_teams">Microsoft Teams</option>
+                        <option value="other">أخرى</option>
+                    </select>
+                    <div id="platform_error" class="field-error"></div>
+                </div>
+
+                <!-- تعليمات إضافية -->
+                <div class="section-title">تعليمات إضافية</div>
+
+                <div class="form-group">
+                    <label for="instructions">تعليمات للمرشح:</label>
+                    <textarea id="instructions" name="instructions" placeholder="أدخل أي تعليمات إضافية للمرشح (مثال: تأكد من وجود اتصال إنترنت مستقر، استخدم سماعات أذن، إلخ)...">يرجى التأكد من وجود اتصال إنترنت مستقر واستخدام سماعات أذن لضمان جودة الصوت أثناء المقابلة.</textarea>
+                    <div id="instructions_error" class="field-error"></div>
+                </div>
+
+                <!-- أزرار النموذج -->
+                <div class="form-buttons">
+                    <button type="submit">تحديد الموعد</button>
+                    <button type="button" class="cancel-btn" onclick="window.location.href='{{ url_for('dashboard') }}'">إلغاء</button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    {% with messages = get_flashed_messages(with_categories=true) %}
+        {% if messages %}
+            {% for category, message in messages %}
+                <div class="alert alert-{{ category }}">{{ message }}</div>
+            {% endfor %}
+        {% endif %}
+    {% endwith %}
+
+{% endblock %}
+
+{% block extra_scripts %}
+    <script>
+        document.querySelector('form').addEventListener('submit', function (event) {
+            let valid = true;
+
+            // التحقق من اسم المرشح
+            const candidateName = document.getElementById('candidate_name').value;
+            if (!candidateName || candidateName.trim() === '') {
+                document.getElementById('candidate_name_error').textContent = 'اسم المرشح مطلوب';
+                document.getElementById('candidate_name_error').style.display = 'block';
+                valid = false;
+            } else {
+                document.getElementById('candidate_name_error').style.display = 'none';
+            }
+
+            // التحقق من الرقم القومي
+            const nationalId = document.getElementById('national_id').value;
+            const nationalIdRegex = /^\d{14}$/;
+            if (!nationalId || !nationalIdRegex.test(nationalId)) {
+                document.getElementById('national_id_error').textContent = 'الرقم القومي يجب أن يكون 14 رقمًا';
+                document.getElementById('national_id_error').style.display = 'block';
+                valid = false;
+            } else {
+                document.getElementById('national_id_error').style.display = 'none';
+            }
+
+            // التحقق من نوع الوظيفة
+            const jobType = document.getElementById('job_type').value;
+            if (!jobType) {
+                document.getElementById('job_type_error').textContent = 'نوع الوظيفة مطلوب';
+                document.getElementById('job_type_error').style.display = 'block';
+                valid = false;
+            } else {
+                document.getElementById('job_type_error').style.display = 'none';
+            }
+
+            // التحقق من تاريخ المقابلة
+            const interviewDate = document.getElementById('interview_date').value;
+            const today = new Date().toISOString().split('T')[0];
+            if (!interviewDate) {
+                document.getElementById('interview_date_error').textContent = 'تاريخ المقابلة مطلوب';
+                document.getElementById('interview_date_error').style.display = 'block';
+                valid = false;
+            } else if (interviewDate < today) {
+                document.getElementById('interview_date_error').textContent = 'تاريخ المقابلة يجب أن يكون في المستقبل';
+                document.getElementById('interview_date_error').style.display = 'block';
+                valid = false;
+            } else {
+                document.getElementById('interview_date_error').style.display = 'none';
+            }
+
+            // التحقق من وقت المقابلة
+            const interviewTime = document.getElementById('interview_time').value;
+            if (!interviewTime) {
+                document.getElementById('interview_time_error').textContent = 'وقت المقابلة مطلوب';
+                document.getElementById('interview_time_error').style.display = 'block';
+                valid = false;
+            } else {
+                document.getElementById('interview_time_error').style.display = 'none';
+            }
+
+            // التحقق من رابط المقابلة
+            const interviewLink = document.getElementById('interview_link').value;
+            const urlRegex = /^(https?:\/\/)?([\w-]+(\.[\w-]+)+)(\/[\w-]*)*(\?\S*)?$/;
+            if (!interviewLink || !urlRegex.test(interviewLink)) {
+                document.getElementById('interview_link_error').textContent = 'يرجى إدخال رابط صحيح';
+                document.getElementById('interview_link_error').style.display = 'block';
+                valid = false;
+            } else {
+                document.getElementById('interview_link_error').style.display = 'none';
+            }
+
+            // التحقق من منصة المقابلة
+            const platform = document.getElementById('platform').value;
+            if (!platform) {
+                document.getElementById('platform_error').textContent = 'منصة المقابلة مطلوبة';
+                document.getElementById('platform_error').style.display = 'block';
+                valid = false;
+            } else {
+                document.getElementById('platform_error').style.display = 'none';
+            }
+
+            if (!valid) {
+                event.preventDefault();
+            }
+        });
+    </script>
+{% endblock %}

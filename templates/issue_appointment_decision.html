@@ -1,0 +1,660 @@
+{% extends 'base.html' %}
+
+{% block title %}
+إصدار قرار تعيين
+{% endblock %}
+
+{% block extra_styles %}
+    <style>
+        .form-section {
+            margin-right: 0; /* النموذج على أقصى اليمين */
+            margin-left: auto;
+            direction: rtl; /* اتجاه من اليمين للشمال */
+            display: flex;
+            flex-direction: column;
+        }
+
+        .form-container {
+            width: 100%; /* العرض الكامل */
+            background: #FFF;
+            padding: 10px;
+            border-radius: 4px;
+        }
+
+        .section-title {
+            color: #1B5E20; /* أخضر داكن */
+            font-size: 14px; /* تصغير حجم الخط */
+            margin-top: 15px;
+            margin-bottom: 10px;
+            font-weight: 700;
+            text-align: right;
+        }
+
+        /* تنسيق عام للحقول */
+        .form-group,
+        .decision-details-row {
+            display: flex;
+            align-items: center;
+            margin-bottom: 10px; /* تقليل المسافة العمودية بين الصفوف */
+            margin-left: 20px; /* تقليل المساحة على الشمال */
+            margin-right: 20px; /* مساحة على اليمين للمحاذاة */
+            justify-content: flex-start; /* محاذاة العناصر من بداية السطر */
+        }
+
+        /* تنسيق الـ label */
+        .form-group label,
+        .decision-details-row label {
+            color: #4A4A4A; /* رمادي داكن */
+            font-size: 12px; /* تصغير حجم الخط */
+            font-weight: 600;
+            width: 100px; /* عرض ثابت للـ label */
+            text-align: right;
+            margin: 0 !important; /* إزالة أي margin خارجي */
+            padding: 0 !important; /* إزالة أي padding خارجي */
+            margin-right: 5px !important; /* تقليل المسافة بين الـ label والحقل */
+        }
+
+        /* تنسيق خاص للـ decision-details-row */
+        .decision-details-row {
+            width: 100%; /* العرض الكامل */
+            flex-wrap: wrap; /* السماح بالالتفاف للسطر التالي إذا لزم الأمر */
+            gap: 10px; /* مسافة بين العناصر */
+        }
+
+        /* تنسيق حاوية فرعية لكل زوج (label + input + upload button) */
+        .decision-details-row .field-group {
+            display: flex;
+            align-items: center;
+            gap: 10px; /* مسافة بين العناصر داخل الزوج */
+            flex: 1; /* للسماح بالتمدد */
+            min-width: 300px; /* عرض أدنى لضمان التناسق */
+        }
+
+        .decision-details-row input {
+            width: 120px; /* عرض حقل الإدخال */
+        }
+
+        .decision-details-row .field-error {
+            margin-right: 105px; /* محاذاة رسالة الخطأ مع الحقل */
+        }
+
+        /* تنسيق زر الرفع */
+        .form-group .upload-btn {
+            position: relative;
+            background-color: #1B5E20; /* أخضر داكن */
+            color: white;
+            border: none;
+            padding: 5px 10px;
+            border-radius: 4px;
+            cursor: pointer;
+            font-size: 11px;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            gap: 5px;
+            transition: background-color 0.3s ease;
+            height: 30px; /* ارتفاع ثابت للزر */
+            overflow: hidden; /* التأكد من إخفاء أي نص أو عنصر إضافي */
+        }
+
+        .form-group .upload-btn:hover {
+            background-color: #4A4A4A; /* رمادي داكن */
+        }
+
+        .form-group .upload-btn i {
+            font-size: 12px; /* حجم الأيقونة */
+        }
+
+        /* إخفاء الـ input داخل الزر وتنسيقه */
+        .form-group .upload-btn input[type="file"] {
+            position: absolute;
+            width: 100%;
+            height: 100%;
+            opacity: 0;
+            cursor: pointer;
+            top: 0;
+            right: 0;
+            font-size: 0; /* إزالة أي نص افتراضي */
+        }
+
+        /* إخفاء أي نص افتراضي لـ "chosen file" */
+        .form-group .upload-btn input[type="file"]::-webkit-file-upload-button,
+        .form-group .upload-btn input[type="file"]::file-selector-button {
+            display: none; /* إخفاء زر "اختر ملف" الافتراضي */
+        }
+
+        /* تنسيق رسالة "تم الاختيار" */
+        .file-selected-message {
+            color: #1B5E20; /* أخضر داكن */
+            font-size: 11px;
+            font-weight: 600;
+            margin-right: 5px;
+            display: none; /* مخفي في البداية */
+        }
+
+        .field-error {
+            color: red;
+            font-size: 10px;
+            margin-top: 3px;
+            display: none;
+        }
+
+        /* تنسيق الـ textarea */
+        .form-group textarea {
+            flex: 1;
+            width: 100%; /* للتأكد إنها تأخد العرض الكامل */
+        }
+
+        /* المادة الأولى، الثانية، الثالثة (الكبيرة) */
+        #article_one_text,
+        #article_two_text,
+        #article_three_text {
+            height: 120px; /* ارتفاع أكبر */
+            rows: 5; /* عدد أسطر أكبر */
+        }
+
+        /* صاحب الاختصاص والتوقيع الإلكتروني (عرض أصغر) */
+        #competent_authority,
+        #authority_approval {
+            width: 100%; /* عرض أصغر */
+            max-width: 300px; /* حد أقصى أصغر */
+        }
+
+        /* تنسيق الـ input و textarea */
+        .form-group input,
+        .form-group textarea,
+        .decision-details-row input {
+            padding: 6px;
+            font-size: 12px;
+            border: 1.5px solid #6a9262; /* حدود خضراء فاتحة */
+            border-radius: 4px;
+            background-color: #FFF;
+            color: #4A4A4A;
+            transition: border-color 0.3s ease;
+            margin: 0 !important; /* إزالة أي margin خارجي */
+            padding: 6px !important; /* التأكد من الحشوة */
+        }
+
+        .form-group input:focus,
+        .form-group textarea:focus,
+        .decision-details-row input:focus {
+            outline: none;
+            border-color: #1B5E20; /* أخضر داكن */
+        }
+
+        /* Text Rows */
+        .text-row {
+            display: flex;
+            align-items: center;
+            margin-bottom: 10px; /* تقليل المسافة العمودية */
+            margin-left: 20px; /* تقليل المساحة على الشمال */
+            margin-right: 20px;
+            justify-content: flex-start;
+        }
+
+        .text-row .section-title {
+            margin: 0;
+            flex: 0 0 auto;
+            white-space: nowrap;
+        }
+
+        .text-row .form-group {
+            flex: 1;
+            margin-bottom: 0;
+        }
+
+        /* تنسيق حاوية صاحب الاختصاص والتوقيع مع المستطيلات */
+        .authority-section {
+            display: flex;
+            align-items: flex-start;
+            margin-left: 20px;
+            margin-right: 20px;
+            margin-bottom: 10px;
+            gap: 10px; /* المسافة بين الحقول والمستطيلات */
+        }
+
+        .authority-fields {
+            display: flex;
+            flex-direction: column;
+            flex: 1;
+            gap: 10px; /* المسافة بين حقلي صاحب الاختصاص والتوقيع */
+        }
+
+        /* تنسيق المستطيلات على اليمين */
+        .rectangles-container {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 5px; /* المسافة بين المستطيل الصغير والمستطيل الواقف */
+        }
+
+        /* المستطيل الصغير اللي فوق (مع الأزرار) */
+        .small-rect {
+            width: 300px; /* العرض */
+            height: 40px; /* الارتفاع */
+            background-color: #f0f0f0; /* لون خلفية خفيف */
+            border: 1px solid #6a9262; /* حدود خضراء فاتحة */
+            border-radius: 4px;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            gap: 5px; /* المسافة بين الأزرار */
+            padding: 5px;
+        }
+
+        /* تنسيق الأزرار داخل المستطيل الصغير */
+        .small-rect button {
+            background-color: #1B5E20; /* أخضر داكن */
+            color: white;
+            border: none;
+            padding: 5px 10px; /* تصغير الأزرار */
+            border-radius: 4px;
+            cursor: pointer;
+            font-size: 11px; /* تصغير حجم الخط */
+            display: flex;
+            align-items: center;
+            gap: 5px;
+            transition: background-color 0.3s ease;
+        }
+
+        .small-rect button:hover {
+            background-color: #4A4A4A; /* رمادي داكن */
+        }
+
+        .small-rect i {
+            font-size: 11px; /* تصغير الأيقونة */
+        }
+
+        /* المستطيل الواقف (مع كلمة PDF وأيقونة) */
+        .vertical-rect {
+            width: 300px; /* نفس عرض المستطيل الصغير */
+            height: 150px; /* ارتفاع أكبر من المستطيل الصغير */
+            background-color: #f0f0f0; /* لون خلفية خفيف */
+            border: 1px solid #6a9262; /* حدود خضراء فاتحة */
+            border-radius: 4px;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            gap: 10px; /* المسافة بين الأيقونة والنص */
+        }
+
+        /* تنسيق كلمة PDF وأيقونة */
+        .vertical-rect .pdf-container {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 5px;
+        }
+
+        .vertical-rect .pdf-container i {
+            font-size: 24px; /* حجم الأيقونة */
+            color: #1B5E20; /* أخضر داكن */
+        }
+
+        .vertical-rect .pdf-container .pdf-label {
+            color: #1B5E20; /* أخضر داكن */
+            font-size: 16px; /* حجم أكبر للنص */
+            font-weight: 600;
+        }
+
+        .alert {
+            padding: 10px;
+            margin: 10px 0;
+            border-radius: 4px;
+            text-align: center;
+        }
+
+        .alert-success {
+            background-color: #d4edda;
+            color: #155724;
+            border: 1px solid #c3e6cb;
+        }
+
+        .alert-error {
+            background-color: #f8d7da;
+            color: #721c24;
+            border: 1px solid #f5c6cb;
+        }
+
+        .alert-warning {
+            background-color: #fff3cd;
+            color: #856404;
+            border: 1px solid #ffeeba;
+        }
+
+        /* تنسيق أزرار النموذج */
+        .form-buttons {
+            display: flex;
+            justify-content: center;
+            gap: 10px;
+            margin-top: 15px;
+        }
+
+        .form-buttons button {
+            background-color: #1B5E20; /* أخضر داكن */
+            color: #FFF;
+            padding: 6px 12px;
+            border: none;
+            font-size: 12px;
+            font-weight: 600;
+            cursor: pointer;
+            border-radius: 4px;
+            transition: background-color 0.3s ease;
+        }
+
+        .form-buttons button:hover {
+            background-color: #4A4A4A; /* رمادي داكن */
+        }
+
+        /* تحسين التجاوب على الموبايل */
+        @media (max-width: 576px) {
+            .form-section {
+                padding: 10px;
+            }
+
+            .form-group,
+            .decision-details-row,
+            .text-row,
+            .authority-section {
+                flex-direction: column;
+                align-items: flex-end;
+                margin-left: 0; /* إزالة المسافة على الموبايل */
+                margin-right: 0;
+            }
+
+            .decision-details-row .field-group {
+                flex-direction: column;
+                align-items: flex-end;
+                width: 100%;
+            }
+
+            .form-group label,
+            .decision-details-row label {
+                width: 100%;
+                text-align: right;
+                margin-right: 0 !important; /* إزالة المسافة على الموبايل */
+            }
+
+            .form-group input,
+            .form-group textarea,
+            .decision-details-row input {
+                width: 100%;
+            }
+
+            /* تعديل العرض على الموبايل */
+            #article_one_text,
+            #article_two_text,
+            #article_three_text,
+            #competent_authority,
+            #authority_approval {
+                max-width: 100%; /* عرض كامل على الموبايل */
+            }
+
+            .decision-details-row .field-error {
+                margin-right: 0; /* إزالة المحاذاة على الموبايل */
+            }
+
+            .authority-fields {
+                width: 100%;
+            }
+
+            .rectangles-container {
+                margin-top: 10px; /* مسافة فوق المستطيلات على الموبايل */
+                align-items: flex-end; /* محاذاة المستطيلات لليمين */
+            }
+
+            .small-rect {
+                width: 100%; /* العرض الكامل على الموبايل */
+                height: auto; /* الارتفاع يتعدل تلقائيًا */
+                flex-direction: column; /* ترتيب الأزرار عموديًا */
+                gap: 5px;
+            }
+
+            .small-rect button {
+                width: 100%; /* الأزرار تأخد العرض الكامل */
+                padding: 8px;
+                font-size: 12px;
+            }
+
+            .small-rect i {
+                font-size: 14px;
+            }
+
+            .vertical-rect {
+                width: 100%; /* العرض الكامل على الموبايل */
+                height: 180px; /* زيادة الارتفاع على الموبايل */
+            }
+
+            .form-buttons {
+                flex-direction: column;
+                gap: 5px;
+            }
+
+            .form-buttons button {
+                width: 100%;
+                padding: 8px;
+            }
+
+            .form-group .upload-btn {
+                padding: 6px 10px;
+                font-size: 12px;
+                width: 100%;
+            }
+
+            .form-group .upload-btn i {
+                font-size: 14px;
+            }
+
+            /* تنسيق رسالة "تم الاختيار" على الموبايل */
+            .file-selected-message {
+                margin-right: 0;
+                margin-top: 5px;
+            }
+        }
+    </style>
+{% endblock %}
+
+{% block extra_scripts %}
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+    <script>
+        // دالة لطباعة PDF
+        function printPDF(url) {
+            window.open(url, '_blank').print();
+        }
+
+        // دالة لمسح حقول النموذج
+        function clearForm() {
+            const form = document.querySelector('form');
+            form.reset(); // مسح جميع حقول النموذج
+            // إخفاء رسائل "تم الاختيار"
+            document.querySelectorAll('.file-selected-message').forEach(function(message) {
+                message.style.display = 'none';
+            });
+        }
+
+        // عرض رسالة "تم الاختيار" لما يتم اختيار ملف
+        document.querySelectorAll('.upload-btn input[type="file"]').forEach(function(input) {
+            input.addEventListener('change', function() {
+                const messageElement = this.closest('.field-group').querySelector('.file-selected-message');
+                if (this.files.length > 0) {
+                    messageElement.style.display = 'inline'; // إظهار الرسالة
+                }
+            });
+        });
+
+        // عرض SweetAlert بناءً على رسائل flash
+        {% with messages = get_flashed_messages(with_categories=true) %}
+            {% if messages %}
+                {% for category, message in messages %}
+                    {% if category == 'success' %}
+                        Swal.fire({
+                            icon: 'success',
+                            title: 'تم بنجاح',
+                            text: '{{ message }}',
+                            confirmButtonText: 'موافق'
+                        }).then((result) => {
+                            if (result.isConfirmed) {
+                                clearForm(); // مسح النموذج بعد إغلاق SweetAlert
+                            }
+                        });
+                    {% elif category == 'error' %}
+                        Swal.fire({
+                            icon: 'error',
+                            title: 'خطأ',
+                            text: '{{ message }}',
+                            confirmButtonText: 'موافق'
+                        });
+                    {% endif %}
+                {% endfor %}
+            {% endif %}
+        {% endwith %}
+
+        // دالة للتحقق من صيغة التاريخ
+        document.getElementById('decision_date').addEventListener('input', function() {
+            const value = this.value;
+            const regex = /^(0?[1-9]|[12][0-9]|3[01])\/(0?[1-9]|1[0-2])\/\d{4}$/;
+            const errorElement = document.getElementById('decision_date_error');
+            if (value && !regex.test(value)) {
+                errorElement.textContent = 'التاريخ يجب أن يكون بصيغة يوم/شهر/سنة (مثال: 25/12/2023)';
+                errorElement.style.display = 'block';
+            } else {
+                errorElement.style.display = 'none';
+            }
+        });
+
+        document.querySelector('form').addEventListener('submit', function(event) {
+            const decisionDate = document.getElementById('decision_date').value;
+            const dateRegex = /^(0?[1-9]|[12][0-9]|3[01])\/(0?[1-9]|1[0-2])\/\d{4}$/;
+            if (decisionDate && !dateRegex.test(decisionDate)) {
+                event.preventDefault();
+                const errorElement = document.getElementById('decision_date_error');
+                errorElement.textContent = 'التاريخ يجب أن يكون بصيغة يوم/شهر/سنة (مثال: 25/12/2023)';
+                errorElement.style.display = 'block';
+            }
+        });
+    </script>
+{% endblock %}
+
+{% block content %}
+    <div class="form-section">
+        <!-- النموذج -->
+        <div class="form-container">
+            <form method="POST" action="{{ url_for('issue_appointment_decision') }}" enctype="multipart/form-data">
+                <!-- بيانات القرار -->
+                <div class="decision-details-row">
+                    <!-- السطر الأول: رقم الإعلان وكود المرشح -->
+                    <div class="field-group">
+                        <label for="announcement_number">رقم الإعلان:</label>
+                        <input type="text" id="announcement_number" name="announcement_number" required>
+                        <label class="upload-btn" style="cursor: pointer;">
+                            <input type="file" name="announcement_file" accept="*/*" style="display: none;">
+                            <i class="fas fa-upload"></i> أرفق
+                        </label>
+                        <span class="file-selected-message">تم الاختيار</span>
+                    </div>
+                    <div class="field-group">
+                        <label for="candidate_code">كود المرشح:</label>
+                        <input type="text" id="candidate_code" name="candidate_code" required>
+                        <label class="upload-btn" style="cursor: pointer;">
+                            <input type="file" name="candidate_file" accept="*/*" style="display: none;">
+                            <i class="fas fa-upload"></i> أرفق
+                        </label>
+                        <span class="file-selected-message">تم الاختيار</span>
+                    </div>
+                </div>
+
+                <div class="decision-details-row">
+                    <!-- السطر الثاني: رقم القرار وتاريخ القرار -->
+                    <div class="field-group">
+                        <label for="decision_number">رقم القرار:</label>
+                        <input type="text" id="decision_number" name="decision_number" required>
+                        <label class="upload-btn" style="cursor: pointer;">
+                            <input type="file" name="decision_file" accept="*/*" style="display: none;">
+                            <i class="fas fa-upload"></i> أرفق
+                        </label>
+                        <span class="file-selected-message">تم الاختيار</span>
+                    </div>
+                    <div class="field-group">
+                        <label for="decision_date">تاريخ القرار:</label>
+                        <input type="text" id="decision_date" name="decision_date" placeholder="يوم/شهر/سنة" required>
+                        <div id="decision_date_error" class="field-error"></div>
+                    </div>
+                </div>
+
+                <!-- المادة الأولى -->
+                <div class="text-row">
+                    <h3 class="section-title">المادة الأولى:</h3>
+                    <div class="form-group">
+                        <textarea id="article_one_text" name="article_one_text" rows="5" placeholder="أدخل نص المادة الأولى هنا..." required></textarea>
+                    </div>
+                </div>
+
+                <!-- المادة الثانية -->
+                <div class="text-row">
+                    <h3 class="section-title">المادة الثانية:</h3>
+                    <div class="form-group">
+                        <textarea id="article_two_text" name="article_two_text" rows="5" placeholder="أدخل نص المادة الثانية هنا..." required></textarea>
+                    </div>
+                </div>
+
+                <!-- المادة الثالثة -->
+                <div class="text-row">
+                    <h3 class="section-title">المادة الثالثة:</h3>
+                    <div class="form-group">
+                        <textarea id="article_three_text" name="article_three_text" rows="5" placeholder="أدخل نص المادة الثالثة هنا..." required></textarea>
+                    </div>
+                </div>
+
+                <!-- السلطة المختصة مع المستطيلات -->
+                <div class="authority-section">
+                    <div class="authority-fields">
+                        <div class="form-group">
+                            <label for="competent_authority">صاحب الاختصاص:</label>
+                            <input type="text" id="competent_authority" name="competent_authority" required>
+                        </div>
+                        <div class="form-group">
+                            <label for="authority_approval">اعتماد السلطة المختصة (التوقيع الإلكتروني):</label>
+                            <input type="text" id="authority_approval" name="authority_approval" placeholder="أدخل رمز التوقيع الإلكتروني" required>
+                        </div>
+                    </div>
+                    <div class="rectangles-container">
+                        <div class="small-rect">
+                            <button type="button" onclick="window.location.href='{{ url_for('view_pdf', type='appointment') }}'">
+                                <i class="fas fa-eye"></i> عرض
+                            </button>
+                            <button type="button" onclick="printPDF('{{ url_for('print_pdf', type='appointment') }}')">
+                                مسح ضوئي
+                            </button>
+                            <button type="button" onclick="window.location.href='{{ url_for('download_pdf', type='appointment') }}'">
+                                ارفاق من جهازك
+                            </button>
+                        </div>
+                        <div class="vertical-rect">
+                            <div class="pdf-container">
+                                <i class="fas fa-file-pdf"></i>
+                                <div class="pdf-label">PDF</div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- أزرار الفورم -->
+                <div class="form-buttons">
+                    <button type="submit" name="action" value="create_decision">إنشاء قرار</button>
+                    <button type="submit" name="action" value="save_draft">حفظ كمسودة</button>
+                    <button type="submit" name="action" value="refer_to">إحالة إلى</button>
+                    <button type="submit" name="action" value="next">التالي</button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    {% with messages = get_flashed_messages(with_categories=true) %}
+        {% if messages %}
+            {% for category, message in messages %}
+                <div class="alert alert-{{ category }}">{{ message }}</div>
+            {% endfor %}
+        {% endif %}
+    {% endwith %}
+{% endblock %}

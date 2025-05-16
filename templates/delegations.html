@@ -1,0 +1,344 @@
+{% extends 'base.html' %}
+
+{% block title %}التفويضات{% endblock %}
+
+{% block extra_styles %}
+    <style>
+        /* تنسيق العنوان */
+        h2 {
+            color: #1B5E20;
+            font-size: 24px;
+            font-weight: 700;
+            margin-bottom: 20px;
+            text-align: right;
+        }
+
+        /* تنسيق نموذج إضافة تفويض */
+        .delegation-form {
+            background: #f5f5f5;
+            padding: 20px;
+            border-radius: 8px;
+            margin-bottom: 20px;
+            direction: rtl;
+        }
+
+        .delegation-form .form-row {
+            display: flex;
+            gap: 15px;
+            margin-bottom: 15px;
+            flex-wrap: wrap;
+        }
+
+        .delegation-form label {
+            color: #4A4A4A;
+            font-size: 14px;
+            font-weight: 600;
+            margin-left: 10px;
+            display: inline-block;
+            width: 100px;
+            text-align: left;
+        }
+
+        .delegation-form input,
+        .delegation-form select {
+            padding: 8px;
+            border: 1px solid #e6f0e6;
+            border-radius: 4px;
+            font-size: 14px;
+            color: #4A4A4A;
+            background: #FFFFFF;
+            direction: rtl;
+            width: 200px;
+        }
+
+        .delegation-form button {
+            background: #1B5E20;
+            color: #FFFFFF;
+            border: none;
+            padding: 8px 15px;
+            border-radius: 4px;
+            font-size: 14px;
+            cursor: pointer;
+            transition: background 0.3s ease;
+            display: flex;
+            align-items: center;
+            gap: 5px;
+        }
+
+        .delegation-form button:hover {
+            background: #2e7d32;
+        }
+
+        .delegation-form button i {
+            font-size: 12px;
+        }
+
+        /* تنسيق الجدول */
+        .delegations-table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-bottom: 20px;
+            direction: rtl;
+        }
+
+        .delegations-table th,
+        .delegations-table td {
+            padding: 12px 15px;
+            text-align: right;
+            font-size: 14px;
+            color: #4A4A4A;
+        }
+
+        .delegations-table th {
+            background: #b1e3b5dc;
+            color: #1B5E20;
+            font-weight: 600;
+            border-bottom: 2px solid #e6f0e6;
+        }
+
+        .delegations-table td {
+            background: #FFFFFF;
+            border-bottom: 1px solid #e6f0e6;
+        }
+
+        .delegations-table tr:hover td {
+            background: #E6F0E6;
+        }
+
+        /* تنسيق الحالة */
+        .status {
+            padding: 5px 10px;
+            border-radius: 4px;
+            font-size: 12px;
+            font-weight: 600;
+        }
+
+        .status.active {
+            background: #b1e3b5dc;
+            color: #1B5E20;
+        }
+
+        .status.expired {
+            background: #f5f5f5;
+            color: #4A4A4A;
+        }
+
+        /* تنسيق الأزرار */
+        .action-buttons {
+            display: flex;
+            gap: 8px;
+            justify-content: flex-end;
+        }
+
+        .action-buttons button {
+            border: none;
+            padding: 8px 12px;
+            border-radius: 4px;
+            font-size: 14px;
+            cursor: pointer;
+            transition: background 0.3s ease;
+            display: flex;
+            align-items: center;
+            gap: 5px;
+        }
+
+        .action-buttons .edit-btn {
+            background: #1B5E20;
+            color: #FFFFFF;
+        }
+
+        .action-buttons .edit-btn:hover {
+            background: #2e7d32;
+        }
+
+        .action-buttons .delete-btn {
+            background: #d32f2f;
+            color: #FFFFFF;
+        }
+
+        .action-buttons .delete-btn:hover {
+            background: #b71c1c;
+        }
+
+        .action-buttons button i {
+            font-size: 12px;
+        }
+
+        /* تنسيق الرسالة في حالة عدم وجود تفويضات */
+        .no-delegations {
+            color: #4A4A4A;
+            font-size: 16px;
+            text-align: center;
+            margin: 20px 0;
+        }
+
+        /* زر العودة */
+        .back-btn-container {
+            text-align: center;
+            margin-top: 20px;
+        }
+    </style>
+{% endblock %}
+
+{% block content %}
+    <h2>التفويضات</h2>
+
+    <!-- نموذج إضافة تفويض -->
+    <div class="delegation-form">
+        <div class="form-row">
+            <label>المفوض</label>
+            <select id="delegate">
+                <option value="">اختر المفوض</option>
+                <option value="ahmed_khaled">أحمد خالد</option>
+                <option value="sara_mohamed">سارة محمد</option>
+                <option value="mohamed_ali">محمد علي</option>
+            </select>
+        </div>
+        <div class="form-row">
+            <label>الوظيفة</label>
+            <select id="job">
+                <option value="">اختر الوظيفة</option>
+                <option value="hr_manager">مدير إدارة الموارد البشرية</option>
+                <option value="it_head">رئيس قسم تكنولوجيا المعلومات</option>
+                <option value="legal_advisor">مستشار قانوني أول</option>
+            </select>
+        </div>
+        <div class="form-row">
+            <label>تاريخ البداية</label>
+            <input type="date" id="startDate">
+        </div>
+        <div class="form-row">
+            <label>تاريخ الانتهاء</label>
+            <input type="date" id="endDate">
+        </div>
+        <div class="form-row">
+            <button onclick="addDelegation()"><i class="fas fa-plus"></i> إضافة تفويض</button>
+        </div>
+    </div>
+
+    <!-- جدول التفويضات -->
+    <table class="delegations-table" id="delegationsTable">
+        <thead>
+            <tr>
+                <th>المفوض</th>
+                <th>الوظيفة</th>
+                <th>تاريخ البداية</th>
+                <th>تاريخ الانتهاء</th>
+                <th>الحالة</th>
+                <th>الإجراءات</th>
+            </tr>
+        </thead>
+        <tbody>
+            <!-- بيانات تجريبية -->
+            <tr>
+                <td>أحمد خالد</td>
+                <td>مدير إدارة الموارد البشرية</td>
+                <td>2025-04-01</td>
+                <td>2025-04-30</td>
+                <td><span class="status active">نشط</span></td>
+                <td>
+                    <div class="action-buttons">
+                        <button class="edit-btn" onclick="editDelegation('1')"><i class="fas fa-edit"></i> تعديل</button>
+                        <button class="delete-btn" onclick="deleteDelegation('1')"><i class="fas fa-trash"></i> إلغاء</button>
+                    </div>
+                </td>
+            </tr>
+            <tr>
+                <td>سارة محمد</td>
+                <td>رئيس قسم تكنولوجيا المعلومات</td>
+                <td>2025-03-15</td>
+                <td>2025-04-15</td>
+                <td><span class="status expired">منتهي</span></td>
+                <td>
+                    <div class="action-buttons">
+                        <button class="edit-btn" onclick="editDelegation('2')"><i class="fas fa-edit"></i> تعديل</button>
+                        <button class="delete-btn" onclick="deleteDelegation('2')"><i class="fas fa-trash"></i> إلغاء</button>
+                    </div>
+                </td>
+            </tr>
+            <tr>
+                <td>محمد علي</td>
+                <td>مستشار قانوني أول</td>
+                <td>2025-04-10</td>
+                <td>2025-05-10</td>
+                <td><span class="status active">نشط</span></td>
+                <td>
+                    <div class="action-buttons">
+                        <button class="edit-btn" onclick="editDelegation('3')"><i class="fas fa-edit"></i> تعديل</button>
+                        <button class="delete-btn" onclick="deleteDelegation('3')"><i class="fas fa-trash"></i> إلغاء</button>
+                    </div>
+                </td>
+            </tr>
+        </tbody>
+    </table>
+
+    <!-- رسالة في حالة عدم وجود تفويضات -->
+    <p class="no-delegations" id="noDelegationsMessage" style="display: none;">لا توجد تفويضات حاليًا.</p>
+
+{% endblock %}
+
+{% block extra_scripts %}
+    <script>
+        // دالة لإضافة تفويض (مؤقتة)
+        function addDelegation() {
+            const delegate = document.getElementById('delegate').options[document.getElementById('delegate').selectedIndex].text;
+            const job = document.getElementById('job').options[document.getElementById('job').selectedIndex].text;
+            const startDate = document.getElementById('startDate').value;
+            const endDate = document.getElementById('endDate').value;
+
+            if (!delegate || !job || !startDate || !endDate) {
+                Swal.fire({
+                    title: 'خطأ!',
+                    text: 'يرجى ملء جميع الحقول.',
+                    icon: 'error',
+                    confirmButtonText: 'موافق',
+                    confirmButtonColor: '#1B5E20'
+                });
+                return;
+            }
+
+            Swal.fire({
+                title: 'تم!',
+                text: `تم إضافة التفويض لـ ${delegate} بنجاح.`,
+                icon: 'success',
+                confirmButtonText: 'موافق',
+                confirmButtonColor: '#1B5E20'
+            });
+        }
+
+        // دالة لتعديل تفويض (مؤقتة)
+        function editDelegation(id) {
+            Swal.fire({
+                title: 'تعديل التفويض',
+                html: `جاري تعديل التفويض رقم ${id}...`,
+                icon: 'info',
+                confirmButtonText: 'موافق',
+                confirmButtonColor: '#1B5E20'
+            });
+        }
+
+        // دالة لإلغاء تفويض (مؤقتة)
+        function deleteDelegation(id) {
+            Swal.fire({
+                title: 'هل أنت متأكد؟',
+                text: `سيتم إلغاء التفويض رقم ${id}.`,
+                icon: 'warning',
+                showCancelButton: true,
+                confirmButtonText: 'نعم، إلغاء',
+                cancelButtonText: 'لا',
+                confirmButtonColor: '#1B5E20',
+                cancelButtonColor: '#d32f2f'
+            }).then((result) => {
+                if (result.isConfirmed) {
+                    Swal.fire({
+                        title: 'تم!',
+                        text: `تم إلغاء التفويض رقم ${id} بنجاح.`,
+                        icon: 'success',
+                        confirmButtonText: 'موافق',
+                        confirmButtonColor: '#1B5E20'
+                    });
+                }
+            });
+        }
+    </script>
+{% endblock %}

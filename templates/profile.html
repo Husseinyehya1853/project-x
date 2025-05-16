@@ -1,0 +1,263 @@
+{% extends 'base.html' %}
+
+{% block title %}الملف الشخصي{% endblock %}
+
+{% block extra_styles %}
+    <style>
+        /* تنسيق العنوان */
+        h2 {
+            color: #1B5E20;
+            font-size: 24px;
+            font-weight: 700;
+            margin-bottom: 20px;
+            text-align: right;
+        }
+
+        /* تنسيق الحاوية الرئيسية */
+        .profile-container {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            direction: rtl;
+            padding: 20px;
+        }
+
+        /* تنسيق كرت الملف الشخصي */
+        .profile-card {
+            background: #FFF;
+            border: 1px solid #e6f0e6;
+            border-radius: 8px;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+            width: 100%;
+            max-width: 500px;
+            padding: 20px;
+            text-align: center;
+        }
+
+        /* تنسيق الصورة الشخصية */
+        .profile-picture {
+            width: 120px;
+            height: 120px;
+            border-radius: 50%;
+            border: 3px solid #1B5E20;
+            margin-bottom: 15px;
+            object-fit: cover;
+        }
+
+        /* تنسيق التفاصيل */
+        .profile-details p {
+            margin: 10px 0;
+            font-size: 16px;
+            color: #4A4A4A;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .profile-details p strong {
+            color: #1B5E20;
+            font-weight: 600;
+            width: 150px;
+            text-align: right;
+        }
+
+        .profile-details p span {
+            flex: 1;
+            text-align: right;
+        }
+
+        /* تنسيق الأزرار */
+        .profile-actions {
+            display: flex;
+            justify-content: center;
+            gap: 15px;
+            margin-top: 20px;
+        }
+
+        .profile-actions button,
+        .profile-actions a {
+            background-color: #1B5E20;
+            color: #FFF;
+            padding: 10px 20px;
+            border: none;
+            font-size: 14px;
+            font-weight: 600;
+            cursor: pointer;
+            border-radius: 4px;
+            text-decoration: none;
+            transition: background-color 0.3s ease, transform 0.1s ease;
+        }
+
+        .profile-actions button:hover,
+        .profile-actions a:hover {
+            background-color: #2e7d32;
+            transform: translateY(-2px);
+        }
+
+        .profile-actions .logout-btn {
+            background-color: #4A4A4A;
+        }
+
+        .profile-actions .logout-btn:hover {
+            background-color: #6a6a6a;
+        }
+
+        /* تنسيق رسائل التنبيه */
+        .alert {
+            padding: 10px;
+            margin: 10px 0;
+            border-radius: 4px;
+            text-align: center;
+            width: 100%;
+            max-width: 500px;
+        }
+
+        .alert-success {
+            background-color: #d4edda;
+            color: #155724;
+            border: 1px solid #c3e6cb;
+        }
+
+        .alert-error {
+            background-color: #f8d7da;
+            color: #721c24;
+            border: 1px solid #f5c6cb;
+        }
+
+        /* زر العودة */
+        .back-btn-container {
+            text-align: center;
+            margin-top: 20px;
+        }
+
+        /* تحسين التجاوب على الموبايل */
+        @media (max-width: 576px) {
+            .profile-card {
+                padding: 15px;
+            }
+
+            .profile-picture {
+                width: 100px;
+                height: 100px;
+            }
+
+            .profile-details p {
+                font-size: 14px;
+                flex-direction: column;
+                align-items: flex-end;
+                gap: 5px;
+            }
+
+            .profile-details p strong {
+                width: 100%;
+                text-align: right;
+            }
+
+            .profile-details p span {
+                text-align: right;
+            }
+
+            .profile-actions {
+                flex-direction: column;
+                gap: 10px;
+            }
+
+            .profile-actions button,
+            .profile-actions a {
+                width: 100%;
+                padding: 12px;
+            }
+        }
+    </style>
+{% endblock %}
+
+{% block content %}
+    <div class="profile-container">
+        <h2>الملف الشخصي</h2>
+
+        <!-- كرت الملف الشخصي -->
+        <div class="profile-card">
+            <!-- الصورة الشخصية -->
+            <img src="{{ url_for('static', filename='images/profile.png') }}" alt="الصورة الشخصية" class="profile-picture">
+
+            <!-- التفاصيل -->
+            <div class="profile-details">
+                <p><strong>الاسم:</strong> <span>{{ full_name | default('محمد أحمد') }}</span></p>
+                <p><strong>الأدوار:</strong> <span>{{ roles | default('مدير الموارد البشرية') }}</span></p>
+                <p><strong>البريد الإلكتروني:</strong> <span>{{ email | default('mohamed.ahmed@example.com') }}</span></p>
+                <p><strong>رقم الهاتف:</strong> <span>{{ phone | default('01234567890') }}</span></p>
+                <p><strong>تاريخ التسجيل:</strong> <span>{{ registration_date | default('2025-01-15') }}</span></p>
+            </div>
+
+            <!-- الأزرار -->
+            <div class="profile-actions">
+                <button onclick="editProfile()">تعديل الملف الشخصي</button>
+                <a href="{{ url_for('logout') }}" class="logout-btn">تسجيل الخروج</a>
+            </div>
+        </div>
+
+        <!-- رسائل التنبيه -->
+        {% with messages = get_flashed_messages(with_categories=true) %}
+            {% if messages %}
+                {% for category, message in messages %}
+                    <div class="alert alert-{{ category }}">{{ message }}</div>
+                {% endfor %}
+            {% endif %}
+        {% endwith %}
+
+{% endblock %}
+
+{% block extra_scripts %}
+    <script>
+        // دالة لتعديل الملف الشخصي (مؤقتة)
+        function editProfile() {
+            Swal.fire({
+                title: 'تعديل الملف الشخصي',
+                html: `
+                    <input type="text" id="full_name" class="swal2-input" placeholder="الاسم" value="{{ full_name | default('محمد أحمد') }}">
+                    <input type="email" id="email" class="swal2-input" placeholder="البريد الإلكتروني" value="{{ email | default('mohamed.ahmed@example.com') }}">
+                    <input type="text" id="phone" class="swal2-input" placeholder="رقم الهاتف" value="{{ phone | default('01234567890') }}">
+                `,
+                confirmButtonText: 'حفظ',
+                confirmButtonColor: '#1B5E20',
+                cancelButtonText: 'إلغاء',
+                showCancelButton: true,
+                preConfirm: () => {
+                    const fullName = Swal.getPopup().querySelector('#full_name').value;
+                    const email = Swal.getPopup().querySelector('#email').value;
+                    const phone = Swal.getPopup().querySelector('#phone').value;
+
+                    if (!fullName || !email || !phone) {
+                        Swal.showValidationMessage('يرجى ملء جميع الحقول');
+                        return false;
+                    }
+
+                    const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+                    if (!emailRegex.test(email)) {
+                        Swal.showValidationMessage('يرجى إدخال بريد إلكتروني صحيح');
+                        return false;
+                    }
+
+                    const phoneRegex = /^\d{11}$/;
+                    if (!phoneRegex.test(phone)) {
+                        Swal.showValidationMessage('رقم الهاتف يجب أن يكون 11 رقمًا');
+                        return false;
+                    }
+
+                    return { fullName, email, phone };
+                }
+            }).then((result) => {
+                if (result.isConfirmed) {
+                    // هنا يمكنك إرسال البيانات إلى الخادم باستخدام fetch أو نموذج
+                    Swal.fire({
+                        title: 'تم الحفظ!',
+                        text: 'تم تحديث بيانات الملف الشخصي بنجاح.',
+                        icon: 'success',
+                        confirmButtonText: 'موافق',
+                        confirmButtonColor: '#1B5E20'
+                    });
+                }
+            });
+        }
+    </script>
+{% endblock %}

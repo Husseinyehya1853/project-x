@@ -1,0 +1,1037 @@
+{% extends 'base.html' %}
+
+{% block title %}الوارد{% endblock %}
+
+{% block sidebar_announcements %}
+    <!-- عرض الوظائف من قاعدة البيانات -->
+    <div class="announcement" data-job-title="قاتل" data-code="kILL-54-2002">
+        <div class="announcement-header">
+            <span class="new-label">إعلان جديد</span>
+        </div>
+        <div class="job-title-container">
+            <div class="job-title-wrapper">
+                <i class="fas fa-desktop desktop-icon"></i>
+                <span class="job-title">قاتل</span>
+            </div>
+            <div class="icons">
+                <i class="fas fa-copy"></i>
+                <i class="fas fa-lock"></i>
+            </div>
+        </div>
+        <div class="announcement-code">
+            <i class="fas fa-hashtag hashtag-icon"></i>
+            <span class="code">kILL-54-2002</span>
+        </div>
+    </div>
+    {% if jobs %}
+        {% for job in jobs %}
+        <div class="announcement" data-job-title="{{ job.job_title }}" data-code="{{ job.job_code }}">
+            <div class="announcement-header">
+                <span class="new-label">إعلان جديد</span>
+            </div>
+            <div class="job-title-container">
+                <div class="job-title-wrapper">
+                    <i class="fas fa-desktop desktop-icon"></i>
+                    <span class="job-title">{{ job.job_title }}</span>
+                </div>
+                <div class="icons">
+                    <i class="fas fa-copy"></i>
+                    <i class="fas fa-lock"></i>
+                </div>
+            </div>
+            <div class="announcement-code">
+                <i class="fas fa-hashtag hashtag-icon"></i>
+                <span class="code">{{ job.job_code }}</span>
+            </div>
+        </div>
+        {% endfor %}
+    {% endif %}
+{% endblock %}
+
+{% block extra_styles %}
+    <style>
+        .inner-container {
+            background: #FFFFFF !important; /* التأكد من أن الخلفية بيضاء */
+        }
+        
+        /* تحسين أنماط المرفقات */
+        .attachments-section {
+            margin: 20px 0;
+            padding: 15px;
+            background-color: #f9f9f9;
+            border-radius: 8px;
+        }
+        
+        .attachment-item {
+            margin-bottom: 15px;
+            border: 1px solid #e6f0e6;
+            border-radius: 8px;
+            overflow: hidden;
+        }
+        
+        .attachment-container {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 15px;
+            background-color: #ffffff;
+            transition: all 0.3s ease;
+        }
+        
+        .attachment-container:hover {
+            background-color: #f0f7f0;
+        }
+        
+        .attachment-info {
+            display: flex;
+            align-items: center;
+            flex: 1;
+        }
+        
+        .attachment-icon {
+            color: #1B5E20;
+            font-size: 24px;
+            margin-left: 15px;
+            width: 40px;
+            text-align: center;
+        }
+        
+        .attachment-details {
+            flex: 1;
+        }
+        
+        .attachment-title {
+            color: #1B5E20;
+            font-size: 16px;
+            font-weight: 600;
+            margin-bottom: 5px;
+        }
+        
+        .attachment-meta {
+            color: #6a9262;
+            font-size: 13px;
+            display: flex;
+            align-items: center;
+            gap: 15px;
+        }
+        
+        .attachment-meta i {
+            margin-left: 5px;
+        }
+        
+        .attachment-actions {
+            display: flex;
+            gap: 10px;
+        }
+        
+        .attachment-button {
+            background-color: #1B5E20;
+            color: white;
+            border: none;
+            padding: 8px 15px;
+            border-radius: 6px;
+            cursor: pointer;
+            font-size: 14px;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            transition: all 0.3s ease;
+        }
+        
+        .attachment-button:hover {
+            background-color: #2e7d32;
+            transform: translateY(-1px);
+        }
+        
+        .attachment-button i {
+            font-size: 16px;
+        }
+        
+        /* تحسين أنماط التبويبات */
+        .tabs {
+            display: flex;
+            justify-content: center;
+            gap: 40px;
+            margin: 20px 0;
+            border-bottom: 2px solid #e6f0e6;
+            padding-bottom: 10px;
+        }
+        
+        .tab {
+            color: #4A4A4A;
+            font-size: 16px;
+            font-weight: 600;
+            cursor: pointer;
+            position: relative;
+            padding: 10px 20px;
+            transition: all 0.3s ease;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+        
+        .tab.active {
+            color: #1B5E20;
+        }
+        
+        .tab i {
+            font-size: 18px;
+        }
+        
+        .tab::after {
+            content: '';
+            position: absolute;
+            bottom: -12px;
+            left: 0;
+            width: 100%;
+            height: 3px;
+            background-color: transparent;
+            transition: all 0.3s ease;
+        }
+        
+        .tab.active::after {
+            background-color: #1B5E20;
+        }
+        
+        .tab-content {
+            display: none;
+            padding: 25px;
+            border-radius: 8px;
+            margin-top: 20px;
+        }
+        
+        .tab-content.active {
+            display: block;
+            animation: fadeIn 0.3s ease;
+        }
+        
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(10px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        .divider {
+            border-top: 1px solid #e6f0e6;
+            margin: 15px 0;
+        }
+
+        .announcement-details {
+            text-align: right;
+            margin-bottom: 20px;
+        }
+
+        .announcement-details .announcement-header {
+            justify-content: flex-end;
+            align-items: center;
+            margin-bottom: 4px;
+        }
+
+        .announcement-details .announcement-header .new-label {
+            color: #4A4A4A;
+            font-size: 14px;
+            font-weight: 600;
+        }
+
+        .announcement-details .job-title-container {
+            display: flex;
+            align-items: center;
+            gap: 0;
+            margin-bottom: 4px;
+        }
+
+        .announcement-details .job-title-container .job-title-wrapper {
+            display: flex;
+            align-items: center;
+            gap: 4px;
+        }
+
+        .announcement-details .job-title {
+            color: #4A4A4A;
+            font-size: 13px;
+            font-weight: 600;
+        }
+
+        .announcement-details .job-title-container .desktop-icon {
+            color: #6a9262;
+            font-size: 14px;
+        }
+
+        .announcement-details .job-title-container .icons {
+            display: flex;
+            flex-direction: row;
+            gap: 2px;
+            margin-right: 2px;
+        }
+
+        .announcement-details .job-title-container .icons i {
+            color: #6a9262;
+            font-size: 12px;
+        }
+
+        .announcement-details .announcement-code {
+            justify-content: flex-end;
+            align-items: center;
+            gap: 2px;
+        }
+
+        .announcement-details .announcement-code .code {
+            color: #4A4A4A;
+            font-size: 14px;
+        }
+
+        .announcement-details .announcement-code .hashtag-icon {
+            color: #6a9262;
+            font-size: 12px;
+        }
+
+        .referral-info {
+            text-align: right;
+            margin-left: 0; /* محاذاة للشمال */
+            margin-right: auto; /* عشان الكلام يفضل على الشمال */
+        }
+
+        .referral-info h3 {
+            color: #1B5E20;
+            font-size: 16px;
+            font-weight: 600;
+            margin-bottom: 5px; /* تقليل المسافة بين معلومات الإحالة والخط اللي فوقيها */
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            cursor: pointer; /* عشان يبقى زي زر */
+        }
+
+        .referral-info h3 i {
+            color: #6a9262;
+            font-size: 14px;
+            transition: transform 0.3s ease; /* تأثير دوران السهم */
+        }
+
+        .referral-info h3 i.active {
+            transform: rotate(-90deg); /* السهم هيبص لتحت لما التفاصيل مفتوحة */
+        }
+
+        .referral-details {
+            display: none; /* الكلام هيبقى مخفي في البداية */
+            margin-right: -20px; /* عشان البيانات تلزق في جمب الصفحة على اليمين */
+        }
+
+        .referral-details.active {
+            display: block; /* الكلام هيظهر لما أضغط على السهم */
+        }
+
+        .referral-details .dotted-divider {
+            border-top: 2px dotted #e6f0e6; /* تكبير سمك الخط المنقط */
+            margin: 5px 0; /* تقليل المسافة فوق وتحت الخط */
+            width: 100%; /* الخط هيمتد لحد نص الصفحة بسبب max-width بتاع referral-info */
+        }
+
+        .referral-details p {
+            color: #4A4A4A;
+            font-size: 14px;
+            margin-bottom: 5px;
+            margin-top: 2px; /* تقليل المسافة بين الخط والبيانات */
+            text-align: right;
+        }
+
+        .action-box {
+            background: #F5F7F5; /* خلفية خفيفة للمستطيل */
+            padding: 10px;
+            margin-top: 20px;
+            margin-right: -20px; /* نفس الـ margin-right بتاع referral-details عشان يكون بنفس العرض */
+            border-radius: 4px;
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15); /* box-shadow بدرجة كبيرة */
+            display: flex;
+            justify-content: space-between; /* الكلمات هتبقى موزعة بالتساوي */
+            align-items: center;
+        }
+
+        .action-box span {
+            color: #4A4A4A;
+            font-size: 14px;
+            font-weight: 600;
+        }
+
+        .action-fields {
+            margin-top: 10px;
+            margin-right: -20px; /* نفس الـ margin-right عشان الحقول تكون محاذية لباقي المحتوى */
+            margin-bottom: 20px; /* زيادة المسافة بين الحقول والـ rectangles-container */
+            display: flex;
+            justify-content: space-between; /* الحقول هتبقى موزعة بالتساوي */
+        }
+
+        .action-fields .field {
+            flex: 1; /* كل حقل ياخد نفس المساحة */
+            display: flex;
+            flex-direction: column; /* الحقل والـ label تحت بعض */
+            align-items: flex-end; /* المحاذاة لليمين */
+            margin-left: 10px; /* مسافة صغيرة بين الحقول */
+        }
+
+        .action-fields .field:first-child {
+            margin-left: 0; /* أول حقل مايكونش ليه margin-left */
+        }
+
+        .action-fields .field select,
+        .action-fields .field input[type="date"],
+        .action-fields .field input[type="text"] {
+            width: 100%;
+            padding: 8px;
+            border: 1px solid #e6f0e6;
+            border-radius: 4px;
+            font-size: 14px;
+            color: #4A4A4A;
+            background: #FFFFFF;
+            direction: rtl; /* عشان القوائم والحقول تكون محاذية لليمين */
+        }
+
+        /* ستايل قسم السلطة المختصة */
+        .authority-section {
+            text-align: left; /* المحاذاة للشمال */
+            max-width: 85%; /* نفس العرض بتاع referral-info */
+            margin-left: 0; /* عشان الكلام يفضل على الشمال */
+            margin-right: auto;
+            margin-top: 20px; /* مسافة فوق القسم */
+        }
+
+        .authority-fields {
+            margin-bottom: 10px;
+        }
+
+        .authority-fields .form-group {
+            margin-bottom: 10px;
+        }
+
+        .authority-fields .form-group label {
+            color: #4A4A4A;
+            font-size: 14px;
+            font-weight: 600;
+            display: block;
+            margin-bottom: 5px;
+        }
+
+        .authority-fields .form-group input[type="text"] {
+            width: 100%;
+            padding: 8px;
+            border: 1px solid #e6f0e6;
+            border-radius: 4px;
+            font-size: 14px;
+            color: #4A4A4A;
+            background: #FFFFFF;
+            direction: rtl; /* عشان الحقول تكون محاذية لليمين داخل القسم المحاذي للشمال */
+        }
+
+        .rectangles-container {
+            display: flex;
+            flex-direction: column; /* ترتيب عمودي */
+            align-items: flex-start; /* محاذاة المستطيلات للشمال */
+            gap: 5px; /* المسافة بين المستطيلين */
+            margin-left: -20px; /* عشان يلزق في أقصى الشمال */
+        }
+
+        .rectangles-container .small-rect {
+            width: 300px; /* العرض */
+            height: 40px; /* الارتفاع */
+            background-color: #f0f0f0; /* لون خلفية خفيف */
+            border: 1px solid #6a9262; /* حدود */
+            border-radius: 4px;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            gap: 5px; /* المسافة بين الأزرار */
+            padding: 5px;
+        }
+
+        .rectangles-container .small-rect button {
+            background-color: #1B5E20;
+            color: white;
+            border: none;
+            padding: 5px 10px; /* تصغير الأزرار */
+            border-radius: 4px;
+            cursor: pointer;
+            font-size: 11px; /* تصغير حجم الخط */
+            display: flex;
+            align-items: center;
+            gap: 5px;
+        }
+
+        .rectangles-container .small-rect button:hover {
+            background-color: #4A4A4A;
+        }
+
+        .rectangles-container .small-rect i {
+            font-size: 11px; /* تصغير الأيقونة */
+        }
+
+        .rectangles-container .vertical-rect {
+            width: 300px; /* نفس عرض المستطيل الصغير */
+            height: 150px; /* ارتفاع أكبر */
+            background-color: #f0f0f0; /* لون خلفية خفيف */
+            border: 1px solid #6a9262; /* حدود */
+            border-radius: 4px;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            gap: 10px; /* المسافة بين الأيقونة والنص */
+        }
+
+        .rectangles-container .pdf-container {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 5px;
+        }
+
+        .rectangles-container .pdf-container i {
+            font-size: 24px; /* حجم الأيقونة */
+            color: #1B5E20; /* نفس لون العنوان */
+        }
+
+        .rectangles-container .pdf-container .pdf-label {
+            color: #1B5E20; /* نفس لون العنوان */
+            font-size: 16px; /* حجم أكبر للنص */
+            font-weight: 600;
+            margin-top: 0; /* إزالة المسافة العلوية */
+        }
+
+        /* ستايل الأزرار المنفصلة */
+        .action-buttons {
+            margin-top: 20px; /* زيادة المسافة بين الأزرار والـ rectangles-container */
+            display: flex;
+            gap: 8px; /* مسافة بين الأزرار */
+        }
+
+        .action-buttons button {
+            background: #1B5E20;
+            color: #FFFFFF;
+            border: none;
+            padding: 8px 12px;
+            border-radius: 4px;
+            font-size: 14px;
+            cursor: pointer;
+            transition: background 0.3s ease;
+            display: flex; /* عشان النص والأيقونة يترتبوا جنب بعض */
+            align-items: center;
+            gap: 5px; /* المسافة بين النص والأيقونة */
+        }
+
+        .action-buttons button:hover {
+            background: #2e7d32;
+        }
+
+        .action-buttons button i {
+            font-size: 12px; /* حجم الأيقونة */
+            color: #FFFFFF; /* نفس لون النص */
+        }
+
+        /* إضافة أنماط جديدة */
+        .request-details {
+            padding: 20px;
+            background-color: #f9f9f9;
+            border-radius: 8px;
+            margin-bottom: 20px;
+        }
+        
+        .request-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 15px;
+        }
+        
+        .request-title {
+            font-size: 18px;
+            font-weight: 600;
+            color: #1B5E20;
+        }
+        
+        .request-status {
+            padding: 5px 10px;
+            border-radius: 4px;
+            font-size: 14px;
+            font-weight: 500;
+        }
+        
+        .status-pending { background-color: #FFF3E0; color: #E65100; }
+        .status-forwarded { background-color: #E8F5E9; color: #2E7D32; }
+        .status-returned { background-color: #FFEBEE; color: #C62828; }
+        
+        .request-form {
+            background-color: #ffffff;
+            padding: 20px;
+            border-radius: 8px;
+            margin-top: 20px;
+        }
+        
+        .form-group {
+            margin-bottom: 15px;
+        }
+        
+        .form-group label {
+            display: block;
+            margin-bottom: 5px;
+            color: #4A4A4A;
+            font-weight: 500;
+        }
+        
+        .form-group select,
+        .form-group input,
+        .form-group textarea {
+            width: 100%;
+            padding: 8px 12px;
+            border: 1px solid #ddd;
+            border-radius: 4px;
+            font-size: 14px;
+        }
+        
+        .history-item {
+            padding: 15px;
+            border-right: 3px solid #1B5E20;
+            background-color: #ffffff;
+            margin-bottom: 15px;
+            border-radius: 4px;
+        }
+        
+        .history-date {
+            color: #6a9262;
+            font-size: 13px;
+            margin-bottom: 5px;
+        }
+        
+        .history-action {
+            font-weight: 500;
+            color: #1B5E20;
+        }
+        
+        .history-details {
+            margin-top: 10px;
+            color: #4A4A4A;
+        }
+    </style>
+{% endblock %}
+
+{% block content %}
+    <p id="default-message" class="slide-up" style="color: #4A4A4A; font-size: 14px;">يرجى اختيار إعلان من القائمة على اليمين لعرض التفاصيل.</p>
+
+    <div id="announcement-details" style="display: none;" class="announcement-details">
+        <div class="announcement-header">
+            <span class="new-label">إعلان جديد</span>
+        </div>
+        <div class="job-title-container">
+            <div class="job-title-wrapper">
+                <i class="fas fa-desktop desktop-icon"></i>
+                <span class="job-title" id="job-title"></span>
+            </div>
+        </div>
+        <div class="announcement-code">
+            <i class="fas fa-hashtag hashtag-icon"></i>
+            <span class="code" id="announcement-code"></span>
+        </div>
+    </div>
+
+    <div id="tabs-section" style="display: none;">
+        <div class="divider"></div>
+        <div class="tabs">
+            <div class="tab active" data-tab="attachments">
+                <i class="fas fa-paperclip"></i>
+                <span>المرفقات</span>
+            </div>
+            <div class="tab" data-tab="details">
+                <i class="fas fa-info-circle"></i>
+                <span>التفاصيل</span>
+            </div>
+            <div class="tab" data-tab="history">
+                <i class="fas fa-history"></i>
+                <span>السجل</span>
+            </div>
+        </div>
+        <div class="divider"></div>
+
+        <div id="attachments" class="tab-content active">
+            <div class="attachments-section">
+                {% for attachment in attachments %}
+                <div class="attachment-item">
+                    <div class="attachment-container">
+                        <div class="attachment-info">
+                            <div class="attachment-icon">
+                                <i class="fas {% if attachment.type == 'pdf' %}fa-file-pdf{% elif attachment.type in ['doc', 'docx'] %}fa-file-word{% elif attachment.type in ['jpg', 'jpeg', 'png'] %}fa-file-image{% else %}fa-file{% endif %}"></i>
+                            </div>
+                            <div class="attachment-details">
+                                <div class="attachment-title">{{ attachment.name }}</div>
+                                <div class="attachment-meta">
+                                    <span><i class="fas fa-calendar-alt"></i> {{ attachment.date }}</span>
+                                    <span><i class="fas fa-file-alt"></i> {{ attachment.size }}</span>
+                                    <span><i class="fas fa-user"></i> {{ attachment.uploader }}</span>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="attachment-actions">
+                            <button class="attachment-button" onclick="viewAttachment('{{ attachment.request_id }}', '{{ attachment.name }}')">
+                                <i class="fas fa-eye"></i>
+                                <span>عرض</span>
+                            </button>
+                            <button class="attachment-button" onclick="downloadAttachment('{{ attachment.request_id }}', '{{ attachment.name }}')">
+                                <i class="fas fa-download"></i>
+                                <span>تحميل</span>
+                            </button>
+                        </div>
+                    </div>
+                </div>
+                {% endfor %}
+            </div>
+        </div>
+        <div id="details" class="tab-content">
+            {% for request in requests %}
+            <div class="request-details">
+                <div class="request-header">
+                    <div class="request-title">{{ request.title }}</div>
+                    <div class="request-status status-{{ request.status }}">{{ request.status }}</div>
+                </div>
+                
+                <div class="request-form">
+                    <div class="form-group">
+                        <label>الغاية</label>
+                        <select id="purpose_{{ request.id }}" class="form-control">
+                            <option value="">اختر الغاية</option>
+                            <option value="review">مراجعة</option>
+                            <option value="approval">موافقة</option>
+                            <option value="feedback">تعليقات</option>
+                        </select>
+                    </div>
+                    
+                    <div class="form-group">
+                        <label>التالية</label>
+                        <select id="next_action_{{ request.id }}" class="form-control">
+                            <option value="">اختر الإجراء التالي</option>
+                            <option value="submit">تقديم</option>
+                            <option value="escalate">تصعيد</option>
+                            <option value="follow-up">متابعة</option>
+                        </select>
+                    </div>
+                    
+                    <div class="form-group">
+                        <label>تاريخ الاستحقاق</label>
+                        <input type="date" id="due_date_{{ request.id }}" class="form-control">
+                    </div>
+                    
+                    <div class="form-group">
+                        <label>تعليقات</label>
+                        <textarea id="comments_{{ request.id }}" class="form-control" rows="3"></textarea>
+                    </div>
+                    
+                    <div class="action-buttons">
+                        <button class="attachment-button" onclick="forwardRequest('{{ request.id }}')">
+                            <i class="fas fa-share"></i>
+                            <span>تحويل</span>
+                        </button>
+                        <button class="attachment-button" onclick="returnRequest('{{ request.id }}')">
+                            <i class="fas fa-reply"></i>
+                            <span>رد المعاملة</span>
+                        </button>
+                        <button class="attachment-button" onclick="saveRequest('{{ request.id }}')">
+                            <i class="fas fa-save"></i>
+                            <span>حفظ</span>
+                        </button>
+                    </div>
+                </div>
+            </div>
+            {% endfor %}
+        </div>
+        <div id="history" class="tab-content">
+            {% for request in requests %}
+            <div class="history-item">
+                <div class="history-date">{{ request.created_at.strftime('%Y-%m-%d %H:%M') }}</div>
+                <div class="history-action">{{ request.request_type }}</div>
+                <div class="history-details">{{ request.description }}</div>
+            </div>
+            {% endfor %}
+        </div>
+    </div>
+{% endblock %}
+
+{% block extra_scripts %}
+<script>
+    // دالة لعرض التاب المحدد
+    function showTab(tabId) {
+        // إخفاء كل محتويات التاب
+        document.querySelectorAll('.tab-content').forEach(function(content) {
+            content.classList.remove('active');
+        });
+
+        // إزالة الكلاس active من كل التابات
+        document.querySelectorAll('.tab').forEach(function(tab) {
+            tab.classList.remove('active');
+        });
+
+        // إظهار محتوى التاب المحدد
+        document.getElementById(tabId).classList.add('active');
+
+        // إضافة الكلاس active للتاب المحدد
+        document.querySelector('.tab[data-tab="' + tabId + '"]').classList.add('active');
+    }
+
+    // دالة لإظهار/إخفاء تفاصيل الإحالة
+    function toggleReferralDetails() {
+        var details = document.querySelector('.referral-details');
+        var icon = document.querySelector('.referral-info h3 i');
+        details.classList.toggle('active');
+        icon.classList.toggle('active');
+    }
+
+    // دالة لطباعة ملف PDF
+    function printPDF(url) {
+        window.open(url, '_blank');
+    }
+
+    // دالة لجلب تفاصيل الوظيفة من الخادم
+    function fetchJobDetails(jobCode) {
+        fetch('/api/job_details/' + jobCode)
+            .then(response => response.json())
+            .then(data => {
+                if (data.status === 'success') {
+                    // تحديث واجهة المستخدم بتفاصيل الوظيفة
+                    document.getElementById('job-title').textContent = data.job.job_title;
+                    document.getElementById('announcement-code').textContent = data.job.job_code;
+                    
+                    // إظهار تفاصيل الإعلان
+                    document.getElementById('default-message').style.display = 'none';
+                    document.getElementById('announcement-details').style.display = 'block';
+                    document.getElementById('tabs-section').style.display = 'block';
+                } else {
+                    alert('حدث خطأ أثناء جلب تفاصيل الوظيفة');
+                }
+            })
+            .catch(error => {
+                console.error('Error:', error);
+                alert('حدث خطأ في الاتصال بالخادم');
+            });
+    }
+
+    // إضافة مستمع أحداث للإعلانات
+    document.addEventListener('DOMContentLoaded', function() {
+        var announcements = document.querySelectorAll('.announcement');
+        announcements.forEach(function(announcement) {
+            announcement.addEventListener('click', function(event) {
+                // منع السلوك الافتراضي للمتصفح (منع الانتقال إلى صفحة أخرى)
+                event.preventDefault();
+                
+                const jobCode = this.getAttribute('data-code');
+                const jobTitle = this.getAttribute('data-job-title');
+                
+                // تعيين عنوان الوظيفة والكود مباشرة
+                document.getElementById('job-title').textContent = jobTitle;
+                document.getElementById('announcement-code').textContent = jobCode;
+                
+                // إخفاء الرسالة الافتراضية
+                document.getElementById('default-message').style.display = 'none';
+                
+                // إظهار تفاصيل الإعلان
+                document.getElementById('announcement-details').style.display = 'block';
+                document.getElementById('tabs-section').style.display = 'block';
+                
+                // تحديث معلومات الإحالة إذا كان الإعلان هو "قاتل"
+                if (jobTitle === "قاتل" && jobCode === "kILL-54-2002") {
+                    // تحديث معلومات الإحالة
+                    document.querySelector('.referral-details p:nth-child(2)').innerHTML = "<strong>إحالة من:</strong> أحمد محمد - إدارة الموارد البشرية";
+                    document.querySelector('.referral-details p:nth-child(3)').innerHTML = "<strong>تاريخ الإحالة:</strong> 2025/04/22";
+                    document.querySelector('.referral-details p:nth-child(4)').innerHTML = "<strong>توجيه:</strong> أحمد محمد";
+                    document.querySelector('.referral-details p:nth-child(5)').innerHTML = "<strong>ملاحظة:</strong> يرجى الإسراع في مراجعة الطلب.";
+                    
+                    // تحديث تاريخ الاستحقاق
+                    document.getElementById('decision_date').value = "2025-04-30";
+                    
+                    // تحديث القوائم المنسدلة
+                    const selects = document.querySelectorAll('.action-fields .field select');
+                    if (selects.length >= 2) {
+                        // تحديث قائمة الغاية
+                        selects[0].value = "review";
+                        // تحديث قائمة التالية
+                        selects[1].value = "submit";
+                    }
+                    
+                    // تحديث حقل التعليقات
+                    const commentInput = document.querySelector('.action-fields .field input[type="text"]');
+                    if (commentInput) {
+                        commentInput.value = "اكتب تعليق هنا";
+                    }
+                    
+                    // تحميل المرفقات الفعلية للإعلان "قاتل"
+                    loadAttachments(jobCode);
+                }
+                
+                // دالة لتحميل المرفقات الفعلية
+                function loadAttachments(jobCode) {
+                    // إظهار رسالة التحميل
+                    const attachmentsContainer = document.getElementById('attachments-container');
+                    
+                    // في حالة الإعلان "قاتل" نعرض المرفقات الفعلية
+                    if (jobCode === "kILL-54-2002") {
+                        // إزالة رسالة التحميل
+                        document.getElementById('loading-attachments').style.display = 'none';
+                        
+                        // إنشاء المرفقات الفعلية
+                        const realAttachments = [
+                            { name: "طلب التعيين الرسمي.pdf", size: "1.2 MB", date: "2025/04/15" },
+                            { name: "السيرة الذاتية المعتمدة.pdf", size: "3.5 MB", date: "2025/04/16" },
+                            { name: "شهادة الخبرة المصدقة.pdf", size: "0.8 MB", date: "2025/04/17" },
+                            { name: "صورة الهوية الوطنية.pdf", size: "0.5 MB", date: "2025/04/18" },
+                            { name: "شهادات الدورات التدريبية.pdf", size: "2.3 MB", date: "2025/04/19" }
+                        ];
+                        
+                        // إنشاء عناصر HTML للمرفقات
+                        realAttachments.forEach((attachment, index) => {
+                            const attachmentElement = document.createElement('div');
+                            attachmentElement.className = 'attachment-item';
+                            attachmentElement.innerHTML = `
+                                <div class="attachment-container">
+                                    <div class="attachment-info">
+                                        <i class="fas fa-file-pdf attachment-icon"></i>
+                                        <div class="attachment-details">
+                                            <p class="attachment-title"><strong>المرفق ${index + 1}:</strong> ${attachment.name}</p>
+                                            <p class="attachment-meta">الحجم: ${attachment.size} | تاريخ الرفع: ${attachment.date}</p>
+                                        </div>
+                                    </div>
+                                    <div class="attachment-actions">
+                                        <button type="button" onclick="alert('جاري عرض المرفق: ${attachment.name}')">
+                                            <i class="fas fa-eye"></i> عرض
+                                        </button>
+                                        <button type="button" onclick="alert('جاري تحميل المرفق: ${attachment.name}')">
+                                            <i class="fas fa-download"></i> تحميل
+                                        </button>
+                                    </div>
+                                </div>
+                            `;
+
+                            attachmentsContainer.appendChild(attachmentElement);
+                        });
+                    } else {
+                        // في حالة الإعلانات الأخرى نعرض رسالة
+                        attachmentsContainer.innerHTML = '<p style="color: #4A4A4A; font-size: 14px; margin-bottom: 10px;">لا توجد مرفقات متاحة لهذا الإعلان.</p>';
+                    }
+                }
+                
+                // يمكن استدعاء fetchJobDetails لجلب المزيد من التفاصيل إذا لزم الأمر
+                // fetchJobDetails(jobCode);
+                
+                // إيقاف انتشار الحدث لمنع أي سلوك غير مرغوب فيه
+                event.stopPropagation();
+            });
+        });
+    });
+    
+    // تجاوز السلوك الافتراضي لإعادة التوجيه في base.html
+    window.setupAnnouncementClicks = function() {
+        // تعريف فارغ لمنع التنفيذ الأصلي في base.html
+        // هذا سيمنع إعادة التوجيه إلى صفحة appointment_decision
+        console.log("تم تجاوز إعادة التوجيه الافتراضي للإعلانات");
+    };
+
+    // دوال معالجة المرفقات
+    function viewAttachment(requestId, filename) {
+        window.open(`/view_attachment/${requestId}/${filename}`, '_blank');
+    }
+
+    function downloadAttachment(requestId, filename) {
+        window.location.href = `/download_attachment/${requestId}/${filename}`;
+    }
+
+    // دوال معالجة الطلبات
+    function forwardRequest(requestId) {
+        const purpose = document.getElementById(`purpose_${requestId}`).value;
+        const nextAction = document.getElementById(`next_action_${requestId}`).value;
+        const dueDate = document.getElementById(`due_date_${requestId}`).value;
+        const comments = document.getElementById(`comments_${requestId}`).value;
+        
+        if (!purpose || !nextAction || !dueDate) {
+            alert('يرجى ملء جميع الحقول المطلوبة');
+            return;
+        }
+        
+        fetch(`/forward_request/${requestId}`, {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+            },
+            body: JSON.stringify({
+                purpose: purpose,
+                next_action: nextAction,
+                due_date: dueDate,
+                comments: comments
+            })
+        })
+        .then(response => response.json())
+        .then(data => {
+            if (data.success) {
+                alert(data.message);
+                location.reload();
+            } else {
+                alert(data.message);
+            }
+        })
+        .catch(error => {
+            console.error('Error:', error);
+            alert('حدث خطأ أثناء تحويل الطلب');
+        });
+    }
+
+    function returnRequest(requestId) {
+        const comments = document.getElementById(`comments_${requestId}`).value;
+        
+        if (!comments) {
+            alert('يرجى إضافة سبب الرد');
+            return;
+        }
+        
+        fetch(`/return_request/${requestId}`, {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+            },
+            body: JSON.stringify({
+                reason: 'return',
+                comments: comments
+            })
+        })
+        .then(response => response.json())
+        .then(data => {
+            if (data.success) {
+                alert(data.message);
+                location.reload();
+            } else {
+                alert(data.message);
+            }
+        })
+        .catch(error => {
+            console.error('Error:', error);
+            alert('حدث خطأ أثناء رد الطلب');
+        });
+    }
+
+    function saveRequest(requestId) {
+        const notes = document.getElementById(`comments_${requestId}`).value;
+        
+        fetch(`/save_request/${requestId}`, {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+            },
+            body: JSON.stringify({
+                notes: notes
+            })
+        })
+        .then(response => response.json())
+        .then(data => {
+            if (data.success) {
+                alert(data.message);
+            } else {
+                alert(data.message);
+            }
+        })
+        .catch(error => {
+            console.error('Error:', error);
+            alert('حدث خطأ أثناء حفظ الطلب');
+        });
+    }
+</script>
+{% endblock %}

@@ -1,0 +1,487 @@
+{% extends 'base.html' %}
+
+{% block title %}تعديل التقييم{% endblock %}
+
+{% block extra_styles %}
+    <style>
+        /* تنسيق العنوان */
+        h2 {
+            color: #1B5E20;
+            font-size: 24px;
+            font-weight: 700;
+            margin-bottom: 20px;
+            text-align: right;
+        }
+
+        /* تنسيق النموذج */
+        .form-section {
+            margin-right: 0;
+            margin-left: auto;
+            direction: rtl;
+            display: flex;
+            flex-direction: column;
+        }
+
+        .form-container {
+            width: 100%;
+            background: #FFF;
+            padding: 30px;
+            border-radius: 8px;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+            border: 1px solid #e6f0e6;
+        }
+
+        .form-group {
+            display: flex;
+            align-items: center;
+            margin-bottom: 20px;
+            margin-left: 20px;
+            margin-right: 20px;
+            justify-content: flex-start;
+        }
+
+        .form-group label {
+            color: #4A4A4A;
+            font-size: 14px;
+            font-weight: 600;
+            width: 200px;
+            text-align: right;
+            margin-right: 15px;
+        }
+
+        .form-group input,
+        .form-group textarea,
+        .form-group select {
+            padding: 10px;
+            font-size: 14px;
+            border: 1.5px solid #6a9262;
+            border-radius: 4px;
+            background-color: #FFF;
+            color: #4A4A4A;
+            transition: border-color 0.3s ease, box-shadow 0.3s ease;
+            flex: 1;
+        }
+
+        .form-group input:focus,
+        .form-group textarea:focus,
+        .form-group select:focus {
+            outline: none;
+            border-color: #1B5E20;
+            box-shadow: 0 0 5px rgba(27, 94, 32, 0.3);
+        }
+
+        /* تنسيق textarea */
+        .form-group textarea {
+            height: 120px;
+            resize: vertical;
+        }
+
+        /* تنسيق القسم الفرعي */
+        .section-title {
+            color: #1B5E20;
+            font-size: 18px;
+            font-weight: 600;
+            margin: 20px 0 10px;
+            text-align: right;
+            border-bottom: 1px solid #e6f0e6;
+            padding-bottom: 5px;
+        }
+
+        /* تنسيق الأسئلة */
+        .question-group {
+            margin-bottom: 25px;
+            margin-left: 20px;
+            margin-right: 20px;
+        }
+
+        .question-group label {
+            color: #4A4A4A;
+            font-size: 14px;
+            font-weight: 600;
+            display: block;
+            margin-bottom: 10px;
+            text-align: right;
+        }
+
+        .question-group select {
+            width: 100%;
+            padding: 10px;
+            font-size: 14px;
+            border: 1.5px solid #6a9262;
+            border-radius: 4px;
+            background-color: #FFF;
+            color: #4A4A4A;
+            transition: border-color 0.3s ease, box-shadow 0.3s ease;
+        }
+
+        .question-group select:focus {
+            outline: none;
+            border-color: #1B5E20;
+            box-shadow: 0 0 5px rgba(27, 94, 32, 0.3);
+        }
+
+        /* تنسيق الدرجة الكلية */
+        .total-score {
+            text-align: center;
+            margin: 20px 0;
+            padding: 15px;
+            background: #b1e3b5dc;
+            border-radius: 8px;
+            font-size: 16px;
+            font-weight: 600;
+            color: #1B5E20;
+        }
+
+        /* تنسيق الأزرار */
+        .form-buttons {
+            display: flex;
+            justify-content: center;
+            gap: 15px;
+            margin-top: 30px;
+        }
+
+        .form-buttons button {
+            background-color: #1B5E20;
+            color: #FFF;
+            padding: 10px 20px;
+            border: none;
+            font-size: 14px;
+            font-weight: 600;
+            cursor: pointer;
+            border-radius: 4px;
+            transition: background-color 0.3s ease, transform 0.1s ease;
+        }
+
+        .form-buttons button:hover {
+            background-color: #2e7d32;
+            transform: translateY(-2px);
+        }
+
+        .form-buttons .cancel-btn {
+            background-color: #4A4A4A;
+        }
+
+        .form-buttons .cancel-btn:hover {
+            background-color: #6a6a6a;
+        }
+
+        /* تنسيق رسائل الخطأ */
+        .field-error {
+            color: red;
+            font-size: 12px;
+            margin-top: 5px;
+            display: none;
+            margin-right: 215px;
+        }
+
+        /* تنسيق رسائل التنبيه */
+        .alert {
+            padding: 10px;
+            margin: 10px 0;
+            border-radius: 4px;
+            text-align: center;
+        }
+
+        .alert-success {
+            background-color: #d4edda;
+            color: #155724;
+            border: 1px solid #c3e6cb;
+        }
+
+        .alert-error {
+            background-color: #f8d7da;
+            color: #721c24;
+            border: 1px solid #f5c6cb;
+        }
+
+        /* زر العودة */
+        .back-btn-container {
+            text-align: center;
+            margin-top: 20px;
+        }
+
+        /* تحسين التجاوب على الموبايل */
+        @media (max-width: 576px) {
+            .form-section {
+                padding: 10px;
+            }
+
+            .form-group,
+            .question-group {
+                flex-direction: column;
+                align-items: flex-end;
+                margin-left: 0;
+                margin-right: 0;
+            }
+
+            .form-group label,
+            .question-group label {
+                width: 100%;
+                text-align: right;
+                margin-right: 0;
+                margin-bottom: 5px;
+            }
+
+            .form-group input,
+            .form-group textarea,
+            .form-group select,
+            .question-group select {
+                width: 100%;
+            }
+
+            .field-error {
+                margin-right: 0;
+            }
+
+            .form-buttons {
+                flex-direction: column;
+                gap: 10px;
+            }
+
+            .form-buttons button {
+                width: 100%;
+                padding: 12px;
+            }
+
+            .total-score {
+                font-size: 14px;
+                padding: 10px;
+            }
+        }
+    </style>
+{% endblock %}
+
+{% block content %}
+    <h2>تعديل التقييم</h2>
+
+    <!-- النموذج -->
+    <div class="form-section">
+        <div class="form-container">
+            <form method="POST" action="{{ url_for('edit_evaluation') }}">
+                <!-- معلومات أساسية -->
+                <div class="section-title">المعلومات الأساسية</div>
+
+                <!-- اسم المرشح -->
+                <div class="form-group">
+                    <label for="candidate_name">اسم المرشح:</label>
+                    <input type="text" id="candidate_name" name="candidate_name" value="محمد أحمد" required>
+                    <div id="candidate_name_error" class="field-error"></div>
+                </div>
+
+                <!-- الرقم القومي -->
+                <div class="form-group">
+                    <label for="national_id">الرقم القومي:</label>
+                    <input type="text" id="national_id" name="national_id" value="29701012548765" required>
+                    <div id="national_id_error" class="field-error"></div>
+                </div>
+
+                <!-- تاريخ التقييم -->
+                <div class="form-group">
+                    <label for="assessment_date">تاريخ التقييم:</label>
+                    <input type="date" id="assessment_date" name="assessment_date" value="2025-04-29" required>
+                    <div id="assessment_date_error" class="field-error"></div>
+                </div>
+
+                <!-- أسئلة التقييم -->
+                <div class="section-title">أسئلة التقييم</div>
+
+                <!-- السؤال الأول -->
+                <div class="question-group">
+                    <label for="q1">1. كيف تقيم أداء المرشح في المقابلة؟</label>
+                    <select id="q1" name="q1" onchange="calculateTotalScore()">
+                        <option value="0">اختر إجابة...</option>
+                        <option value="1">ضعيف جدًا (1 درجة)</option>
+                        <option value="2" selected>ضعيف (2 درجة)</option>
+                        <option value="3">متوسط (3 درجات)</option>
+                        <option value="4">جيد (4 درجات)</option>
+                        <option value="5">ممتاز (5 درجات)</option>
+                    </select>
+                </div>
+
+                <!-- السؤال الثاني -->
+                <div class="question-group">
+                    <label for="q2">2. ما مدى ملاءمة المرشح للوظيفة بناءً على الخبرة؟</label>
+                    <select id="q2" name="q2" onchange="calculateTotalScore()">
+                        <option value="0">اختر إجابة...</option>
+                        <option value="1">ضعيف جدًا (1 درجة)</option>
+                        <option value="2">ضعيف (2 درجة)</option>
+                        <option value="3" selected>متوسط (3 درجات)</option>
+                        <option value="4">جيد (4 درجات)</option>
+                        <option value="5">ممتاز (5 درجات)</option>
+                    </select>
+                </div>
+
+                <!-- السؤال الثالث -->
+                <div class="question-group">
+                    <label for="q3">3. كيف تقيم مهارات التواصل لدى المرشح؟</label>
+                    <select id="q3" name="q3" onchange="calculateTotalScore()">
+                        <option value="0">اختر إجابة...</option>
+                        <option value="1">ضعيف جدًا (1 درجة)</option>
+                        <option value="2">ضعيف (2 درجة)</option>
+                        <option value="3">متوسط (3 درجات)</option>
+                        <option value="4" selected>جيد (4 درجات)</option>
+                        <option value="5">ممتاز (5 درجات)</option>
+                    </select>
+                </div>
+
+                <!-- السؤال الرابع -->
+                <div class="question-group">
+                    <label for="q4">4. ما مدى قدرة المرشح على حل المشكلات؟</label>
+                    <select id="q4" name="q4" onchange="calculateTotalScore()">
+                        <option value="0">اختر إجابة...</option>
+                        <option value="1">ضعيف جدًا (1 درجة)</option>
+                        <option value="2">ضعيف (2 درجة)</option>
+                        <option value="3">متوسط (3 درجات)</option>
+                        <option value="4">جيد (4 درجات)</option>
+                        <option value="5" selected>ممتاز (5 درجات)</option>
+                    </select>
+                </div>
+
+                <!-- السؤال الخامس -->
+                <div class="question-group">
+                    <label for="q5">5. كيف تقيم التزام المرشح بالمعايير المهنية؟</label>
+                    <select id="q5" name="q5" onchange="calculateTotalScore()">
+                        <option value="0">اختر إجابة...</option>
+                        <option value="1">ضعيف جدًا (1 درجة)</option>
+                        <option value="2" selected>ضعيف (2 درجة)</option>
+                        <option value="3">متوسط (3 درجات)</option>
+                        <option value="4">جيد (4 درجات)</option>
+                        <option value="5">ممتاز (5 درجات)</option>
+                    </select>
+                </div>
+
+                <!-- الدرجة الكلية -->
+                <div class="total-score" id="totalScore">الدرجة الكلية: 16 / 25</div>
+
+                <!-- التعليقات -->
+                <div class="section-title">التعليقات والملاحظات</div>
+
+                <!-- تعليقات المقيّم -->
+                <div class="form-group">
+                    <label for="assessor_comments">تعليقات المقيّم:</label>
+                    <textarea id="assessor_comments" name="assessor_comments" placeholder="أدخل تعليقاتك حول أداء المرشح..." required>المرشح يحتاج إلى تحسين مهارات التواصل وأدائه في المقابلات.</textarea>
+                    <div id="assessor_comments_error" class="field-error"></div>
+                </div>
+
+                <!-- توصيات التطوير -->
+                <div class="form-group">
+                    <label for="development_recommendations">توصيات التطوير:</label>
+                    <textarea id="development_recommendations" name="development_recommendations" placeholder="حدد التوصيات لتطوير أداء المرشح..." required>يُوصى بإدراج المرشح في دورات تدريبية لتحسين مهارات التواصل وحل المشكلات.</textarea>
+                    <div id="development_recommendations_error" class="field-error"></div>
+                </div>
+
+                <!-- أزرار النموذج -->
+                <div class="form-buttons">
+                    <button type="submit" name="action" value="update">حفظ التعديلات</button>
+                    <button type="button" class="cancel-btn" onclick="window.location.href='{{ url_for('dashboard') }}'">إلغاء</button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    {% with messages = get_flashed_messages(with_categories=true) %}
+        {% if messages %}
+            {% for category, message in messages %}
+                <div class="alert alert-{{ category }}">{{ message }}</div>
+            {% endfor %}
+        {% endif %}
+    {% endwith %}
+
+{% endblock %}
+
+{% block extra_scripts %}
+    <script>
+        // دالة لحساب الدرجة الكلية
+        function calculateTotalScore() {
+            const questions = ['q1', 'q2', 'q3', 'q4', 'q5'];
+            let total = 0;
+            const maxScore = questions.length * 5; // أقصى درجة (5 أسئلة × 5 درجات)
+
+            questions.forEach(q => {
+                const value = parseInt(document.getElementById(q).value) || 0;
+                total += value;
+            });
+
+            document.getElementById('totalScore').textContent = `الدرجة الكلية: ${total} / ${maxScore}`;
+        }
+
+        // استدعاء الدالة عند تحميل الصفحة لعرض الدرجة الافتراضية
+        document.addEventListener('DOMContentLoaded', calculateTotalScore);
+
+        // دالة التحقق من الحقول
+        document.querySelector('form').addEventListener('submit', function (event) {
+            let valid = true;
+
+            // التحقق من اسم المرشح
+            const candidateName = document.getElementById('candidate_name').value;
+            if (!candidateName || candidateName.trim() === '') {
+                document.getElementById('candidate_name_error').textContent = 'اسم المرشح مطلوب';
+                document.getElementById('candidate_name_error').style.display = 'block';
+                valid = false;
+            } else {
+                document.getElementById('candidate_name_error').style.display = 'none';
+            }
+
+            // التحقق من الرقم القومي
+            const nationalId = document.getElementById('national_id').value;
+            const nationalIdRegex = /^\d{14}$/;
+            if (!nationalId || !nationalIdRegex.test(nationalId)) {
+                document.getElementById('national_id_error').textContent = 'الرقم القومي يجب أن يكون 14 رقمًا';
+                document.getElementById('national_id_error').style.display = 'block';
+                valid = false;
+            } else {
+                document.getElementById('national_id_error').style.display = 'none';
+            }
+
+            // التحقق من تاريخ التقييم
+            const assessmentDate = document.getElementById('assessment_date').value;
+            if (!assessmentDate) {
+                document.getElementById('assessment_date_error').textContent = 'تاريخ التقييم مطلوب';
+                document.getElementById('assessment_date_error').style.display = 'block';
+                valid = false;
+            } else {
+                document.getElementById('assessment_date_error').style.display = 'none';
+            }
+
+            // التحقق من تعليقات المقيّم
+            const assessorComments = document.getElementById('assessor_comments').value;
+            if (!assessorComments || assessorComments.trim() === '') {
+                document.getElementById('assessor_comments_error').textContent = 'تعليقات المقيّم مطلوبة';
+                document.getElementById('assessor_comments_error').style.display = 'block';
+                valid = false;
+            } else {
+                document.getElementById('assessor_comments_error').style.display = 'none';
+            }
+
+            // التحقق من توصيات التطوير
+            const developmentRecommendations = document.getElementById('development_recommendations').value;
+            if (!developmentRecommendations || developmentRecommendations.trim() === '') {
+                document.getElementById('development_recommendations_error').textContent = 'توصيات التطوير مطلوبة';
+                document.getElementById('development_recommendations_error').style.display = 'block';
+                valid = false;
+            } else {
+                document.getElementById('development_recommendations_error').style.display = 'none';
+            }
+
+            // التحقق من إجابة جميع الأسئلة
+            const questions = ['q1', 'q2', 'q3', 'q4', 'q5'];
+            questions.forEach(q => {
+                const value = document.getElementById(q).value;
+                if (value === '0') {
+                    valid = false;
+                    Swal.fire({
+                        title: 'خطأ',
+                        text: 'يرجى الإجابة على جميع الأسئلة قبل الحفظ.',
+                        icon: 'error',
+                        confirmButtonText: 'موافق',
+                        confirmButtonColor: '#1B5E20'
+                    });
+                }
+            });
+
+            if (!valid) {
+                event.preventDefault();
+            }
+        });
+    </script>
+{% endblock %}

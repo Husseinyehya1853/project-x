@@ -1,0 +1,330 @@
+{% extends 'base.html' %}
+
+{% block title %}تحديث بطاقة وصف{% endblock %}
+
+{% block extra_styles %}
+    <style>
+        /* تنسيق العنوان */
+        h2 {
+            color: #1B5E20;
+            font-size: 24px;
+            font-weight: 700;
+            margin-bottom: 20px;
+            text-align: right;
+        }
+
+        /* تنسيق النموذج */
+        .form-section {
+            margin-right: 0;
+            margin-left: auto;
+            direction: rtl;
+            display: flex;
+            flex-direction: column;
+        }
+
+        .form-container {
+            width: 100%;
+            background: #FFF;
+            padding: 20px;
+            border-radius: 4px;
+            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+        }
+
+        .form-group {
+            display: flex;
+            align-items: center;
+            margin-bottom: 15px;
+            margin-left: 20px;
+            margin-right: 20px;
+            justify-content: flex-start;
+        }
+
+        .form-group label {
+            color: #4A4A4A;
+            font-size: 14px;
+            font-weight: 600;
+            width: 150px;
+            text-align: right;
+            margin-right: 10px;
+        }
+
+        .form-group input,
+        .form-group textarea,
+        .form-group select {
+            padding: 8px;
+            font-size: 14px;
+            border: 1.5px solid #6a9262;
+            border-radius: 4px;
+            background-color: #FFF;
+            color: #4A4A4A;
+            transition: border-color 0.3s ease;
+            flex: 1;
+        }
+
+        .form-group input:focus,
+        .form-group textarea:focus,
+        .form-group select:focus {
+            outline: none;
+            border-color: #1B5E20;
+        }
+
+        /* تنسيق textarea */
+        .form-group textarea {
+            height: 100px;
+            resize: vertical;
+        }
+
+        /* تنسيق الأزرار */
+        .form-buttons {
+            display: flex;
+            justify-content: center;
+            gap: 10px;
+            margin-top: 20px;
+        }
+
+        .form-buttons button {
+            background-color: #1B5E20;
+            color: #FFF;
+            padding: 8px 16px;
+            border: none;
+            font-size: 14px;
+            font-weight: 600;
+            cursor: pointer;
+            border-radius: 4px;
+            transition: background-color 0.3s ease;
+        }
+
+        .form-buttons button:hover {
+            background-color: #2e7d32;
+        }
+
+        .form-buttons .cancel-btn {
+            background-color: #4A4A4A;
+        }
+
+        .form-buttons .cancel-btn:hover {
+            background-color: #6a6a6a;
+        }
+
+        /* تنسيق رسائل الخطأ */
+        .field-error {
+            color: red;
+            font-size: 12px;
+            margin-top: 5px;
+            display: none;
+            margin-right: 160px;
+        }
+
+        /* تنسيق رسائل التنبيه */
+        .alert {
+            padding: 10px;
+            margin: 10px 0;
+            border-radius: 4px;
+            text-align: center;
+        }
+
+        .alert-success {
+            background-color: #d4edda;
+            color: #155724;
+            border: 1px solid #c3e6cb;
+        }
+
+        .alert-error {
+            background-color: #f8d7da;
+            color: #721c24;
+            border: 1px solid #f5c6cb;
+        }
+
+        /* زر العودة */
+        .back-btn-container {
+            text-align: center;
+            margin-top: 20px;
+        }
+
+        /* تحسين التجاوب على الموبايل */
+        @media (max-width: 576px) {
+            .form-section {
+                padding: 10px;
+            }
+
+            .form-group {
+                flex-direction: column;
+                align-items: flex-end;
+                margin-left: 0;
+                margin-right: 0;
+            }
+
+            .form-group label {
+                width: 100%;
+                text-align: right;
+                margin-right: 0;
+                margin-bottom: 5px;
+            }
+
+            .form-group input,
+            .form-group textarea,
+            .form-group select {
+                width: 100%;
+            }
+
+            .field-error {
+                margin-right: 0;
+            }
+
+            .form-buttons {
+                flex-direction: column;
+                gap: 5px;
+            }
+
+            .form-buttons button {
+                width: 100%;
+                padding: 10px;
+            }
+        }
+    </style>
+{% endblock %}
+
+{% block content %}
+    <h2>تحديث بطاقة وصف</h2>
+
+    <!-- النموذج -->
+    <div class="form-section">
+        <div class="form-container">
+            <form method="POST" action="{{ url_for('update_job_description') }}">
+                <!-- اسم الوظيفة -->
+                <div class="form-group">
+                    <label for="job_title">اسم الوظيفة:</label>
+                    <input type="text" id="job_title" name="job_title" placeholder="أدخل اسم الوظيفة..." required>
+                    <div id="job_title_error" class="field-error"></div>
+                </div>
+
+                <!-- نوع الوظيفة -->
+                <div class="form-group">
+                    <label for="job_type">نوع الوظيفة:</label>
+                    <select id="job_type" name="job_type" required>
+                        <option value="">اختر نوع الوظيفة</option>
+                        <option value="leadership">وظيفة قيادية</option>
+                        <option value="supervisory">وظيفة إشرافية</option>
+                    </select>
+                    <div id="job_type_error" class="field-error"></div>
+                </div>
+
+                <!-- الوصف العام -->
+                <div class="form-group">
+                    <label for="description">الوصف العام:</label>
+                    <textarea id="description" name="description" placeholder="أدخل الوصف العام للوظيفة..." required></textarea>
+                    <div id="description_error" class="field-error"></div>
+                </div>
+
+                <!-- المهام الرئيسية -->
+                <div class="form-group">
+                    <label for="responsibilities">المهام الرئيسية:</label>
+                    <textarea id="responsibilities" name="responsibilities" placeholder="أدخل المهام الرئيسية للوظيفة..." required></textarea>
+                    <div id="responsibilities_error" class="field-error"></div>
+                </div>
+
+                <!-- المتطلبات -->
+                <div class="form-group">
+                    <label for="requirements">المتطلبات:</label>
+                    <textarea id="requirements" name="requirements" placeholder="أدخل متطلبات الوظيفة..." required></textarea>
+                    <div id="requirements_error" class="field-error"></div>
+                </div>
+
+                <!-- تاريخ التحديث -->
+                <div class="form-group">
+                    <label for="update_date">تاريخ التحديث:</label>
+                    <input type="date" id="update_date" name="update_date" required>
+                    <div id="update_date_error" class="field-error"></div>
+                </div>
+
+                <!-- أزرار النموذج -->
+                <div class="form-buttons">
+                    <button type="submit" name="action" value="update">تحديث</button>
+                    <button type="button" class="cancel-btn" onclick="window.location.href='{{ url_for('dashboard') }}'">إلغاء</button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    {% with messages = get_flashed_messages(with_categories=true) %}
+        {% if messages %}
+            {% for category, message in messages %}
+                <div class="alert alert-{{ category }}">{{ message }}</div>
+            {% endfor %}
+        {% endif %}
+    {% endwith %}
+
+{% endblock %}
+
+{% block extra_scripts %}
+    <script>
+        // دالة التحقق من الحقول
+        document.querySelector('form').addEventListener('submit', function (event) {
+            let valid = true;
+
+            // التحقق من اسم الوظيفة
+            const jobTitle = document.getElementById('job_title').value;
+            if (!jobTitle || jobTitle.trim() === '') {
+                document.getElementById('job_title_error').textContent = 'اسم الوظيفة مطلوب';
+                document.getElementById('job_title_error').style.display = 'block';
+                valid = false;
+            } else {
+                document.getElementById('job_title_error').style.display = 'none';
+            }
+
+            // التحقق من نوع الوظيفة
+            const jobType = document.getElementById('job_type').value;
+            if (!jobType) {
+                document.getElementById('job_type_error').textContent = 'نوع الوظيفة مطلوب';
+                document.getElementById('job_type_error').style.display = 'block';
+                valid = false;
+            } else {
+                document.getElementById('job_type_error').style.display = 'none';
+            }
+
+            // التحقق من الوصف العام
+            const description = document.getElementById('description').value;
+            if (!description || description.trim() === '') {
+                document.getElementById('description_error').textContent = 'الوصف العام مطلوب';
+                document.getElementById('description_error').style.display = 'block';
+                valid = false;
+            } else {
+                document.getElementById('description_error').style.display = 'none';
+            }
+
+            // التحقق من المهام
+            const responsibilities = document.getElementById('responsibilities').value;
+            if (!responsibilities || responsibilities.trim() === '') {
+                document.getElementById('responsibilities_error').textContent = 'المهام الرئيسية مطلوبة';
+                document.getElementById('responsibilities_error').style.display = 'block';
+                valid = false;
+            } else {
+                document.getElementById('responsibilities_error').style.display = 'none';
+            }
+
+            // التحقق من المتطلبات
+            const requirements = document.getElementById('requirements').value;
+            if (!requirements || requirements.trim() === '') {
+                document.getElementById('requirements_error').textContent = 'المتطلبات مطلوبة';
+                document.getElementById('requirements_error').style.display = 'block';
+                valid = false;
+            } else {
+                document.getElementById('requirements_error').style.display = 'none';
+            }
+
+            // التحقق من تاريخ التحديث
+            const updateDate = document.getElementById('update_date').value;
+            if (!updateDate) {
+                document.getElementById('update_date_error').textContent = 'تاريخ التحديث مطلوب';
+                document.getElementById('update_date_error').style.display = 'block';
+                valid = false;
+            } else {
+                document.getElementById('update_date_error').style.display = 'none';
+            }
+
+            if (!valid) {
+                event.preventDefault();
+            }
+        });
+    </script>
+{% endblock %}
