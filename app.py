@@ -6,13 +6,14 @@ import logging
 import os
 from werkzeug.security import generate_password_hash, check_password_hash
 from datetime import datetime, date, timedelta
-from threading import Timer
+from threading import Timer, Thread
 from werkzeug.utils import secure_filename
 import json
 from sqlalchemy.exc import SQLAlchemyError
 import webbrowser
 import io
 from weasyprint import HTML
+import webview  
 
 # إعداد الـ logging
 logging.basicConfig(level=logging.DEBUG, format='%(asctime)s - %(levelname)s - %(message)s')
@@ -391,15 +392,15 @@ def signup():
             new_user = User(
                 full_name=username,
                 email=email,
-                roles='["regular_user"]',
+                roles='["user"]',
                 governorate=governorate,
-                active=False
+                active=True
             )
             new_user.set_password(password)
             db.session.add(new_user)
             db.session.commit()
             logging.info(f"تم تسجيل المستخدم {username} بنجاح.")
-            flash('تم التسجيل بنجاح، وانتظر السماح لك بالدخول للمنصة', 'success')
+            flash('تم التسجيل بنجاح، يمكنك الآن تسجيل الدخول', 'success')
         except Exception as e:
             db.session.rollback()
             logging.error(f"خطأ أثناء التسجيل: {e}")
@@ -1836,8 +1837,12 @@ def download_file(filename):
         return redirect(url_for('dashboard'))
 
 def open_browser():
-    # مش هنفتح متصفح بقى، Electron هيقوم بالدور
+    # لن نستخدم هذه الدالة بعد الآن لأننا سنستخدم pywebview
     pass
+
+def start_flask():
+    """تشغيل خادم Flask في خلفية التطبيق"""
+    app.run(debug=False, port=5000)
 
 @app.route('/update_job_status/<int:job_id>', methods=['POST'])
 def update_job_status(job_id):
@@ -2969,5 +2974,19 @@ class DatabaseError(Exception):
 init_db()
 
 if __name__ == "__main__":
-    Timer(1, open_browser).start()
-    app.run(debug=True)
+    # بدء تشغيل خادم Flask في خلفية التطبيق
+    flask_thread = Thread(target=start_flask)
+    flask_thread.daemon = True
+    flask_thread.start()
+    
+    # إنشاء نافذة تطبيق سطح المكتب باستخدام pywebview
+    webview.create_window(
+        title="نظام إدارة الوظائف القيادية", 
+        url="http://127.0.0.1:5000",
+        width=1024,
+        height=768,
+        resizable=True,
+        min_size=(800, 600),
+        text_select=True
+    )
+    webview.start(debug=False)
