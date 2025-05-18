@@ -13,7 +13,7 @@ from sqlalchemy.exc import SQLAlchemyError
 import webbrowser
 import io
 from weasyprint import HTML
-import webview  
+import webview  # إضافة مكتبة pywebview
 
 # إعداد الـ logging
 logging.basicConfig(level=logging.DEBUG, format='%(asctime)s - %(levelname)s - %(message)s')
@@ -301,8 +301,9 @@ def create_sample():
         logging.error(f"خطأ في إنشاء بيانات العينة: {e}")
         raise
 
+# تهيئة قاعدة البيانات عند بدء التطبيق
 with app.app_context():
-    create_sample()
+    db.create_all()
 
 # دالة لتوليد PDF
 def generate_pdf(data=None, data_type='committee'):
@@ -2974,19 +2975,41 @@ class DatabaseError(Exception):
 init_db()
 
 if __name__ == "__main__":
-    # بدء تشغيل خادم Flask في خلفية التطبيق
-    flask_thread = Thread(target=start_flask)
-    flask_thread.daemon = True
-    flask_thread.start()
-    
-    # إنشاء نافذة تطبيق سطح المكتب باستخدام pywebview
-    webview.create_window(
-        title="نظام إدارة الوظائف القيادية", 
-        url="http://127.0.0.1:5000",
-        width=1024,
-        height=768,
-        resizable=True,
-        min_size=(800, 600),
-        text_select=True
-    )
-    webview.start(debug=False)
+    try:
+        # تهيئة قاعدة البيانات
+        init_db()
+        
+        # تشغيل الخادم في خلفية منفصلة
+        def start_server():
+            app.run(host='127.0.0.1', port=5000, debug=False)
+        
+        # بدء تشغيل الخادم في خلفية
+        server_thread = Thread(target=start_server)
+        server_thread.daemon = True  # هذا يضمن إغلاق الخيط عند إغلاق البرنامج الرئيسي
+        server_thread.start()
+        
+        # انتظار قليلاً للتأكد من بدء الخادم
+        import time
+        time.sleep(1)
+        
+        # فتح نافذة التطبيق باستخدام pywebview
+        webview.create_window(
+            title="النظام الإلكتروني للوظائف القيادية والإشرافية",
+            url="http://127.0.0.1:5000",
+            width=1200,
+            height=800,
+            resizable=True,
+            min_size=(800, 600),
+            background_color='#FFFFFF',
+            text_select=True
+        )
+        
+        # بدء تشغيل النافذة - سيتوقف البرنامج عند إغلاق النافذة
+        webview.start()
+        
+        # عند إغلاق النافذة، سيتم الوصول إلى هنا وإنهاء البرنامج
+        print("تم إغلاق التطبيق")
+        sys.exit(0)
+    except Exception as e:
+        logging.error(f"خطأ أثناء تشغيل التطبيق: {e}")
+        sys.exit(1)

@@ -16,13 +16,13 @@
         }
 
         body {
-            background: linear-gradient(135deg, #70a9e1 0%, #0a325c 100%); /* خلفية تدرج ناعمة */
+            background: linear-gradient(135deg, #70a9e1 0%, #0a325c 100%);
             min-height: 100vh;
             display: flex;
             justify-content: center;
             align-items: center;
             direction: rtl;
-            padding: 50px 0; /* إضافة padding عشان الـ scroll يظهر */
+            padding: 50px 0;
         }
 
         .container {
@@ -30,14 +30,14 @@
             max-width: 900px;
             width: 100%;
             margin: 20px;
-            border-top: 50px solid #1B5E20; /* إضافة حد علوي أخضر */
-            border-bottom: 50px solid #1B5E20; /* إضافة حد سفلي أخضر */
-            border-left: none; /* إزالة الحد الجانبي الأيسر */
-            border-right: none; /* إزالة الحد الجانبي الأيمن */
-            border-radius: 0; /* جعل الزوايا حادة */
-            overflow: hidden; /* عشان الحدود تكون متماسكة */
-            box-shadow: 0 8px 16px rgba(0, 0, 0, 0.1); /* ظل ناعم */
-            min-height: 500px; /* ارتفاع موحد للجزئين */
+            border-top: 50px solid #1B5E20;
+            border-bottom: 50px solid #1B5E20;
+            border-left: none;
+            border-right: none;
+            border-radius: 0;
+            overflow: hidden;
+            box-shadow: 0 8px 16px rgba(0, 0, 0, 0.1);
+            min-height: 500px;
             position: relative;
         }
 
@@ -46,50 +46,35 @@
             width: 50%;
             text-align: center;
             position: relative;
-            transition: all 0.3s ease; /* للتفاعل عند الـ hover */
+            transition: all 0.3s ease;
             display: flex;
             flex-direction: column;
-            justify-content: center; /* لتوسيط المحتوى عموديًا */
-            align-items: center; /* لتوسيط المحتوى أفقيًا */
+            justify-content: center;
+            align-items: center;
         }
 
         .login-box {
-            background: linear-gradient(45deg, #c2c1c1 0%, #FFFFFF 100%); /* تدرج من رمادي فاتح إلى أبيض */
+            background: linear-gradient(45deg, #c2c1c1 0%, #FFFFFF 100%);
             transform: translateX(100%);
             animation: slideInRight 1s ease-out forwards;
         }
 
         .welcome-box {
-            background-color: #FFFFFF; /* أبيض للجزء الأيسر */
+            background-color: #FFFFFF;
             transform: translateX(-100%);
             animation: slideInLeft 1s ease-out forwards;
         }
 
-        /* الأنيميشن للجزء الأيسر */
         @keyframes slideInLeft {
-            0% {
-                transform: translateX(-100%);
-                opacity: 0;
-            }
-            100% {
-                transform: translateX(0);
-                opacity: 1;
-            }
+            0% { transform: translateX(-100%); opacity: 0; }
+            100% { transform: translateX(0); opacity: 1; }
         }
 
-        /* الأنيميشن للجزء الأيمن */
         @keyframes slideInRight {
-            0% {
-                transform: translateX(100%);
-                opacity: 0;
-            }
-            100% {
-                transform: translateX(0);
-                opacity: 1;
-            }
+            0% { transform: translateX(100%); opacity: 0; }
+            100% { transform: translateX(0); opacity: 1; }
         }
 
-        /* أنيميشن دمج الجزئين */
         .merge-left {
             animation: mergeLeft 0.5s ease-in forwards;
         }
@@ -99,54 +84,37 @@
         }
 
         @keyframes mergeLeft {
-            0% {
-                transform: translateX(0);
-                opacity: 1;
-            }
-            100% {
-                transform: translateX(100%);
-                opacity: 0;
-            }
+            0% { transform: translateX(0); opacity: 1; }
+            100% { transform: translateX(100%); opacity: 0; }
         }
 
         @keyframes mergeRight {
-            0% {
-                transform: translateX(0);
-                opacity: 1;
-            }
-            100% {
-                transform: translateX(-100%);
-                opacity: 0;
-            }
+            0% { transform: translateX(0); opacity: 1; }
+            100% { transform: translateX(-100%); opacity: 0; }
         }
 
-        /* إخفاء الكلام */
         .fade-out {
             animation: fadeOut 0.5s ease-in forwards;
         }
 
         @keyframes fadeOut {
-            0% {
-                opacity: 1;
-            }
-            100% {
-                opacity: 0;
-            }
+            0% { opacity: 1; }
+            100% { opacity: 0; }
         }
 
         .login-box:hover, .welcome-box:hover {
-            transform: scale(1.02); /* تأثير خفيف عند الـ hover */
+            transform: scale(1.02);
         }
 
         .login-box h2 {
-            color: #1B5E20; /* لون أخضر لعنوان تسجيل الدخول */
+            color: #1B5E20;
             font-size: 20px;
             margin-bottom: 20px;
             font-weight: 700;
         }
 
         .welcome-box h2 {
-            color: #1B5E20; /* ذهبي لعنوان الترحيب */
+            color: #1B5E20;
             font-size: 20px;
             margin-bottom: 20px;
             font-weight: 700;
@@ -154,73 +122,55 @@
 
         .welcome-box .logo, .login-box .logo {
             margin-bottom: 20px;
-            display: block; /* التأكد من إن الـ div مش مخفي */
-            visibility: visible; /* التأكد من إن الـ div ظاهر */
+            display: block;
+            visibility: visible;
         }
 
         .welcome-box .logo-img {
-            width: 150px; /* حجم اللوجو في الصفحة الرئيسية */
-            height: 150px; /* عشان تكون دائرة متساوية */
-            border-radius: 50%; /* شكل دائري */
-            filter: drop-shadow(0 2px 4px rgba(0, 0, 0, 0.1)); /* ظل ناعم */
-            animation: pulse 2s infinite ease-in-out; /* أنيميشن نبض */
-            object-fit: contain; /* عشان الشعار يظهر بالكامل بدون قص */
-            display: block; /* التأكد من إن الصورة مش مخفية */
-            visibility: visible; /* التأكد من إن الصورة ظاهرة */
-            opacity: 1; /* التأكد من إن الصورة مش شفافة */
-        }
-
-        .login-box .logo-img {
-            width: 90px; /* تصغير حجم الشعار في القسم الأيمن */
-            height: 90px;
+            width: 150px;
+            height: 150px;
             border-radius: 50%;
-            filter: drop-shadow(0 2px 4px rgba(0, 0, 0, 0.1)); /* ظل ناعم */
+            filter: drop-shadow(0 2px 4px rgba(0, 0, 0, 0.1));
+            animation: pulse 2s infinite ease-in-out;
             object-fit: contain;
             display: block;
             visibility: visible;
             opacity: 1;
-            /* إزالة أي أنيميشن */
         }
 
-        /* أنيميشن النبض للشعار (يُطبق فقط على الشعار الأول) */
+        .login-box .logo-img {
+            width: 90px;
+            height: 90px;
+            border-radius: 50%;
+            filter: drop-shadow(0 2px 4px rgba(0, 0, 0, 0.1));
+            object-fit: contain;
+            display: block;
+            visibility: visible;
+            opacity: 1;
+        }
+
         @keyframes pulse {
-            0% {
-                transform: scale(1);
-                box-shadow: 0 0 0 0 rgba(212, 175, 55, 0.5);
-            }
-            50% {
-                transform: scale(1.03); /* تصغير النبض عشان يكون ألطف */
-                box-shadow: 0 0 0 10px rgba(212, 175, 55, 0); /* تصغير الظل */
-            }
-            100% {
-                transform: scale(1);
-                box-shadow: 0 0 0 0 rgba(212, 175, 55, 0);
-            }
+            0% { transform: scale(1); box-shadow: 0 0 0 0 rgba(212, 175, 55, 0.5); }
+            50% { transform: scale(1.03); box-shadow: 0 0 0 10px rgba(212, 175, 55, 0); }
+            100% { transform: scale(1); box-shadow: 0 0 0 0 rgba(212, 175, 55, 0); }
         }
 
-        /* أنيميشن ظهور الشعار من تحت */
         .slide-up-logo {
             opacity: 0;
             transform: translateY(20px);
             animation: slideUpLogo 0.7s ease-in-out forwards;
-            display: block; /* التأكد من إن الصورة مش مخفية */
-            visibility: visible; /* التأكد من إن الصورة ظاهرة */
-            opacity: 1; /* التأكد من إن الصورة مش شفافة */
+            display: block;
+            visibility: visible;
+            opacity: 1;
         }
 
         @keyframes slideUpLogo {
-            0% {
-                opacity: 0;
-                transform: translateY(20px);
-            }
-            100% {
-                opacity: 1;
-                transform: translateY(0);
-            }
+            0% { opacity: 0; transform: translateY(20px); }
+            100% { opacity: 1; transform: translateY(0); }
         }
 
         .welcome-box p {
-            color: #4A4A4A; /* رمادي داكن */
+            color: #4A4A4A;
             font-size: 16px;
             margin-bottom: 10px;
             line-height: 1.5;
@@ -235,66 +185,65 @@
         .login-box form, .single-box form {
             display: flex;
             flex-direction: column;
-            gap: 10px; /* تقليل المسافة بين الحقول */
-            width: 100%; /* تصغير عرض الفورم */
+            gap: 10px;
+            width: 100%;
             align-items: stretch;
         }
 
         .login-box .form-row, .single-box .form-row {
             display: flex;
             align-items: center;
-            gap: 10px; /* المسافة بين الـ label والحقل */
+            gap: 10px;
         }
 
         .login-box label, .single-box label {
             color: #4A4A4A;
-            font-size: 14px; /* تصغير حجم الـ label */
+            font-size: 14px;
             font-weight: 600;
-            width: 120px; /* تقليل عرض الـ label */
-            text-align: right; /* محاذاة النص لليمين */
+            width: 120px;
+            text-align: right;
         }
 
         .login-box input, .single-box input {
-            padding: 8px; /* تقليل الحشوة */
-            font-size: 14px; /* تصغير الخط */
-            border: none; /* إزالة الحواف */
+            padding: 8px;
+            font-size: 14px;
+            border: none;
             border-radius: 4px;
-            flex: 1; /* ليأخذ الحقل المساحة المتبقية */
-            background-color: #FFFFFF; /* خلفية بيضاء */
+            flex: 1;
+            background-color: #FFFFFF;
             color: #4A4A4A;
-            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1); /* ظل خفيف */
+            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
             transition: box-shadow 0.3s ease;
         }
 
         .login-box input:focus, .single-box input:focus {
             outline: none;
-            box-shadow: 0 0 5px rgba(212, 175, 55, 0.3); /* تأثير ذهبي عند التركيز */
+            box-shadow: 0 0 5px rgba(212, 175, 55, 0.3);
         }
 
         .login-btn {
-            background-color: #1B5E20; /* لون أخضر */
+            background-color: #1B5E20;
             color: #FFFFFF;
-            padding: 8px 20px; /* تصغير الزر */
-            border: none; /* إزالة الحواف */
-            font-size: 14px; /* تصغير الخط */
+            padding: 8px 20px;
+            border: none;
+            font-size: 14px;
             font-weight: 600;
             cursor: pointer;
             transition: background-color 0.3s ease, transform 0.1s ease;
-            margin-top: 10px; /* مسافة فوق الزر */
-            align-self: flex-start; /* المحاذاة لليمين (الشمال في اتجاه RTL) */
-            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1); /* ظل خفيف */
+            margin-top: 10px;
+            align-self: flex-start;
+            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
         }
 
         .login-btn:hover {
             background-color: #4A4A4A;
-            transform: scale(1.05); /* تأثير خفيف عند الـ hover */
+            transform: scale(1.05);
         }
 
-        /* زر "الدخول للمنصة" */
         .platform-btn {
             background-color: #1B5E20;
             color: #FFFFFF;
-            padding: 12px 30px; /* زيادة العرض */
+            padding: 12px 30px;
             border: none;
             font-size: 16px;
             font-weight: 600;
@@ -310,34 +259,29 @@
             transform: scale(1.05);
         }
 
-        /* زر "رجوع" */
         .back-btn {
-            background-color: #1B5E20; /* أخضر داكن */
+            background-color: #1B5E20;
             color: #FFFFFF;
-            padding: 8px 20px; /* نفس حجم زر الدخول */
+            padding: 8px 20px;
             border: none;
             font-size: 14px;
             font-weight: 600;
             cursor: pointer;
             text-decoration: none;
             transition: background-color 0.3s ease, transform 0.1s ease;
-            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1); /* ظل خفيف لتطابق زر الدخول */
+            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
         }
 
         .back-btn:hover {
-            background-color: #4A4A4A; /* رمادي داكن */
+            background-color: #4A4A4A;
             transform: scale(1.05);
         }
 
-        /* مجموعة الأزرار */
-
-
-        /* الجزء الجديد لتسجيل الدخول */
         .single-box {
             padding: 40px;
             width: 100%;
             text-align: center;
-            background: #FFFFFF; /* خلفية بيضاء */
+            background: #FFFFFF;
             display: flex;
             flex-direction: column;
             justify-content: center;
@@ -345,97 +289,78 @@
             position: relative;
         }
 
-        /* تصغير اللوجو في تسجيل الدخول */
         .single-box .logo {
-            margin-bottom: 20px; /* نفس المسافة زي الجزء الأول */
-            display: block; /* التأكد من إن الـ div بتاع اللوجو مش مخفي */
-            visibility: visible; /* التأكد من إن الـ div ظاهر */
-            opacity: 1; /* التأكد من إن الـ div مش شفاف */
+            margin-bottom: 20px;
+            display: block;
+            visibility: visible;
+            opacity: 1;
         }
 
         .single-box .logo-img {
-            width: 100px; /* نفس حجم اللوجو في الجزء الأول */
-            height: 100px; /* نفس الحجم */
+            width: 100px;
+            height: 100px;
             border-radius: 50%;
             filter: drop-shadow(0 2px 4px rgba(0, 0, 0, 0.1));
-            animation: pulse 2s infinite ease-in-out; /* أنيميشن النبض */
+            animation: pulse 2s infinite ease-in-out;
             object-fit: contain;
-            display: block !important; /* التأكد من إن الصورة مش مخفية */
-            visibility: visible !important; /* التأكد من إن الصورة ظاهرة */
-            opacity: 1 !important; /* التأكد من إن الصورة مش شفافة */
-            position: relative; /* التأكد من إن الصورة في مكانها */
-            z-index: 10; /* التأكد من إن الصورة فوق أي عناصر تانية */
+            display: block !important;
+            visibility: visible !important;
+            opacity: 1 !important;
+            position: relative;
+            z-index: 10;
         }
 
-        /* أنيميشن الكتابة للعنوان */
         .typing-text {
             overflow: hidden;
-            white-space: nowrap; /* النص يبدأ في سطر واحد */
-            border-left: 2px solid #1B5E20; /* مؤشر الكتابة */
+            white-space: nowrap;
+            border-left: 2px solid #1B5E20;
             animation: typing 2s steps(40, end) forwards, blink 0.5s step-end infinite;
             display: inline-block;
-            width: 100%; /* التأكد من أن النص يأخذ العرض الكامل */
-            opacity: 0; /* البداية مخفي */
+            width: 100%;
+            opacity: 0;
             animation-fill-mode: forwards;
         }
 
         @keyframes typing {
-            0% {
-                width: 0;
-                opacity: 1; /* يظهر مع بداية الكتابة */
-            }
-            100% {
-                width: 100%;
-                opacity: 1;
-            }
+            0% { width: 0; opacity: 1; }
+            100% { width: 100%; opacity: 1; }
         }
 
         @keyframes blink {
-            50% {
-                border-color: transparent;
-            }
+            50% { border-color: transparent; }
         }
 
-        /* أنيميشن الكتابة للنص الإنجليزي */
         .typing-text-english {
             overflow: hidden;
-            white-space: nowrap; /* النص يبدأ في سطر واحد */
-            border-left: 2px solid #1B5E20; /* مؤشر الكتابة */
+            white-space: nowrap;
+            border-left: 2px solid #1B5E20;
             animation: typing 1.5s steps(40, end) forwards 0.5s, blink 0.5s step-end infinite;
             display: inline-block;
-            width: 100%; /* التأكد من أن النص يأخذ العرض الكامل */
-            opacity: 0; /* البداية مخفي */
+            width: 100%;
+            opacity: 0;
             animation-fill-mode: forwards;
         }
 
-        /* ظهور نموذج تسجيل الدخول من تحت */
         .slide-up {
             opacity: 0;
             transform: translateY(20px);
-            animation: slideUp 0.5s ease-in forwards 1s; /* تأخير 1 ثانية */
+            animation: slideUp 0.5s ease-in forwards 1s;
         }
 
         @keyframes slideUp {
-            0% {
-                opacity: 0;
-                transform: translateY(20px);
-            }
-            100% {
-                opacity: 1;
-                transform: translateY(0);
-            }
+            0% { opacity: 0; transform: translateY(20px); }
+            100% { opacity: 1; transform: translateY(0); }
         }
 
-        /* Responsive Design */
         @media (max-width: 768px) {
             .container {
                 flex-direction: column;
-                min-height: auto; /* للتكيف مع الشاشات الصغيرة */
+                min-height: auto;
             }
 
             .login-box, .welcome-box, .single-box {
                 width: 100%;
-                min-height: 400px; /* ارتفاع موحد للشاشات الصغيرة */
+                min-height: 400px;
             }
 
             .login-box {
@@ -446,24 +371,21 @@
                 animation: slideInLeft 0.8s ease-out forwards;
             }
 
-            /* ضبط النصوص للشاشات الصغيرة */
             .typing-text, .typing-text-english {
-                font-size: 16px; /* تصغير الخط للشاشات الصغيرة */
-                white-space: normal; /* النص يتقسم لأسطر على الموبايل */
-                overflow-x: hidden; /* إزالة الـ scroll الأفقي */
+                font-size: 16px;
+                white-space: normal;
+                overflow-x: hidden;
                 width: 100%;
                 display: inline-block;
-                line-height: 1.5; /* زيادة المسافة بين الأسطر */
+                line-height: 1.5;
             }
 
-            /* التأكد من إن الـ single-box مش بيعمل scroll أفقي */
             .single-box {
-                overflow-x: hidden; /* إزالة الـ scroll الأفقي */
+                overflow-x: hidden;
             }
 
-            /* ضبط اللوجو على الموبايل */
             .single-box .logo-img {
-                width: 80px; /* تصغير اللوجو على الموبايل لكن أكبر من القديم (كان 60px) */
+                width: 80px;
                 height: 80px;
                 display: block !important;
                 visibility: visible !important;
@@ -471,27 +393,26 @@
             }
 
             .login-box .logo-img {
-                width: 60px; /* تصغير حجم الشعار في القسم الأيمن للشاشات الصغيرة */
+                width: 60px;
                 height: 60px;
             }
 
-            /* ضبط الفورم على الشاشات الصغيرة */
             .login-box .form-row, .single-box .form-row {
-                flex-direction: column; /* على الشاشات الصغيرة، الـ label يرجع فوق الحقل */
+                flex-direction: column;
                 align-items: stretch;
             }
 
             .login-box label, .single-box label {
-                width: 100%; /* عرض كامل للـ label */
+                width: 100%;
                 text-align: right;
             }
 
             .login-box input, .single-box input {
-                width: 100%; /* عرض كامل للحقل */
+                width: 100%;
             }
 
             .login-btn {
-                align-self: center; /* توسيط الزر على الشاشات الصغيرة */
+                align-self: center;
             }
         }
     </style>
@@ -531,18 +452,20 @@
                     <label for="email">البريد الإلكتروني:</label>
                     <input type="email" id="email" name="email" required>
                 </div>
+                <div class="form-row">
+                    <label for="governorate">المحافظة:</label>
+                    <input type="text" id="governorate" name="governorate" required>
+                </div>
                 <button type="submit" class="login-btn">تسجيل</button>
             </form>
         </div>
     </div>
 
-    <!-- إضافة محتوى وهمي لزيادة الارتفاع وظهور الـ scroll -->
     <div style="height: 500px;"></div>
 
-    <!-- JavaScript لعرض نموذج تسجيل الدخول -->
+    <!-- JavaScript لعرض نموذج تسجيل الدخول والتحقق من البيانات -->
     <script>
         function showLoginForm() {
-            // إضافة أنيميشن دمج الجزئين
             const welcomeBox = document.getElementById('welcome-box');
             const signupBox = document.getElementById('signup-box');
             const welcomeTitle = document.getElementById('welcome-title');
@@ -555,11 +478,9 @@
             welcomeText.classList.add('fade-out');
             logo.classList.add('fade-out');
 
-            // بعد انتهاء الأنيميشن، نعرض الجزء الجديد
             setTimeout(() => {
                 const container = document.getElementById('container');
                 const logoPath = "{{ url_for('static', filename='images/logo1.jpg') }}";
-                console.log("Logo Path in single-box:", logoPath); // للتأكد من المسار
                 container.innerHTML = `
                     <div class="single-box">
                         <div class="logo">
@@ -583,7 +504,7 @@
                         </form>
                     </div>
                 `;
-            }, 500); // نفس مدة أنيميشن الدمج
+            }, 500);
         }
 
         function resetForm() {
@@ -619,20 +540,39 @@
                             <label for="email">البريد الإلكتروني:</label>
                             <input type="email" id="email" name="email" required>
                         </div>
+                        <div class="form-row">
+                            <label for="governorate">المحافظة:</label>
+                            <input type="text" id="governorate" name="governorate" required>
+                        </div>
                         <button type="submit" class="login-btn">تسجيل</button>
                     </form>
                 </div>
             `;
         }
 
-        // التحقق من وجود رسالة نجاح في الـ session
+        // التحقق من تطابق كلمة المرور قبل إرسال النموذج
+        document.getElementById('signup-form').addEventListener('submit', function(event) {
+            var password = document.getElementById('password').value;
+            var confirmPassword = document.getElementById('confirm-password').value;
+            if (password !== confirmPassword) {
+                event.preventDefault();
+                Swal.fire({
+                    title: 'خطأ!',
+                    text: 'كلمة المرور وتأكيدها غير متطابقتين',
+                    icon: 'error',
+                    confirmButtonText: 'موافق',
+                    confirmButtonColor: '#D4AF37'
+                });
+            }
+        });
+
         {% with messages = get_flashed_messages(with_categories=true) %}
             {% if messages %}
                 {% for category, message in messages %}
                     {% if category == 'success' %}
                         Swal.fire({
                             title: 'تم التسجيل بنجاح!',
-                            text: '{{ message }}',  // الرسالة الجديدة: "تم التسجيل بنجاح، وانتظر السماح لك بالدخول للمنصة"
+                            text: '{{ message }}',
                             icon: 'success',
                             confirmButtonText: 'موافق',
                             confirmButtonColor: '#D4AF37'
