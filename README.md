@@ -40,7 +40,7 @@
 
 ```bash
 # 1. نسخ المشروع
-git clone https://github.com/username/repository.git
+git clone [https://github.com/username/repository.git](https://github.com/Husseinyehya1853/project-x.git)
 cd repository
 
 # 2. إنشاء بيئة افتراضية
@@ -98,28 +98,7 @@ project/
 
 ---
 
-## 🤝 المساهمة في المشروع
 
-نرحب بمساهماتكم في تطوير هذا المشروع! اتبع الخطوات التالية:
-
-```bash
-1. Fork المشروع
-2. أنشئ فرع جديد:
-   git checkout -b feature/اسم-الميزة
-
-3. أضف التعديلات المطلوبة
-4. سجل التغييرات:
-   git commit -m "أضفت ميزة رائعة"
-
-5. ارفع الفرع:
-   git push origin feature/اسم-الميزة
-
-6. افتح Pull Request
-```
-
-> **ملاحظة**: يُفضّل اختبار التعديلات قبل إرسال الطلب.
-
----
 
 ## 📝 الترخيص
 
@@ -129,7 +108,7 @@ project/
 
 ## 📞 الدعم الفني
 
-- افتح [Issue](https://github.com/username/repository/issues) على GitHub
+- افتح [Issue](https://github.com/Husseinyehya1853/project-x/issues) على GitHub
 - أو تواصل معنا عبر البريد: [husseinyehya2008@gmail.com](mailto:husseinyehya2008@gmail.com)
 - أو زر موقع الدعم (قريباً)
 
